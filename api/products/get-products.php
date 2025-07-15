@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config/db.php'; // Fixed path
+require_once '../config/db.php';
 require_once '../middleware/auth_required.php';
 
 header('Content-Type: application/json');
