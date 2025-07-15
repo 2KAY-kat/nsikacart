@@ -15,6 +15,7 @@ form.addEventListener('submit', async (e) => {
     const formData = {
         name: form.name.value,
         email: form.email.value,
+        phone: form.phone.value,
         password: form.password.value,
         confirm_password: form.confirm_password.value
     };

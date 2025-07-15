@@ -21,6 +21,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
+$phone = htmlspecialchars(trim($data['phone']));
 $password = trim($data['password']);
 $confirm_password = trim($data['confirm_password']);
 
@@ -53,8 +54,8 @@ $hashpassword = password_hash($password, PASSWORD_DEFAULT);
 
 // upon successful hashing we proceed to inserting the data into the database we goooo
 
-$stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES(?, ?, ?)");
-$success = $stmt->execute([$name, $email, $hashpassword]);
+$stmt = $pdo->prepare("INSERT INTO users (name, email, phone, password) VALUES(?, ?, ?, ?)");
+$success = $stmt->execute([$name, $email, $phone, $hashpassword]);
 
 if ($success) {
     echo json_encode([
