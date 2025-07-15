@@ -1,5 +1,5 @@
-import { uploadContainer } from './upload-data.js';
-import { categories } from '../../scripts/categories-data.js';
+import { uploadContainer } from '../upload/upload-data';
+import { categories } from '../../../scripts/categories-data.js';
 
 let uploadContainerHTML = '';
 
@@ -70,7 +70,6 @@ document.querySelector('.container').innerHTML = uploadContainerHTML;
 const categorySelect = document.querySelector('#category');
 categories.forEach((category) => {
     const option = document.createElement('option');
-    option.value = category.categoryID;
     option.textContent = category.name;
     categorySelect.appendChild(option);
 });
