@@ -1,0 +1,208 @@
+body {
+  margin: 0 0 0 0;
+  font-family: Roboto, Arial;
+  background-color: var(--text-color);
+}
+
+.dashboard-header {
+  height: 60px;
+  padding: 0 30;
+  background-color: var(--nav-background);
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  gap: 100px;
+}
+
+.header-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.dashboar-header-mid {
+  display: flex;
+  gap: 30px;
+  margin: 20px;
+  padding: 0 30px;
+  align-items: center;
+  text-align: left;
+  justify-content: left;
+}
+
+.dashboar-header-mid .dashboard-header-middle-section {
+  background-color: var(--text-color);
+  color: var(--main-color);
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.dashboar-header-mid .dashboard-header-middle-section:hover {
+  background-color: var(--main-color);
+  color: var(--text-color);
+}
+
+.dashboard-header-right-section {
+  text-align: right;
+  width: auto;
+}
+
+.dashboar-header-mid .dashboard-header-middle-section a {
+  background-color: var(--text-color);
+  color: var(--main-color);
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.dashboar-header-mid .dashboard-header-middle-section a:hover {
+  background-color: var(--main-color);
+  color: var(--text-color);
+}
+
+
+@media (max-width: 575px) {
+  .checkout-header-left-section {
+    width: auto;
+  }
+
+  .dambwe-logo {
+    display: none;
+  }
+
+  .dambwe-mobile-logo {
+    display: inline-block;
+    height: 35px;
+    margin-top: 5px;
+  }
+}
+
+/*
+  
+  .dashboard-header-middle-section {
+    flex: 1;
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 25px;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+  }
+  */
+
+@media (max-width: 1000px) {
+  .dashboard-header-middle-section {
+    font-size: 20px;
+    margin-right: 60px;
+  }
+}
+
+@media (max-width: 575px) {
+  .dashboard-header-middle-section {
+    margin-right: 5px;
+  }
+
+  #username {
+    display: none;
+  }
+}
+
+.dashboard-header-right-section {
+  text-align: right;
+  width: auto;
+}
+
+@media (max-width: 1000px) {
+  .dashboard-header-right-section {
+    width: auto;
+  }
+}
+
+
+
+#username {
+  font-weight: 600;
+  color: var(--main-color);
+  /*background: #f1f7ff;*/
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* When the username nav link is active, change its color */
+.nav-icon[data-section="profile"].active #username,
+.nav-icon[data-section="profile"]:hover #username {
+  color: var(--main-description-color) !important;
+}
+
+
+/* toast for user respponse  */
+/* Toast styles */
+.toast {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 16px;
+  position: fixed;
+  z-index: 9999;
+  left: 50%;
+  bottom: 40px;
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.4s, visibility 0.4s;
+}
+
+.toast.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.toast.success {
+  background-color: #28a745;
+}
+
+.toast.error {
+  background-color: #dc3545;
+}
+
+a {
+  color: #1d283c;
+}
+
+.sidebar-list-item {
+    padding: 10px 15px;
+    margin: 5px 0;
+}
+
+.sidebar-list-item a {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    text-decoration: none;
+}
+
+.sidebar-list-item i {
+    margin-right: 10px;
+}
+
+#admin-panel-link {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}

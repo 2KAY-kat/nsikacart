@@ -1,0 +1,70 @@
+<?php
+    require_once '../api/middleware/auth_required.php';
+?>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../assets/favicon.png" type="image/x-icon">
+    <title>Nsikacart| DASHBOARD</title>
+    <link rel="stylesheet" href="./css/my-products.css">
+    <link rel="stylesheet" href="css/dashboard-styles.css">
+    <link rel="stylesheet" href="../css/fontawesome-free-6.6.0-web/fontawesome-free-6.6.0-web/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="app-icon">
+                    <div class="nav-logo">
+                        <a href="../index.html">
+                            <img class="dambwe-logo" src="../assets/favicon.png" alt="Logo">
+                            <img class="dambwe-mobile-logo" src="../../assets/favicon.png">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!--- here is whwere we palce our navigation links -->
+            <ul class="sidebar-list">
+                <!-- admin link will be inserted here dynamically -->
+            </ul>
+
+            <div class="account-info dropup">
+                <div data-section="profile" class="nav-icon">
+                    <div class="account-info-name">
+                        <i class="fa fa-user">
+                            <span id="username"></span>
+                        </i>
+                        
+                    </div>
+                </div>
+                <div class="dropup-menu dashboard-user-logout">
+                    <a href="../index.html" class="dropup-item">
+                        <i class="fa fa-home"></i> Home
+                    </a>
+                    <div class="logout-btn dropup-item" id="logout-btn">
+                        <i class="fa fa-sign-out-alt"></i> Logout
+                    </div>
+                </div>
+            </div>
+          
+        </div>
+
+        <div class="app-content">
+
+        </div>
+
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+</body>
+<script type="module" src="./js/dashboard-init.js"></script>
+<script src="./js/dashboard.js" defer></script>
+<script src="./js/logout.js"></script>
+<script src="./js/check-session.js"></script>
+</html>

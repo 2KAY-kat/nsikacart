@@ -1,0 +1,43 @@
+# Configuration and sensitive files
+/api/config/db.php
+/api/config/*.ini
+/api/config/*.env
+.env
+*.env
+
+# User uploads
+/public/dashboard/uploads/
+/uploads/
+
+# Vendor directories
+/vendor/
+/node_modules/
+/public/package/
+
+# FontAwesome (already in your ignore)
+css/fontawesome-free-6.6.0-web/
+public/css/fontawesome-free-6.6.0-web/
+
+# Temporary files and logs
+*.log
+*.cache
+/logs/
+/tmp/
+
+# IDE and editor specific files
+.vscode/
+.idea/
+.DS_Store
+
+# Database backups
+*.sql
+*.sqlite
+*.db
+backup/
+
+# Compiled files
+*.min.js
+*.min.css
+
+# Session files
+/sessions/
