@@ -1,3 +1,10 @@
+import { validateSession } from './session-manager.js';
+
+// Wait for DOM to be ready before running session check
+document.addEventListener('DOMContentLoaded', async function() {
+    await validateSession();
+});
+
 window.addEventListener('DOMContentLoaded', async () => {
     try {
         const response = await fetch('/nsikacart/api/auth/check-session.php');
@@ -15,7 +22,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-/**
+/*
 
 window.addEventListener("DOMContentLoaded", async () => {
   try {

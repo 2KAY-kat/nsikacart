@@ -1,5 +1,6 @@
 import { uploadContainer } from '../upload/upload-data';
 import { categories } from '../../../scripts/categories-data.js';
+import { validateSession, getCurrentUser } from '../session-manager.js';
 
 let uploadContainerHTML = '';
 
@@ -132,15 +133,23 @@ async function uploadProduct(formData) {
     }
 }
 
-document.getElementById('product-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
+async function handleFormSubmit(event) {
+    event.preventDefault();
     
-    const submitButton = e.target.querySelector('button[type="submit"]');
+    // Validate session before proceeding
+    const isValid = await validateSession();
+    if (!isValid) {
+        return; // Stop if session isn't valid
+    }
+    
+    const user = getCurrentUser();
+    
+    const submitButton = event.target.querySelector('button[type="submit"]');
     submitButton.disabled = true;
     submitButton.textContent = 'Uploading...';
     
     try {
-        const formData = new FormData(e.target);
+        const formData = new FormData(event.target);
         const result = await uploadProduct(formData);
         
         if (result.success) {
@@ -157,4 +166,21 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
         submitButton.disabled = false;
         submitButton.textContent = 'Publish';
     }
+}
+
+document.getElementById('product-form').addEventListener('submit', handleFormSubmit);
+
+// Add to your upload.js
+document.addEventListener('DOMContentLoaded', () => {
+    // Log session state on page load
+    const user = sessionStorage.getItem('user');
+    console.log('Session storage user on load:', user ? JSON.parse(user) : null);
+    
+    // Check PHP session too
+    fetch('/nsikacart/api/auth/session-debug.php')
+        .then(res => res.json())
+        .then(data => {
+            console.log('PHP session debug data:', data);
+        })
+        .catch(err => console.error('Error fetching session debug:', err));
 });

@@ -1,3 +1,7 @@
+<?php
+    require_once '../api/middleware/auth_required.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +17,8 @@
         
     </div>
 
+    <script type="module" src="./js/session-manager.js"></script>
+    <!-- <script type="module" src="./js/check-session.js"></script> -->
     <script type="module" src="./js/upload/upload.js"></script>
     <script type="module" src="./js/upload/preview-logic.js"></script>
 </body>

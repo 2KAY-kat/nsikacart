@@ -21,7 +21,7 @@ export function renderSections() {
         <div class="dashboard-section" id="section-${key}" style="${idx === 0 ? '' : 'display:none;'}">
             <div class="app-content-header" style="padding: 12px 12px 2px 12px; margin-bottom: 2px;">
                 <h1 class="app-content-headerText" style="margin: 0 0 0 4px;">${section.header}</h1>
-                ${key === 'products' ? '<button class="app-content-headerButton" style="margin-left: 12px;"><a href="../dashboard/upload.html">Add Product</a></button>' : ''}
+                ${key === 'products' ? '<button class="app-content-headerButton" style="margin-left: 12px;"><a href="./upload.html">Add Product</a></button>' : ''}
             </div>
             <div style="padding: 24px 12px; color: var(--app-content-main-color);">
                 ${section.content}

@@ -1,6 +1,17 @@
 import { formatCurrency } from '../../scripts/utilities/calculate_cash.js';
+import { getCurrentUser, validateSession } from './session-manager.js';
 
 export async function renderProductsTable() {
+    // First validate session
+    await validateSession();
+    
+    // Get current user data
+    const user = getCurrentUser();
+    if (!user) {
+        console.error('No user session found');
+        return;
+    }
+
     const table = document.getElementById('dashboard-products-table');
     if (!table) return;
 
@@ -14,15 +25,9 @@ export async function renderProductsTable() {
             <div class="product-cell category">Category</div>
             <div class="product-cell status-cell">Status</div>
             <div class="product-cell price">Price</div>
+            <div class="product-cell edit">Update</div>
         </div>
     `;
-
-    // get current user from session
-    const user = JSON.parse(sessionStorage.getItem('user'));
-    if (!user || !user.id) {
-        console.error('No user session found');
-        return;
-    }
 
     try {
         // add user_id to the request
@@ -54,6 +59,7 @@ export async function renderProductsTable() {
                         <span class="status ${product.status}">${product.status}</span>
                     </div>
                     <div class="product-cell price">MK${formatCurrency(product.price)}</div>
+                    <div class="product-cell edit"><a class="edit-link" href="./upload.html"><i class="fa fa-edit"></i> Edit</a></div>
                 </div>
             `;
         }).join('');

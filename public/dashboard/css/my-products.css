@@ -564,6 +564,10 @@ body {
     background-color: #59719d;
 }
 
+.edit-link {
+  color: var(--action-color);
+}
+
 /*
 
 .gridView {
