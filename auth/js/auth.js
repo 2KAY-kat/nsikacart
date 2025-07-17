@@ -65,76 +65,62 @@ function showToast(message, type = 'success') {
 window.showToast = showToast;
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Initialize password toggle functionality
-    initializePasswordToggle();
-    
-    // Initialize password strength checker
-    initializePasswordStrength();
-});
-
-function initializePasswordToggle() {
+    // Password toggle functionality
+    const toggleButtons = document.querySelectorAll('.toggle-password');
     const passwordInputs = document.querySelectorAll('.password-input');
-    
-    passwordInputs.forEach(input => {
-        const inputGroup = input.closest('.input-group');
-        if (!inputGroup) return;
+
+    toggleButtons.forEach((button, index) => {
+        // Initially hide toggle buttons
+        button.style.display = 'none';
         
-        let toggleButton = inputGroup.querySelector('.toggle-password');
+        // Find the corresponding password input
+        const inputGroup = button.closest('.input-group');
+        const passwordInput = inputGroup ? inputGroup.querySelector('.password-input') : null;
         
-        // Create toggle button if it doesn't exist
-        if (!toggleButton) {
-            toggleButton = document.createElement('i');
-            toggleButton.className = 'fas fa-eye-slash toggle-password';
-            inputGroup.appendChild(toggleButton);
+        if (!passwordInput) {
+            console.warn('Password input not found for toggle button', button);
+            return;
         }
-        
-        // Initialize button state
-        toggleButton.style.display = 'none';
-        
+
         // Toggle password visibility
-        toggleButton.addEventListener('click', function (e) {
+        button.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
             
-            if (input.type === 'password') {
-                input.type = 'text';
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
                 this.classList.remove('fa-eye-slash');
                 this.classList.add('fa-eye');
             } else {
-                input.type = 'password';
+                passwordInput.type = 'password';
                 this.classList.remove('fa-eye');
                 this.classList.add('fa-eye-slash');
             }
         });
 
-        // Show toggle button on focus
-        input.addEventListener('focus', () => {
-            toggleButton.style.display = 'block';
+        // Show/hide toggle button based on input focus and content
+        passwordInput.addEventListener('focus', () => {
+            button.style.display = 'block';
         });
 
-        // Hide toggle button on blur if input is empty
-        input.addEventListener('blur', () => {
-            if (input.value === '') {
-                toggleButton.style.display = 'none';
+        passwordInput.addEventListener('blur', () => {
+            // Keep button visible if input has content
+            if (passwordInput.value === '') {
+                button.style.display = 'none';
             }
         });
 
-        // Show toggle button when user starts typing
-        input.addEventListener('input', () => {
-            if (input.value.length > 0) {
-                toggleButton.style.display = 'block';
+        // Show button when user starts typing
+        passwordInput.addEventListener('input', () => {
+            if (passwordInput.value.length > 0) {
+                button.style.display = 'block';
             } else {
-                toggleButton.style.display = 'none';
-                // Reset to password type when empty
-                input.type = 'password';
-                toggleButton.classList.remove('fa-eye');
-                toggleButton.classList.add('fa-eye-slash');
+                button.style.display = 'none';
             }
         });
     });
-}
 
-function initializePasswordStrength() {
+    // Password strength checker
     const passwordField = document.getElementById('password');
     if (passwordField) {
         passwordField.addEventListener('input', function() {
@@ -149,7 +135,7 @@ function initializePasswordStrength() {
             }
         });
     }
-}
+});
 
 // Password strength checker
 function checkPasswordStrength(password) {
@@ -186,11 +172,11 @@ function checkPasswordMatch() {
     }
 
     if (passwordValue === confirmPasswordValue) {
-        matchIcon.style.display = 'block';
+        matchIcon.style.display = 'inline-block';
         mismatchIcon.style.display = 'none';
     } else {
         matchIcon.style.display = 'none';
-        mismatchIcon.style.display = 'block';
+        mismatchIcon.style.display = 'inline-block';
     }
 }
 
