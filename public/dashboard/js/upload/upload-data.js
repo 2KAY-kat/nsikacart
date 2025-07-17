@@ -1,7 +1,9 @@
 export const uploadContainer = [
     {
         title: 'Add New Product',
+        editTitle: 'Edit Product',
         PublishButton: 'Publish',
+        UpdateButton: 'Update Product',
         previewContainers: `
             <div class="preview-section">
                 <div class="main-preview-container">

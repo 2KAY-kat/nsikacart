@@ -11,11 +11,8 @@
 </head>
 
 <body class="login-page">
-    <div id="toast" class="toast"></div>
-
     <div class="login-container">
         <div class="login-box">
-
             <div class="checkout-header-middle-section">
                 <img class="dambwe-logo" src="../public/assets/favicon.png">
             </div>
@@ -66,8 +63,10 @@
         </div>
     </div>
 
-    <script src="../auth/js/signup.js"></script>
-    <script src="../auth/js/auth.js" defer></script>
+    <!-- Load auth.js first for global functions -->
+    <script src="./js/auth.js"></script>
+    <!-- Then load page-specific script -->
+    <script src="./js/signup.js"></script>
 </body>
 
 </html>

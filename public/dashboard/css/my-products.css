@@ -18,6 +18,7 @@
     --action-color-hover: #6291fd;
     --app-content-secondary-color: #1d283c;
     --filter-reset: #2c394f;
+    --error-color: #6d2b2b;
     --filter-shadow: rgba(16, 24, 39, 0.8) 0px 6px 12px -2px,
         rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
@@ -566,6 +567,10 @@ body {
 
 .edit-link {
   color: var(--action-color);
+}
+
+.delete-link {
+    color: var(--error-color);
 }
 
 /*

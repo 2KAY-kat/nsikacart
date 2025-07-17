@@ -52,7 +52,7 @@
 
 .input-group {
     position: relative;
-    margin-bottom: 1.5rem;
+    margin-bottom: 20px;
 }
 
 .input-group input {
@@ -61,6 +61,12 @@
     border: 1px solid var(--random-color);
     border-radius: 5px;
     font-size: 1rem;
+}
+
+.input-group input[type="password"],
+.input-group input[type="text"] {
+    width: 100%;
+    padding-right: 50px; /* Make room for the toggle button */
 }
 
 .input-group i {
@@ -79,6 +85,29 @@ i.toggle-password {
     left: auto; 
     right: 10px; 
     cursor: pointer;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+    font-size: 16px;
+    z-index: 2;
+    background: none;
+    border: none;
+    padding: 5px;
+}
+
+.toggle-password:hover {
+    color: #333;
+}
+
+/* Ensure the icon is visible and clickable */
+.toggle-password i {
+    pointer-events: none;
 }
 
 .options {

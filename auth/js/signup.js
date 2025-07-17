@@ -1,46 +1,95 @@
 const form = document.querySelector('#signup-form');
-const toast = document.getElementById('toast');
 
-function showToast(message, type = "success") {
-    toast.textContent = message;
-    toast.className = `toast show ${type}`;
-    setTimeout(() => {
-        toast.className = "toast";
-    }, 35000);
-}
+// Remove any existing event listeners to prevent duplicates
+form.removeEventListener('submit', handleSignup);
 
-form.addEventListener('submit', async (e) => {
+function handleSignup(e) {
     e.preventDefault();
 
+    // Validate password match before submitting
+    const password = form.password.value;
+    const confirmPassword = form.confirm_password.value;
+
+    if (password !== confirmPassword) {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Passwords do not match!', 'error');
+        }
+        return;
+    }
+
+    if (password.length < 6) {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Password must be at least 6 characters long!', 'error');
+        }
+        return;
+    }
+
     const formData = {
-        name: form.name.value,
-        email: form.email.value,
-        phone: form.phone.value,
-        password: form.password.value,
-        confirm_password: form.confirm_password.value
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim(),
+        password: password,
+        confirm_password: confirmPassword
     };
 
-    try {
-        const response = await fetch('/nsikacart/api/auth/register.php', {
-            method: "POST",
-            headers: {
-                "content-type": "application/json"
-            },
-            body: JSON.stringify(formData)
-        });
-
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
+    // Validate required fields
+    if (!formData.name || !formData.email || !formData.phone) {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Please fill in all required fields!', 'error');
         }
-
-        const result = await response.json();
-        if (result.success) {
-            showToast(result.message, "success");
-            setTimeout(() => window.location.href = "./login.html", 1500);
-        } else {
-            showToast(result.message, "error");
-        }
-    } catch (err) {
-        showToast("An error occurred: " + err.message, "error");
+        return;
     }
-});
+
+    // Show loading state
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = 'Creating Account...';
+
+    fetch('/nsikacart/api/auth/register.php', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Network error: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(result => {
+        if (result.success) {
+            if (typeof window.showToast === 'function') {
+                window.showToast(result.message || 'Account created successfully!', 'success');
+            }
+            
+            // Clear form
+            form.reset();
+            
+            // Redirect after delay
+            setTimeout(() => {
+                window.location.href = "./login.html";
+            }, 2000);
+        } else {
+            if (typeof window.showToast === 'function') {
+                window.showToast(result.message || 'Registration failed', 'error');
+            }
+        }
+    })
+    .catch(err => {
+        console.error('Signup error:', err);
+        if (typeof window.showToast === 'function') {
+            window.showToast("Network error. Please check your connection and try again.", 'error');
+        }
+    })
+    .finally(() => {
+        // Reset button state
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+    });
+}
+
+// Add single event listener
+form.addEventListener('submit', handleSignup);
