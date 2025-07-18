@@ -11,8 +11,6 @@ if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] !== 'admin' && $_SES
 }
 
 try {
-    // Use $pdo directly instead of getDbConnection()
-    // $pdo is already created in db.php
     
     // Get total users count
     $stmt = $pdo->query("SELECT COUNT(*) as total FROM users");
@@ -26,7 +24,8 @@ try {
     $monthlySales = 0; // You'll need to implement this based on your sales/orders table
     
     // Get active sessions (simplified count)
-    $activeSessions = 1; // You'll need to implement proper session tracking
+    $stmt = $pdo->query("SELECT COUNT(*) as total FROM sessions WHERE last_active > NOW() - INTERVAL 15 MINUTE");
+    $activeSessions = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     
     echo json_encode([
         'success' => true,

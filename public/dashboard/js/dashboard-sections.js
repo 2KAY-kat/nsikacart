@@ -1,3 +1,4 @@
+/* from the old frontend stracrures and product/ category mapping approach ... we go backe d now
 import { products } from '../../scripts/data.js';
 
 const productCategories = Array.from(new Set(products.map(p => p.category)));
@@ -5,6 +6,8 @@ productCategories.unshift('All');
 
 const productsStatus = Array.from(new Set(products.map(p => p.status)));
 productsStatus.unshift('All');
+
+*/
 
 export const sections = {
     products: {
