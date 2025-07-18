@@ -26,7 +26,7 @@ uploadContainer.forEach((container) => {
             <h2>${title}</h2>
         </div>
         
-        <form id="product-form" enctype="multipart/form-data">
+        <form id="product-form" enctype="multipart/form-data" novalidate>
             ${isEditMode ? `<input type="hidden" name="product_id" value="${editProductId}">` : ''}
             <div class="form-group">
                 <label for="category">Category</label>
@@ -64,9 +64,12 @@ uploadContainer.forEach((container) => {
                     <label class="image-upload-button" id="image_upload_button">
                         <i class="upload-icon">📷</i>
                         <span>Choose Images</span>
-                        <input type="file" id="product_images" name="images[]" accept="image/*" style="display: none;" multiple ${isEditMode ? '' : 'required'}>
+                        <input type="file" id="product_images" name="images[]" accept="image/*" style="display: none;" multiple>
                     </label>
                     ${container.previewContainers}
+                </div>
+                <div class="image-validation-error" id="image_validation_error" style="display: none;">
+                    <span class="error-text">Please select at least one image for your product</span>
                 </div>
             </div>
             
@@ -176,6 +179,7 @@ window.removeImage = function(button) {
     
     updateImageIndices();
     updateUploadButton();
+    validateImages();
 };
 
 // Get count of existing images not marked for deletion
@@ -222,6 +226,20 @@ function updateUploadButton() {
     }
 }
 
+// Validate images
+function validateImages() {
+    const totalImages = getExistingImagesCount() + selectedImages.length;
+    const errorDiv = document.getElementById('image_validation_error');
+    
+    if (!isEditMode && totalImages === 0) {
+        errorDiv.style.display = 'block';
+        return false;
+    } else {
+        errorDiv.style.display = 'none';
+        return true;
+    }
+}
+
 // Handle file input change
 document.addEventListener('change', function(e) {
     if (e.target.id === 'product_images') {
@@ -250,6 +268,7 @@ document.addEventListener('change', function(e) {
                 imageGrid.appendChild(imageContainer);
                 updateImageIndices();
                 updateUploadButton();
+                validateImages();
             };
             reader.readAsDataURL(file);
         });
@@ -306,8 +325,40 @@ async function uploadProduct(formData) {
     }
 }
 
+// Custom form validation
+function validateForm() {
+    let isValid = true;
+    const form = document.getElementById('product-form');
+    
+    // Clear previous validation styles
+    form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+    
+    // Check required fields
+    const requiredFields = ['category', 'name', 'price', 'location', 'description'];
+    requiredFields.forEach(fieldName => {
+        const field = document.getElementById(fieldName);
+        if (!field.value.trim()) {
+            field.classList.add('error');
+            isValid = false;
+        }
+    });
+    
+    // Validate images
+    if (!validateImages()) {
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
 async function handleFormSubmit(event) {
     event.preventDefault();
+    
+    // Custom validation
+    if (!validateForm()) {
+        showToast('Please fill in all required fields and add at least one image', 'error');
+        return;
+    }
     
     // Validate session before proceeding
     const isValid = await validateSession();

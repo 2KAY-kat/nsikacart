@@ -76,6 +76,23 @@ select {
     border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--main-color);
+}
+
+/* Error styling for validation */
+input.error,
+textarea.error,
+select.error {
+    border-color: #dc3545;
+    background-color: #fff5f5;
 }
 
 textarea {
@@ -242,6 +259,21 @@ input[type="checkbox"] {
     margin: 5px 0;
 }
 
+/* Image validation error */
+.image-validation-error {
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #fff5f5;
+    border: 1px solid #dc3545;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.error-text {
+    color: #dc3545;
+    font-size: 12px;
+}
+
 .policy-note {
     font-size: 12px;
     color: #666;
@@ -344,6 +376,10 @@ input[type="checkbox"] {
     }
 
     .image-upload-container {
+        margin-left: 165px;
+    }
+
+    .image-validation-error {
         margin-left: 165px;
     }
 
