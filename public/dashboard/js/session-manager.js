@@ -36,8 +36,8 @@ async function validateSession() {
 }
 
 // Get current user from session
-function getCurrentUser() {
+export function getCurrentUser() {
     return JSON.parse(sessionStorage.getItem('user'));
 }
 
-export { validateSession, getCurrentUser };
+export { validateSession };
