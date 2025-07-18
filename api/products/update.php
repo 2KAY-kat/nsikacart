@@ -26,11 +26,9 @@ try {
     
     $upload_dir = __DIR__ . '/../../public/dashboard/uploads/';
     
-    // Prepare update fields - only update fields that are provided
+    // Prepare update fields
     $update_fields = [];
     $update_values = [];
-    
-    // Only proceed if there are actual changes or files to upload
     $has_changes = false;
     
     // Check each field for changes before adding to update
@@ -70,60 +68,98 @@ try {
         $has_changes = true;
     }
     
-    // Handle main image update
-    if (isset($_FILES['main_image']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
-        $main_image = $_FILES['main_image'];
-        $main_image_name = uniqid() . '_' . basename($main_image['name']);
-        $main_image_path = $upload_dir . $main_image_name;
-        
-        // Validate image type
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-        if (!in_array($main_image['type'], $allowed_types)) {
-            throw new Exception("Invalid file type. Only JPG, PNG and GIF allowed");
-        }
-        
-        if (move_uploaded_file($main_image['tmp_name'], $main_image_path)) {
-            $update_fields[] = "main_image = ?";
-            $update_values[] = $main_image_name;
-            
-            // Delete old main image
-            if ($existing_product['main_image'] && file_exists($upload_dir . $existing_product['main_image'])) {
-                unlink($upload_dir . $existing_product['main_image']);
+    // Handle image deletions first
+    $existing_images = json_decode($existing_product['images'], true) ?: [];
+    $current_main_image = $existing_product['main_image'];
+    
+    if (isset($_POST['delete_images'])) {
+        $images_to_delete = json_decode($_POST['delete_images'], true);
+        if (is_array($images_to_delete)) {
+            foreach ($images_to_delete as $image_to_delete) {
+                // Remove from filesystem
+                $image_path = $upload_dir . basename($image_to_delete);
+                if (file_exists($image_path)) {
+                    unlink($image_path);
+                }
+                
+                // Remove from existing images array
+                $existing_images = array_filter($existing_images, function($img) use ($image_to_delete) {
+                    return $img !== $image_to_delete;
+                });
+                
+                // Check if main image was deleted
+                if ($current_main_image === $image_to_delete) {
+                    $current_main_image = null;
+                }
             }
-            
             $has_changes = true;
         }
     }
     
-    // Handle additional images update
+    // Handle new image uploads
+    $new_images = [];
+    $new_main_image = $current_main_image;
+    
     if (isset($_FILES['images']) && is_array($_FILES['images']['tmp_name'])) {
-        $other_images = [];
-        $existing_images = json_decode($existing_product['images'], true) ?: [];
-        
-        // Keep existing images that aren't being replaced
-        $other_images = $existing_images;
-        
         foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
             if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
+                // Validate image type
+                $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!in_array($_FILES['images']['type'][$key], $allowed_types)) {
+                    throw new Exception("Invalid file type. Only JPG, PNG and GIF allowed");
+                }
+                
                 $image_name = uniqid() . '_' . basename($_FILES['images']['name'][$key]);
                 $image_path = $upload_dir . $image_name;
                 
                 if (move_uploaded_file($tmp_name, $image_path)) {
-                    $other_images[] = $image_name;
+                    $new_images[] = $image_name;
+                    
+                    // First uploaded image becomes main image if no main image exists
+                    if (!$new_main_image && count($new_images) === 1) {
+                        $new_main_image = $image_name;
+                    }
+                    
                     $has_changes = true;
                 }
             }
         }
+    }
+    
+    // Combine existing and new images
+    $all_images = array_merge($existing_images, $new_images);
+    
+    // Limit to 10 images total
+    if (count($all_images) > 10) {
+        $all_images = array_slice($all_images, 0, 10);
+    }
+    
+    // Update main image if it was deleted and we have images
+    if (!$new_main_image && !empty($all_images)) {
+        $new_main_image = $all_images[0];
+        $has_changes = true;
+    }
+    
+    // Update database with new image data
+    if ($has_changes && (!empty($all_images) || !empty($new_main_image))) {
+        if ($new_main_image !== $existing_product['main_image']) {
+            $update_fields[] = "main_image = ?";
+            $update_values[] = $new_main_image;
+        }
         
-        if (!empty($other_images)) {
+        if (json_encode($all_images) !== $existing_product['images']) {
             $update_fields[] = "images = ?";
-            $update_values[] = json_encode($other_images);
+            $update_values[] = json_encode($all_images);
         }
     }
     
     // Only proceed if there are fields to update
     if (empty($update_fields)) {
-        throw new Exception('No fields to update');
+        echo json_encode([
+            'success' => true,
+            'message' => 'No changes detected'
+        ]);
+        exit;
     }
     
     // Add updated_at timestamp
