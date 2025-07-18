@@ -34,11 +34,11 @@ export const sections = {
             </div>
             <div class="products-area-wrapper tableView" id="dashboard-products-table"></div>
         `
-    },/*
+    },
     statistics: {
         header: 'Statistics',
         content: `<p>Statistics content goes here.</p>`
-    },
+    },/*
     inbox: {
         header: 'Inbox',
         content: `<p id="inbox">Inbox content goes here.</p>`

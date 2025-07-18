@@ -8,12 +8,12 @@ export const sidebarItems = [
         name: 'Products', 
         icon: ' fa-bag-shopping', 
         section: 'products' 
-    },/* for later addition in the system
+    },
     { 
         name: 'Statistics', 
         icon: ' fa-chart-pie', 
         section: 'statistics' 
-    },
+    },/* for later addition in the system
     { 
         name: 'Inbox', 
         icon: ' fa-inbox', 
