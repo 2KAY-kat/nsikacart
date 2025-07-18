@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const user = sessionStorage.getItem('user');
     console.log('Session storage user on load:', user ? JSON.parse(user) : null);
     
-    fetch('/nsikacart/api/auth/session-debug.php')
+    fetch('/nsikacart/api/auth/session-debugg.php')
         .then(res => res.json())
         .then(data => {
             console.log('PHP session debug data:', data);

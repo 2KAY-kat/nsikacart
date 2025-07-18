@@ -571,6 +571,7 @@ body {
 
 .delete-link {
     color: var(--error-color);
+    cursor: pointer;
 }
 
 /*
@@ -832,4 +833,98 @@ a {
         left: auto;
         border-radius: 6px;
     }
+}
+
+/* Modal styles */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0; 
+    top: 0; 
+    width: 100vw; 
+    height: 100vh;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    background: rgba(0,0,0,0.4);
+    -webkit-backdrop-filter: blur(4px); 
+    backdrop-filter: blur(4px); 
+}
+
+.modal-content {
+    background: var(--app-content-secondary-color);
+    border-radius: 8px;
+    padding: 2rem 2rem 1.5rem 2rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+    min-width: 320px;
+    max-width: 90vw;
+    position: relative;
+    text-align: center;
+}
+
+.modal-body {
+    text-align: center;
+}
+
+.modal-body i {
+    font-size: 2rem;
+    color: var(--error-color);
+    margin-bottom: 1rem;
+}
+
+.modal-body h3 {
+    margin: 1rem 0 0.5rem 0;
+    color: var(--app-content-main-color);
+}
+
+.modal-body p {
+    margin-bottom: 1.5rem;
+    color: var(--app-content-main-color);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.modal-confirm-btn {
+    background: var(--error-color);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.modal-confirm-btn:hover {
+    background: #5a1f1f;
+}
+
+.modal-cancel-btn {
+    background: var(--app-content-secondary-color);
+    color: var(--app-content-main-color);
+    border: 1px solid var(--table-border);
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-cancel-btn:hover {
+    background: var(--action-color);
+    color: #fff;
+}
+
+.modal-close {
+    position: absolute;
+    right: 1rem; 
+    top: 1rem;
+    font-size: 1.5rem;
+    color: var(--app-content-main-color);
+    cursor: pointer;
+}
+
+.modal-close:hover { 
+    color: var(--error-color); 
 }

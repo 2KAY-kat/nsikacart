@@ -4,25 +4,19 @@
 /api/config/*.env
 .env
 *.env
+.env.local
+.env.production
+
 
 # User uploads
 /public/dashboard/uploads/
-/uploads/
 
 # Vendor directories
-/vendor/
-/node_modules/
 /public/package/
 
 # FontAwesome (already in your ignore)
 css/fontawesome-free-6.6.0-web/
 public/css/fontawesome-free-6.6.0-web/
-
-# Temporary files and logs
-*.log
-*.cache
-/logs/
-/tmp/
 
 # IDE and editor specific files
 .vscode/
@@ -41,3 +35,10 @@ backup/
 
 # Session files
 /sessions/
+/api/auth/session-debugg.php
+/api/debug/session-check.php
+/api/products/debug-delete-verbose.php
+/api/products/debug-delete.php
+
+# Miscellaneous
+Product-Delete-Design-Decisions.md

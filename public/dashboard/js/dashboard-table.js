@@ -65,12 +65,19 @@ export async function renderProductsTable() {
                             <i class="fa fa-edit"></i> Edit
                         </a>
                     </div>
-                    <div class="product-cell edit"><a class="delete-link" href="./delete.html"><i class="fa fa-trash-can"></i> Delete</a></div>
+                    <div class="product-cell edit">
+                        <a class="delete-link" data-product-id="${product.id}" data-product-name="${product.name}">
+                            <i class="fa fa-trash-can"></i> Delete
+                        </a>
+                    </div>
                 </div>
             `;
         }).join('');
 
         table.innerHTML = html + productsHTML;
+
+        // Add event listeners for delete buttons
+        setupDeleteHandlers();
 
     } catch (error) {
         console.error('Fetch error:', error);
@@ -82,36 +89,161 @@ export async function renderProductsTable() {
     }
 }
 
-/*
-// Grid view rendering
-export function renderProductsGrid() {
-    const table = document.getElementById('dashboard-products-table');
-    if (!table) return;
-    table.style.maxHeight = "";
-    table.style.overflowY = "";
-    table.style.display = "grid";
-    table.style.gridTemplateColumns = "repeat(auto-fill, minmax(220px, 1fr))";
-    table.style.gap = "16px";
-    table.innerHTML = products.map(product => {
-        let imgSrc = product.image;
-        if (imgSrc.startsWith('./')) {
-            imgSrc = '../' + imgSrc.substring(2);
-        } else if (!/^https?:\/\//.test(imgSrc) && !imgSrc.startsWith('/')) {
-            imgSrc = '../' + imgSrc;
-        }
-        return `
-        <div class="product-grid-card" style="border:1px solid #eee; border-radius:8px; padding:16px; background:#fff;">
-            <div style="display:flex; align-items:center; margin-bottom:8px;">
-                <img src="${imgSrc}" alt="product" style="width:48px; height:48px; object-fit:cover; border-radius:4px; margin-right:8px;">
-                <span style="font-weight:bold;">${product.name}</span>
-            </div>
-            <div>Category: <b>${product.category}</b></div>
-            <div>Status: <span class="status ${product.status}">${product.status}</span></div>
-            <div>Sales: 0</div>
-            <div>Stock: 0</div>
-            <div>Price: <b>MK${formatCurrency(product.dollar)}</b></div>
-        </div>
-        `;
-    }).join('');
+// Setup delete button event handlers
+function setupDeleteHandlers() {
+    document.querySelectorAll('.delete-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const productId = link.dataset.productId;
+            const productName = link.dataset.productName;
+            showDeleteModal(productId, productName);
+        });
+    });
 }
-    */
+
+// Modal logic for delete confirmation
+function showDeleteModal(productId, productName) {
+    const modal = document.getElementById('delete-modal');
+    const modalMessage = document.getElementById('modal-message');
+    
+    modalMessage.textContent = `Are you sure you want to permanently delete "${productName}"? This action cannot be undone.`;
+    
+    modal.style.display = 'flex';
+    modal.dataset.productId = productId;
+}
+
+function hideDeleteModal() {
+    const modal = document.getElementById('delete-modal');
+    modal.style.display = 'none';
+    modal.dataset.productId = '';
+}
+
+// Toast notification function
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    
+    toast.textContent = message;
+    toast.className = `toast ${type} show`;
+    
+    setTimeout(() => {
+        toast.className = 'toast';
+    }, 3000);
+}
+
+// Delete product function with comprehensive error handling
+async function deleteProduct(productId) {
+    try {
+        // Validate input
+        if (!productId || isNaN(productId)) {
+            showToast('Invalid product ID', 'error');
+            return;
+        }
+
+        const response = await fetch('/nsikacart/api/products/delete.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ product_id: parseInt(productId) }),
+            credentials: 'include'
+        });
+
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+
+        // Handle different HTTP status codes
+        if (response.status === 401) {
+            showToast('Please log in to delete products', 'error');
+            // Redirect to login if needed
+            setTimeout(() => {
+                window.location.href = '../auth/login.html';
+            }, 2000);
+            return;
+        }
+
+        if (response.status === 500) {
+            showToast('Server error occurred. Please try again later.', 'error');
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Check content type
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error('Non-JSON response:', text);
+            showToast('Server returned an invalid response', 'error');
+            return;
+        }
+
+        // Get response text first to debug empty responses
+        const responseText = await response.text();
+        console.log('Response text:', responseText);
+
+        if (!responseText.trim()) {
+            showToast('Server returned empty response', 'error');
+            return;
+        }
+
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('JSON parse error:', parseError);
+            console.error('Response text that failed to parse:', responseText);
+            showToast('Invalid response from server', 'error');
+            return;
+        }
+        
+        if (data.success) {
+            showToast('Product deleted successfully', 'success');
+            // Refresh the products table
+            setTimeout(() => {
+                renderProductsTable();
+            }, 1000);
+        } else {
+            showToast(data.message || 'Failed to delete product', 'error');
+        }
+
+    } catch (error) {
+        console.error('Delete error:', error);
+        
+        // Network or other errors
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            showToast('Network error. Please check your connection.', 'error');
+        } else {
+            showToast('An unexpected error occurred', 'error');
+        }
+    }
+}
+
+// Initialize modal event handlers when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('delete-modal');
+    
+    if (modal) {
+        // Confirm delete
+        document.getElementById('modal-confirm-btn').onclick = function() {
+            const productId = modal.dataset.productId;
+            if (productId) {
+                deleteProduct(productId);
+                hideDeleteModal();
+            }
+        };
+
+        // Cancel delete
+        document.getElementById('modal-cancel-btn').onclick = hideDeleteModal;
+        
+        // Close (X) button
+        document.getElementById('modal-close-btn').onclick = hideDeleteModal;
+        
+        // Close modal when clicking outside content
+        modal.onclick = function(e) {
+            if (e.target === modal) hideDeleteModal();
+        };
+    }
+});
