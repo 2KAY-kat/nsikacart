@@ -104,9 +104,9 @@ try {
         foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
             if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
                 // Validate image type
-                $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+                $allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
                 if (!in_array($_FILES['images']['type'][$key], $allowed_types)) {
-                    throw new Exception("Invalid file type. Only JPG, PNG and GIF allowed");
+                    throw new Exception("Invalid file type. Only JPG, PNG, WEBP and GIF allowed");
                 }
                 
                 $image_name = uniqid() . '_' . basename($_FILES['images']['name'][$key]);

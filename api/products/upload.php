@@ -99,9 +99,9 @@ try {
     $main_image_path = $upload_dir . $main_image_name;
 
     // validate image type
-    $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+    $allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!in_array($main_image['type'], $allowed_types)) {
-        throw new Exception("Invalid file type. Only JPG, PNG and GIF allowed");
+        throw new Exception("Invalid file type. Only JPG, PNG,  WEBP and GIF allowed");
     }
 
     if (!move_uploaded_file($main_image['tmp_name'], $main_image_path)) {

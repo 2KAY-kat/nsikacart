@@ -22,14 +22,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode([
-        'success' => false, 
+        'success' => false,
         'message' => 'Method not allowed'
     ]);
     exit;
 }
 
 // Function to safely output JSON and exit
-function outputJson($data) {
+function outputJson($data)
+{
     echo json_encode($data);
     exit;
 }
@@ -73,24 +74,24 @@ try {
     }
 
     $input = json_decode($input_raw, true);
-    
+
     if (json_last_error() !== JSON_ERROR_NONE) {
         outputJson([
-            'success' => false, 
+            'success' => false,
             'message' => 'Invalid JSON input: ' . json_last_error_msg()
         ]);
     }
-    
+
     if (!isset($input['product_id']) || empty($input['product_id'])) {
         outputJson([
-            'success' => false, 
+            'success' => false,
             'message' => 'Product ID is required'
         ]);
     }
-    
+
     $product_id = (int)$input['product_id'];
-    $user_id = (int)$_SESSION['user']['id']; // Fixed: use correct session structure
-    
+    $user_id = (int)$_SESSION['user']['id'];
+
     if ($product_id <= 0) {
         outputJson([
             'success' => false,
@@ -116,14 +117,14 @@ try {
     }
 
     $product = $check_stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$product) {
         outputJson([
-            'success' => false, 
+            'success' => false,
             'message' => 'Product not found or you do not have permission to delete this product'
         ]);
     }
-    
+
     // Begin transaction for safe deletion
     if (!$pdo->beginTransaction()) {
         outputJson([
@@ -131,7 +132,7 @@ try {
             'message' => 'Failed to start database transaction'
         ]);
     }
-    
+
     try {
         // Delete the product from database first
         $delete_stmt = $pdo->prepare("DELETE FROM products WHERE id = ? AND user_id = ?");
@@ -140,14 +141,14 @@ try {
         }
 
         $delete_result = $delete_stmt->execute([$product_id, $user_id]);
-        
+
         if (!$delete_result || $delete_stmt->rowCount() === 0) {
             throw new Exception('Failed to delete product from database');
         }
-        
+
         // Delete associated image files (after successful DB deletion)
         $upload_dir = dirname(__DIR__, 2) . '/public/dashboard/uploads/';
-        
+
         // Ensure upload directory exists and is accessible
         if (!is_dir($upload_dir)) {
             error_log("Upload directory not found: " . $upload_dir);
@@ -159,7 +160,7 @@ try {
                     @unlink($main_image_path);
                 }
             }
-            
+
             // Delete other images
             if (!empty($product['images'])) {
                 $images = json_decode($product['images'], true);
@@ -175,17 +176,16 @@ try {
                 }
             }
         }
-        
+
         // Commit transaction
         if (!$pdo->commit()) {
             throw new Exception('Failed to commit transaction');
         }
-        
+
         outputJson([
-            'success' => true, 
+            'success' => true,
             'message' => 'Product deleted successfully'
         ]);
-        
     } catch (Exception $e) {
         // Rollback transaction on error
         $pdo->rollback();
@@ -195,11 +195,10 @@ try {
             'message' => 'Failed to delete product: ' . $e->getMessage()
         ]);
     }
-    
 } catch (Exception $e) {
     error_log("Product deletion error: " . $e->getMessage());
     outputJson([
-        'success' => false, 
+        'success' => false,
         'message' => 'An error occurred: ' . $e->getMessage()
     ]);
 } catch (Error $e) {
@@ -215,4 +214,3 @@ outputJson([
     'success' => false,
     'message' => 'Unknown error occurred'
 ]);
-?>
