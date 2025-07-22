@@ -1,13 +1,238 @@
 # =================================================================
-# Local Development Settings (WAMP) 
+# Nsikacart Comprehensive URL Rewriting & Error Handling
 # =================================================================
+
+# Enable URL Rewriting
 RewriteEngine On
 
-# Handle other routes
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}\.html !-f
-RewriteRule ^([^/]+)$ $1.html [L]
+# Set the correct base path for WAMP local development
+RewriteBase /nsikacart/
 
-# Custom error pages
-ErrorDocument 404 /nsikacart/404.md
-ErrorDocument 500 /nsikacart/500.md
+# =================================================================
+# Security Headers & Protection
+# =================================================================
+
+# Prevent access to sensitive files
+<FilesMatch "\.(sql|md|log|bak|config|env|ini|json)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Protect specific sensitive files and directories
+RedirectMatch 403 ^/nsikacart/(api/config/|auth/users\.sql|admin/sessions\.sql|\.hintrc|Nsikacart-Backend-SetUp-Instructions\.md)
+
+# =================================================================
+# CORS and Security Headers
+# =================================================================
+
+<IfModule mod_headers.c>
+    # Security headers
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options SAMEORIGIN
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # CORS headers for API requests
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+    
+    # Remove server information
+    Header unset Server
+    Header unset X-Powered-By
+</IfModule>
+
+# =================================================================
+# API Routes (Priority - must come before frontend routes)
+# =================================================================
+
+# Handle OPTIONS requests for CORS preflight
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^api/ - [R=200,L]
+
+# Admin API routes (requires authentication)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/nsikacart/api/admin/
+RewriteRule ^api/admin/(.*)$ api/admin/$1 [L,QSA]
+
+# Auth API routes
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/nsikacart/api/auth/
+RewriteRule ^api/auth/(.*)$ api/auth/$1 [L,QSA]
+
+# Products API routes
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/nsikacart/api/products/
+RewriteRule ^api/products/(.*)$ api/products/$1 [L,QSA]
+
+# General API routes (catch-all for other APIs)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/nsikacart/api/
+RewriteRule ^api/(.*)$ api/$1 [L,QSA]
+
+# =================================================================
+# Static Assets & Resources (Priority - before frontend routes)
+# =================================================================
+
+# CSS files - direct access to css folder
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/nsikacart/css/
+RewriteRule ^css/(.*)$ css/$1 [L]
+
+# JavaScript files from public/scripts folder
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/nsikacart/js/
+RewriteRule ^js/(.*)$ public/scripts/$1 [L]
+
+# Dashboard specific JS files
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/nsikacart/dashboard/js/
+RewriteRule ^dashboard/js/(.*)$ public/dashboard/js/$1 [L]
+
+# Images and uploads
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/nsikacart/uploads/
+RewriteRule ^uploads/(.*)$ public/dashboard/uploads/$1 [L]
+
+# FontAwesome assets
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/nsikacart/fonts/
+RewriteRule ^fonts/(.*)$ css/fontawesome-free-6.6.0-web/fontawesome-free-6.6.0-web/$1 [L]
+
+# Direct access to existing static files
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^(css|public|auth)/ - [L]
+
+# =================================================================
+# Frontend URL Rewriting Rules
+# =================================================================
+
+# Root access - redirect to public/index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^/?$ public/index.html [L]
+
+# Public pages - redirect to public folder
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(index|home)/?$ public/index.html [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^checkout/?$ public/checkout.html [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^details/?$ public/details.html [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^view-details/?$ public/view-details.html [L]
+
+# Dashboard pages
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^dashboard/?$ public/dashboard/index.html [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^admin/?$ public/dashboard/index.html [L]
+
+# Authentication pages
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^login/?$ auth/login.html [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^signup/?$ auth/signup.html [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^forgot-password/?$ auth/forgot-password.html [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^reset-password/?$ auth/reset-password.html [L]
+
+# =================================================================
+# Error Handling & Custom Error Pages
+# =================================================================
+
+# Create error-pages directory and files if they don't exist
+ErrorDocument 400 /nsikacart/error-pages/400.html
+ErrorDocument 401 /nsikacart/error-pages/401.html
+ErrorDocument 403 /nsikacart/error-pages/403.html
+ErrorDocument 404 /nsikacart/error-pages/404.html
+ErrorDocument 500 /nsikacart/error-pages/500.html
+ErrorDocument 502 /nsikacart/error-pages/502.html
+ErrorDocument 503 /nsikacart/error-pages/503.html
+
+# =================================================================
+# Performance & Caching
+# =================================================================
+
+# Cache static assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 6 months"
+    ExpiresByType image/jpg "access plus 6 months"
+    ExpiresByType image/jpeg "access plus 6 months"
+    ExpiresByType image/gif "access plus 6 months"
+    ExpiresByType image/webp "access plus 6 months"
+    ExpiresByType image/svg+xml "access plus 6 months"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule>
+
+# Enable compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE text/javascript
+</IfModule>
+
+# =================================================================
+# Additional Security Measures
+# =================================================================
+
+# Prevent hot linking (localhost development friendly)
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?localhost [NC]
+RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?127\.0\.0\.1 [NC]
+RewriteCond %{HTTP_REFERER} !^http(s)?://.*\.local [NC]
+RewriteRule \.(jpg|jpeg|png|gif|webp|svg)$ - [F,L]
+
+# =================================================================
+# Fallback Rules (Last Resort)
+# =================================================================
+
+# Try to find the file in public directory first
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/nsikacart/public/$1.html -f
+RewriteRule ^([^/]+)/?$ public/$1.html [L]
+
+# Then try auth directory
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/nsikacart/auth/$1.html -f
+RewriteRule ^([^/]+)/?$ auth/$1.html [L]
+
+# Final catch-all - redirect unknown URLs to home page
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/nsikacart/(api|error-pages)/
+RewriteRule ^(.*)$ public/index.html [L]

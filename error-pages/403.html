@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Forbidden - Nsikacart</title>
+    <link rel="stylesheet" href="/nsikacart/css/style.css">
+    <link rel="stylesheet" href="/nsikacart/css/fontawesome-free-6.6.0-web/fontawesome-free-6.6.0-web/css/all.min.css">
+    <style>
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        .error-code {
+            font-size: 6rem;
+            font-weight: bold;
+            color: #ffc107;
+            margin-bottom: 1rem;
+        }
+        .error-message {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #666;
+        }
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .error-btn {
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .error-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">403</div>
+        <h1 class="error-message">Access Forbidden</h1>
+        <p>You don't have permission to access this resource.</p>
+        
+        <div class="error-actions">
+            <a href="/nsikacart/" class="error-btn btn-primary">
+                <i class="fa-solid fa-home"></i> Go Home
+            </a>
+            <a href="/nsikacart/login" class="error-btn btn-secondary">
+                <i class="fa-solid fa-sign-in-alt"></i> Login
+            </a>
+        </div>
+    </div>
+</body>
+</html>

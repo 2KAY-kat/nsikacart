@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bad Request - Nsikacart</title>
+    <link rel="stylesheet" href="/nsikacart/css/style.css">
+    <style>
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .error-code { font-size: 6rem; font-weight: bold; margin-bottom: 1rem; }
+        .error-message { font-size: 1.5rem; margin-bottom: 2rem; }
+        .error-btn {
+            padding: 12px 24px;
+            margin: 5px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .error-btn:hover { background: rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">400</div>
+        <h1 class="error-message">Bad Request</h1>
+        <p>The request could not be understood by the server.</p>
+        <a href="/nsikacart/" class="error-btn">Go Home</a>
+    </div>
+</body>
+</html>
