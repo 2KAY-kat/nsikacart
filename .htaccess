@@ -1,8 +1,7 @@
 # =================================================================
-# Local Development Settings (WAMP)
+# Local Development Settings (WAMP) 
 # =================================================================
 RewriteEngine On
-RewriteBase /nsikacart/public/
 
 # Handle other routes
 RewriteCond %{REQUEST_FILENAME} !-d
