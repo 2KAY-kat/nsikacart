@@ -20,10 +20,7 @@ try {
     $stmt = $pdo->query("SELECT COUNT(*) as total FROM products");
     $totalProducts = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     
-    // Get monthly sales (placeholder - adjust based on your sales table structure)
-    $monthlySales = 0; // You'll need to implement this based on your sales/orders table
-    
-    // Get active sessions (simplified count)
+    // Get active sessions 
     $stmt = $pdo->query("SELECT COUNT(*) as total FROM sessions WHERE last_active > NOW() - INTERVAL 15 MINUTE");
     $activeSessions = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     
@@ -32,13 +29,15 @@ try {
         'stats' => [
             'totalUsers' => $totalUsers,
             'totalProducts' => $totalProducts,
-            'monthlySales' => $monthlySales,
             'activeSessions' => $activeSessions
         ]
     ]);
     
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database error']);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Database error'
+    ]);
 }
 ?>

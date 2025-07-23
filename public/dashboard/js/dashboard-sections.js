@@ -67,15 +67,7 @@ export const sections = {
                                     <p>Total Products</p>
                                 </div>
                             </div>
-                            <div class="stat-card">
-                                <div class="stat-icon">
-                                    <i class="fa-solid fa-chart-line"></i>
-                                </div>
-                                <div class="stat-info">
-                                    <h4 id="monthly-sales">Loading...</h4>
-                                    <p>Monthly Sales</p>
-                                </div>
-                            </div>
+                           
                             <div class="stat-card">
                                 <div class="stat-icon">
                                     <i class="fa-solid fa-eye"></i>
