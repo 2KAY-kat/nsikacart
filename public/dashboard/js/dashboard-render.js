@@ -89,19 +89,28 @@ function setupAdminNavigation() {
     });
     
     // Load statistics on initial render
-    loadStatistics();
+    setTimeout(() => {
+        loadStatistics();
+    }, 100); // Small delay to ensure DOM is ready
 }
 
 async function loadStatistics() {
     try {
         const response = await fetch('/nsikacart/api/admin/get-statistics.php');
         const data = await response.json();
-        
+
         if (data.success) {
-            document.getElementById('total-users').textContent = data.stats.totalUsers || '0';
-            document.getElementById('total-products').textContent = data.stats.totalProducts || '0';
-            document.getElementById('monthly-sales').textContent = data.stats.monthlySales || '0';
-            document.getElementById('active-sessions').textContent = data.stats.activeSessions || '0';
+            const totalUsersEl = document.getElementById('total-users');
+            const totalProductsEl = document.getElementById('total-products');
+            const activeSessionsEl = document.getElementById('active-sessions');
+            const activeUsersEl = document.getElementById('active-users');
+
+            if (totalUsersEl) totalUsersEl.textContent = data.stats.totalUsers || '0';
+            if (totalProductsEl) totalProductsEl.textContent = data.stats.totalProducts || '0';
+            if (activeSessionsEl) activeSessionsEl.textContent = data.stats.activeSessions || '0';
+            if (activeUsersEl) activeUsersEl.textContent = data.stats.activeUsers || '0';
+        } else {
+            console.error('API Error:', data.message);
         }
     } catch (error) {
         console.error('Error loading statistics:', error);

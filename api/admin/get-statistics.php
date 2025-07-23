@@ -24,15 +24,21 @@ try {
     $totalProducts = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     
     // Get active sessions 
-    $stmt = $pdo->query("SELECT COUNT(*) as total FROM sessions WHERE last_active > NOW() - INTERVAL 15 MINUTE");
+     $stmt = $pdo->query("SELECT COUNT(*) as total FROM sessions WHERE last_active > (NOW() - INTERVAL 15 MINUTE) AND (expires_at IS NULL OR expires_at > NOW())");
     $activeSessions = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     
+    // then get an individual user's active status 
+
+    $stmt = $pdo->query("SELECT COUNT(DISTINCT user_id) as total FROM sessions WHERE last_active > (NOW() - INTERVAL 15 MINUTE) AND is_active = 1 AND (expires_at IS NULL OR expires_at > NOW())");
+    $activeUsers = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+
     echo json_encode([
         'success' => true,
         'stats' => [
             'totalUsers' => $totalUsers,
             'totalProducts' => $totalProducts,
-            'activeSessions' => $activeSessions
+            'activeSessions' => $activeSessions,
+            'activeUsers' => $activeUsers
         ]
     ]);
     

@@ -60,7 +60,7 @@ export const sections = {
                             </div>
                             <div class="stat-card">
                                 <div class="stat-icon">
-                                    <i class="fa-solid fa-bag-shopping"></i>
+                                    <i class="fa-solid fa-boxes-stacked"></i>
                                 </div>
                                 <div class="stat-info">
                                     <h4 id="total-products">Loading...</h4>
@@ -70,11 +70,21 @@ export const sections = {
                            
                             <div class="stat-card">
                                 <div class="stat-icon">
-                                    <i class="fa-solid fa-eye"></i>
+                                    <i class="fa-solid fa-signal"></i>
                                 </div>
                                 <div class="stat-info">
                                     <h4 id="active-sessions">Loading...</h4>
                                     <p>Active Sessions</p>
+                                </div>
+                            </div>
+
+                             <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fa-solid fa-user-check"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h4 id="active-users">Loading...</h4>
+                                    <p>Active Users</p>
                                 </div>
                             </div>
                         </div>
