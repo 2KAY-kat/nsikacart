@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingScreen.style.display = 'flex';
       }
       setTimeout(() => {
-        window.location.href = '/dashboard/index.html';
+        window.location.href = '/nsikacart/public/dashboard/index.html';
       }, 3200); 
     });
   });
