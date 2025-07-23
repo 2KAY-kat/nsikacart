@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Error - Nsikacart</title>
+    <link rel="stylesheet" href="/nsikacart/css/style.css">
+    <link rel="stylesheet" href="/nsikacart/css/fontawesome-free-6.6.0-web/fontawesome-free-6.6.0-web/css/all.min.css">
+    <style>
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        .error-code {
+            font-size: 6rem;
+            font-weight: bold;
+            color: var(--error-color);
+            margin-bottom: 1rem;
+        }
+        span {
+            color: var(--main-color);
+        }       
+             .error-message {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+        }
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .error-btn {
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: var(--main-color);
+            color: var(--text-color);
+        }
+        .btn-secondary {
+            background-color: var(--text-color);
+            color: var(--main-color);
+        }
+        .error-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">5<span>0</span>0</div>
+        <h1 class="error-message">Internal Server Error</h1>
+        <p>Something went wrong on our end. Please try again later.</p>
+        
+        <div class="error-actions">
+            <a href="/nsikacart/public/" class="error-btn btn-primary">
+                <i class="fa-solid fa-home"></i> Go Home
+            </a>
+            <a href="javascript:location.reload()" class="error-btn btn-secondary">
+                <i class="fa-solid fa-refresh"></i> Try Again
+            </a>
+        </div>
+    </div>
+</body>
+</html>
