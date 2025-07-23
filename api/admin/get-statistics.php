@@ -6,7 +6,10 @@ require_once '../middleware/auth_required.php';
 session_start();
 if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] !== 'admin' && $_SESSION['user']['role'] !== 'monitor')) {
     http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Access denied']);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Access denied'
+    ]);
     exit;
 }
 
