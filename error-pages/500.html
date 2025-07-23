@@ -19,13 +19,16 @@
         .error-code {
             font-size: 6rem;
             font-weight: bold;
-            color: #dc3545;
+            color: var(--error-color);
             margin-bottom: 1rem;
         }
-        .error-message {
+        span {
+            color: var(--main-color);
+        }       
+             .error-message {
             font-size: 1.5rem;
             margin-bottom: 2rem;
-            color: #666;
+            color: var(--text-color);
         }
         .error-actions {
             display: flex;
@@ -40,12 +43,12 @@
             transition: all 0.3s ease;
         }
         .btn-primary {
-            background-color: #007bff;
-            color: white;
+            background-color: var(--main-color);
+            color: var(--text-color);
         }
         .btn-secondary {
-            background-color: #6c757d;
-            color: white;
+            background-color: var(--text-color);
+            color: var(--main-color);
         }
         .error-btn:hover {
             transform: translateY(-2px);
@@ -55,12 +58,12 @@
 </head>
 <body>
     <div class="error-container">
-        <div class="error-code">500</div>
+        <div class="error-code">5<span>0</span>0</div>
         <h1 class="error-message">Internal Server Error</h1>
         <p>Something went wrong on our end. Please try again later.</p>
         
         <div class="error-actions">
-            <a href="/nsikacart/" class="error-btn btn-primary">
+            <a href="/nsikacart/public/" class="error-btn btn-primary">
                 <i class="fa-solid fa-home"></i> Go Home
             </a>
             <a href="javascript:location.reload()" class="error-btn btn-secondary">

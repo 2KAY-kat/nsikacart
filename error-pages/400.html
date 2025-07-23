@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bad Request - Nsikacart</title>
+    <link rel="shortcut icon" href="../public/assets/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="/nsikacart/css/style.css">
     <style>
         .error-container {
@@ -14,16 +15,29 @@
             min-height: 100vh;
             text-align: center;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--text-color) 0%, var(--main-color) 100%);
+            color: var(--text-color);
         }
-        .error-code { font-size: 6rem; font-weight: bold; margin-bottom: 1rem; }
-        .error-message { font-size: 1.5rem; margin-bottom: 2rem; }
+        .error-code { 
+            font-size: 6rem; 
+            font-weight: bold; 
+            margin-bottom: 1rem; 
+            color: var(--error-color);
+        }
+        span {
+            color: var(--text-color);
+        }
+        .error-message { 
+            font-size: 1.5rem; 
+            margin-bottom: 2rem;
+            color: var( --main-description-color); 
+        }
         .error-btn {
             padding: 12px 24px;
             margin: 5px;
-            background: rgba(255,255,255,0.2);
-            color: white;
+            margin-top: 2.5rem;
+            background: var(--text-color);
+            color: var(--error-color);
             text-decoration: none;
             border-radius: 5px;
             transition: all 0.3s ease;
@@ -33,10 +47,10 @@
 </head>
 <body>
     <div class="error-container">
-        <div class="error-code">400</div>
+        <div class="error-code">4<span>0</span>0</div>
         <h1 class="error-message">Bad Request</h1>
         <p>The request could not be understood by the server.</p>
-        <a href="/nsikacart/" class="error-btn">Go Home</a>
+        <a href="/nsikacart/public/" class="error-btn">Go Home</a>
     </div>
 </body>
 </html>

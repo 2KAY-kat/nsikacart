@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Access Forbidden - Nsikacart</title>
+    <link rel="shortcut icon" href="../public/assets/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="/nsikacart/css/style.css">
     <link rel="stylesheet" href="/nsikacart/css/fontawesome-free-6.6.0-web/fontawesome-free-6.6.0-web/css/all.min.css">
     <style>
@@ -19,15 +20,19 @@
         .error-code {
             font-size: 6rem;
             font-weight: bold;
-            color: #ffc107;
+            color: var(--text-color);
             margin-bottom: 1rem;
+        }
+        span {
+            color: var(--main-color);
         }
         .error-message {
             font-size: 1.5rem;
             margin-bottom: 2rem;
-            color: #666;
+            color: var(--text-color);
         }
         .error-actions {
+            margin-top: 2.5rem;
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
@@ -40,12 +45,12 @@
             transition: all 0.3s ease;
         }
         .btn-primary {
-            background-color: #007bff;
-            color: white;
+            background-color: var(--main-color);
+            color: var(--text-color);
         }
         .btn-secondary {
-            background-color: #6c757d;
-            color: white;
+            background-color: var(--text-color);
+            color: var(--main-color);
         }
         .error-btn:hover {
             transform: translateY(-2px);
@@ -55,15 +60,15 @@
 </head>
 <body>
     <div class="error-container">
-        <div class="error-code">403</div>
+        <div class="error-code">4<span>0</span>3</div>
         <h1 class="error-message">Access Forbidden</h1>
         <p>You don't have permission to access this resource.</p>
         
         <div class="error-actions">
-            <a href="/nsikacart/" class="error-btn btn-primary">
+            <a href="/nsikacart/public/" class="error-btn btn-primary">
                 <i class="fa-solid fa-home"></i> Go Home
             </a>
-            <a href="/nsikacart/login" class="error-btn btn-secondary">
+            <a href="/nsikacart/auth/login.html" class="error-btn btn-secondary">
                 <i class="fa-solid fa-sign-in-alt"></i> Login
             </a>
         </div>

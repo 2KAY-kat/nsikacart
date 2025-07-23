@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found - Nsikacart</title>
-    <link rel="stylesheet" href="/nsikacart/css/style.css">
+    <link rel="shortcut icon" href="../public/assets/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="/nsikacart/css/fontawesome-free-6.6.0-web/fontawesome-free-6.6.0-web/css/all.min.css">
     <style>
         .error-container {
@@ -19,15 +20,19 @@
         .error-code {
             font-size: 6rem;
             font-weight: bold;
-            color: #ff6b6b;
+            color: var(--text-color);
             margin-bottom: 1rem;
+        }
+        span {
+            color: var(--main-color);
         }
         .error-message {
             font-size: 1.5rem;
             margin-bottom: 2rem;
-            color: #666;
+            color: var(--error-color);
         }
         .error-actions {
+            margin-top: 2.5rem;
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
@@ -40,8 +45,8 @@
             transition: all 0.3s ease;
         }
         .btn-primary {
-            background-color: #007bff;
-            color: white;
+            background-color: var(--main-color);
+            color: var(--text-color);
         }
         .btn-secondary {
             background-color: #6c757d;
@@ -55,15 +60,15 @@
 </head>
 <body>
     <div class="error-container">
-        <div class="error-code">404</div>
+        <div class="error-code">4<span>0</span>4</div>
         <h1 class="error-message">Oops! Page Not Found</h1>
         <p>The page you're looking for doesn't exist or has been moved.</p>
         
         <div class="error-actions">
-            <a href="/nsikacart/" class="error-btn btn-primary">
+            <a href="/nsikacart/public/" class="error-btn btn-primary">
                 <i class="fa-solid fa-home"></i> Go Home
             </a>
-            <a href="/nsikacart/dashboard" class="error-btn btn-secondary">
+            <a href="/nsikacart/public/dashboard" class="error-btn btn-secondary">
                 <i class="fa-solid fa-gauge"></i> Dashboard
             </a>
             <a href="javascript:history.back()" class="error-btn btn-secondary">
