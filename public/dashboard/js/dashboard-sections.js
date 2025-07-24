@@ -92,6 +92,9 @@ export const sections = {
                     
                     <div class="admin-subsection" id="admin-users" style="display: none;">
                         <h3>User Management</h3>
+                        <button class="app-content-headerButton">
+                            <a href="/nsikacart/public/dashboard/user-management/add-user.html">Add User</a>
+                        </button>
                         <div class="users-management">
                             <div class="users-table-container">
                                 <div id="users-table" class="loading-message">Loading users...</div>
