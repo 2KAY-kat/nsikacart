@@ -39,6 +39,7 @@ backup/
 /api/debug/session-check.php
 /api/products/debug-delete-verbose.php
 /api/products/debug-delete.php
+/api/auth/cleanup-sessions.php
 
 # Miscellaneous
 Product-Delete-Design-Decisions.md
