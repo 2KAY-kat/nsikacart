@@ -22,17 +22,18 @@ body {
     align-items: center;
     margin-bottom: 20px;
 }
-
+/*
 .back-btn {
     background: none;
     border: none;
     font-size: 20px;
     cursor: pointer;
 }
-
+*/
 h2 {
     margin: 0;
     font-size: 18px;
+    color: var(--main-color);
 }
 
 .publish-btn {
@@ -127,6 +128,22 @@ input[type="checkbox"] {
 
 .image-upload-container:hover {
     border-color: var(--main-color);
+}
+
+
+button {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background-color: var(--main-color);
 }
 
 .image-upload-button {
