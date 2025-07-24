@@ -138,6 +138,41 @@ export const sections = {
                     </div>
                 </div>
             </div>
+
+            <!-- Role Change Modal -->
+            <div id="role-change-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="modal-close" onclick="document.getElementById('role-change-modal').style.display='none'">&times;</span>
+                    <div class="modal-body">
+                        <i class="fa fa-user-cog"></i>
+                        <h3>Change User Role</h3>
+                        <p>Change role for user "<span id="role-change-username"></span>"</p>
+                        <p>Current role: <strong><span id="role-change-current"></span></strong></p>
+                        
+                        <div class="form-group">
+                            <label for="new-role-select">New Role:</label>
+                            <select id="new-role-select" class="form-control">
+                                <option value="user">User</option>
+                                <option value="monitor">Monitor</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        
+                        <div class="role-descriptions">
+                            <small>
+                                <strong>User:</strong> Basic access to shopping features<br>
+                                <strong>Monitor:</strong> Can view admin statistics and user data<br>
+                                <strong>Admin:</strong> Full administrative access
+                            </small>
+                        </div>
+                        
+                        <div class="modal-buttons">
+                            <button onclick="changeUserRole()" class="modal-confirm-btn">Change Role</button>
+                            <button onclick="document.getElementById('role-change-modal').style.display='none'" class="modal-cancel-btn">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `,
         adminOnly: true
     }

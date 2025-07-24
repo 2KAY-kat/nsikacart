@@ -19,14 +19,27 @@ function setupDeleteUserModal() {
     }
 }
 
+function setupRoleChangeModal() {
+    // Close modal when clicking outside
+    const modal = document.getElementById('role-change-modal');
+    if (modal) {
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+    }
+}
+
 function initDashboard() {
     renderSidebar();
     renderSections();
     setupSidebarNavigation();
     
-    // Setup delete user modal after a short delay to ensure DOM is ready
+    // Setup modals after a short delay to ensure DOM is ready
     setTimeout(() => {
         setupDeleteUserModal();
+        setupRoleChangeModal();
     }, 100);
     
     // Get current active section from localStorage

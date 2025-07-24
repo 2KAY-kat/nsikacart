@@ -184,7 +184,7 @@ async function loadStatistics() {
     }
 }
 
-// Add the loadUsers function
+// Update the loadUsers function to include role toggle
 async function loadUsers() {
     const tableBody = document.querySelector('#userTable tbody');
     const usersTable = document.querySelector('#users-table');
@@ -209,7 +209,7 @@ async function loadUsers() {
         if (!data.success) {
             console.error('API Error:', data.message);
             if (tableBody) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="error-message">Error: ${data.message}</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="6" class="error-message">Error: ${data.message}</td></tr>`;
             }
             return;
         }
@@ -224,6 +224,16 @@ async function loadUsers() {
                 const actionText = user.status === 'active' ? 'Suspend' : 'Activate';
                 const actionClass = user.status === 'active' ? 'btn-warning' : 'btn-success';
                 
+                // Check if current user is admin
+                const currentUser = getCurrentUser();
+                const isCurrentUserAdmin = currentUser?.role === 'admin';
+                const isCurrentUser = user.id == currentUser?.id;
+                
+                let roleToggleButton = '';
+                if (isCurrentUserAdmin && !isCurrentUser) {
+                    roleToggleButton = `<button onclick="showRoleModal(${user.id}, '${user.role}', '${user.username || user.name}')" class="action-btn btn-info">Change Role</button>`;
+                }
+                
                 const row = `
                     <tr>
                         <td>${user.username || user.name || 'N/A'}</td>
@@ -231,6 +241,7 @@ async function loadUsers() {
                         <td><span class="role-badge role-${user.role}">${user.role || 'N/A'}</span></td>
                         <td><span class="status-badge ${statusClass}">${user.status || 'N/A'}</span></td>
                         <td class="actions-cell">
+                            ${roleToggleButton}
                             <button onclick="toggleUserStatus(${user.id}, '${user.status}')" class="action-btn ${actionClass}">${actionText}</button>
                             <button onclick="deleteUser(${user.id}, '${user.username || user.name}')" class="action-btn btn-danger">Delete</button>
                         </td>
@@ -251,6 +262,65 @@ async function loadUsers() {
         }
     }
 }
+
+// Add role management functions
+window.showRoleModal = function(userId, currentRole, username) {
+    const modal = document.getElementById('role-change-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.dataset.userId = userId;
+        modal.dataset.currentRole = currentRole;
+        
+        document.getElementById('role-change-username').textContent = username;
+        document.getElementById('role-change-current').textContent = currentRole;
+        
+        // Set the select value
+        const roleSelect = document.getElementById('new-role-select');
+        if (roleSelect) {
+            roleSelect.value = currentRole;
+        }
+    }
+};
+
+window.changeUserRole = async function() {
+    const modal = document.getElementById('role-change-modal');
+    const userId = modal.dataset.userId;
+    const currentRole = modal.dataset.currentRole;
+    const newRole = document.getElementById('new-role-select').value;
+    
+    if (newRole === currentRole) {
+        showToast('No changes made', 'info');
+        modal.style.display = 'none';
+        return;
+    }
+    
+    try {
+        const response = await fetch('/nsikacart/api/admin/change-user-role.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                user_id: userId, 
+                new_role: newRole,
+                current_role: currentRole
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast(result.message, 'success');
+            loadUsers(); // Reload the users table
+            modal.style.display = 'none';
+        } else {
+            showToast(result.message || 'Failed to change user role', 'error');
+        }
+    } catch (error) {
+        console.error('Error changing user role:', error);
+        showToast('An error occurred while changing user role', 'error');
+    }
+};
 
 // Update the user action functions
 window.toggleUserStatus = async function(userId, currentStatus) {
@@ -331,6 +401,3 @@ function showToast(message, type = 'success') {
         toast.className = 'toast';
     }, 3000);
 }
-
-// Remove the immediate fetch call - it should only happen when users tab is clicked
-// The old fetch code at the bottom should be deleted
