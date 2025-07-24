@@ -1,5 +1,5 @@
 <?php 
-    session_start();
+    require_once '../../api/middleware/auth_required.php';
     if (!isset($_SESSION['user']['id']) || $_SESSION['role'] !== 'admin') {
         header('Location: /../../../../auth/login.html');
         exit;
