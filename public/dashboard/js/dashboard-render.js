@@ -2,12 +2,33 @@ import { sidebarItems } from './dashboard-data.js';
 import { sections } from './dashboard-sections.js';
 import { getCurrentUser } from './session-manager.js';
 
+// Add this function to handle URL hash navigation
+function getActiveStateFromURL() {
+    const hash = window.location.hash.substring(1); // Remove #
+    if (hash) {
+        const [section, subsection] = hash.split('/');
+        return { section, subsection };
+    }
+    return {
+        section: localStorage.getItem('dashboard-active-section') || 'products',
+        subsection: localStorage.getItem('dashboard-admin-subsection') || 'statistics'
+    };
+}
+
+function updateURL(section, subsection = null) {
+    const hash = subsection ? `${section}/${subsection}` : section;
+    window.history.replaceState(null, null, `#${hash}`);
+}
+
 export function renderSidebar() {
     const sidebarList = document.querySelector('.sidebar-list');
     if (!sidebarList) return;
     
     const user = getCurrentUser();
     const userRole = user?.role;
+    
+    // Get current active section from URL or localStorage
+    const { section: currentSection } = getActiveStateFromURL();
     
     // Filter sidebar items based on user role
     const filteredItems = sidebarItems.filter(item => {
@@ -17,8 +38,8 @@ export function renderSidebar() {
         return true;
     });
     
-    sidebarList.innerHTML = filteredItems.map((item, idx) => `
-        <li class="sidebar-list-item${idx === 0 ? ' active' : ''}" style="margin: 0 4px;">
+    sidebarList.innerHTML = filteredItems.map((item) => `
+        <li class="sidebar-list-item${item.section === currentSection ? ' active' : ''}" style="margin: 0 4px;">
             <a href="#" data-section="${item.section}" style="padding: 10px 18px; margin: 0 2px;">
                 <i class="fa-solid ${item.icon}" style="margin-right: 0;"></i>
                 <span style="margin-left: 2px;">${item.name}</span>
@@ -34,6 +55,10 @@ export function renderSections() {
     const user = getCurrentUser();
     const userRole = user?.role;
     
+    // Get current active section and admin subsection from localStorage
+    const currentSection = localStorage.getItem('dashboard-active-section') || 'products';
+    const currentAdminSection = localStorage.getItem('dashboard-admin-subsection') || 'statistics';
+    
     // Filter sections based on user role
     const filteredSections = Object.entries(sections).filter(([key, section]) => {
         if (section.adminOnly) {
@@ -42,8 +67,8 @@ export function renderSections() {
         return true;
     });
     
-    appContent.innerHTML = filteredSections.map(([key, section], idx) => `
-        <div class="dashboard-section" id="section-${key}" style="${idx === 0 ? '' : 'display:none;'}">
+    appContent.innerHTML = filteredSections.map(([key, section]) => `
+        <div class="dashboard-section" id="section-${key}" style="${key === currentSection ? '' : 'display:none;'}">
             <div class="app-content-header" style="padding: 12px 12px 2px 12px; margin-bottom: 2px;">
                 <h1 class="app-content-headerText" style="margin: 0 0 0 4px;">${section.header}</h1>
                 ${key === 'products' ? '<button class="app-content-headerButton" style="margin-left: 12px;"><a href="./upload.html">Add Product</a></button>' : ''}
@@ -56,12 +81,20 @@ export function renderSections() {
     
     // Setup admin navigation if admin section is rendered
     if (filteredSections.some(([key]) => key === 'admin')) {
-        setupAdminNavigation();
+        setupAdminNavigation(currentAdminSection);
     }
 }
 
-function setupAdminNavigation() {
+function setupAdminNavigation(activeSubsection = 'statistics') {
     document.querySelectorAll('.admin-nav-btn').forEach(btn => {
+        // Set active state based on saved subsection
+        const btnSection = btn.getAttribute('data-admin-section');
+        if (btnSection === activeSubsection) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+        
         btn.addEventListener('click', function() {
             // Remove active class from all buttons
             document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
@@ -80,6 +113,9 @@ function setupAdminNavigation() {
             if (targetElement) {
                 targetElement.style.display = 'block';
                 
+                // Save current admin subsection to localStorage
+                localStorage.setItem('dashboard-admin-subsection', targetSection);
+                
                 // Load statistics if statistics section is selected
                 if (targetSection === 'statistics') {
                     loadStatistics();
@@ -88,10 +124,20 @@ function setupAdminNavigation() {
         });
     });
     
-    // Load statistics on initial render
-    setTimeout(() => {
-        loadStatistics();
-    }, 100); // Small delay to ensure DOM is ready
+    // Show the active subsection on load
+    document.querySelectorAll('.admin-subsection').forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    const activeElement = document.getElementById(`admin-${activeSubsection}`);
+    if (activeElement) {
+        activeElement.style.display = 'block';
+        if (activeSubsection === 'statistics') {
+            setTimeout(() => {
+                loadStatistics();
+            }, 100);
+        }
+    }
 }
 
 async function loadStatistics() {

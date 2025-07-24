@@ -15,6 +15,14 @@ export function setupSidebarNavigation() {
                 return;
             }
             
+            // Save current section to localStorage
+            localStorage.setItem('dashboard-active-section', section);
+            
+            // If switching to admin, reset to statistics subsection
+            if (section === 'admin') {
+                localStorage.setItem('dashboard-admin-subsection', 'statistics');
+            }
+            
             document.querySelectorAll('.sidebar-list-item').forEach(li => li.classList.remove('active'));
             this.parentElement.classList.add('active');
             document.querySelectorAll('.dashboard-section').forEach(sec => sec.style.display = 'none');
