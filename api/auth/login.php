@@ -82,7 +82,25 @@ try {
         setcookie('remember_token', $token, $expires, '/', '', false, true);
     }
 
-    // Clear output buffer and send clean response
+    $userId =  $user['id'];
+    $sessionToken = bin2hex(random_bytes(32));
+    $userAgent = $_SERVER['REMOTE_ADDR'];
+    $ipAddress = $_SERVER['HTTP_USER_AGENT'];
+    $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+    $stmt = $pdo->prepare("INSERT INTO sessions (user_id, session_token, ip_address, user_agent, last_active, expires_at) VALUES (:user_id, :token, :ip, :ua, NOW(), :expires)");
+
+    $stmt->execute([
+        ':user_id' => $userId,
+        ':token' => $sessionToken,
+        ':ip' => $ipAddress,
+        ':ua' => $userAgent,
+        ':expires' => $expiresAt
+    ]);
+
+    $_SESSION['session_token'] = $sessionToken;
+
+    // Clear output buffering and send clean response
     ob_clean();
     echo json_encode([
         "success" => true,
@@ -98,7 +116,7 @@ try {
     // Log the error for debugging
     error_log("Login error: " . $e->getMessage());
     
-    // Clear output buffer and send error response
+    // Clear output buffering and send error response
     ob_clean();
     http_response_code(400);
     echo json_encode([
@@ -107,6 +125,5 @@ try {
     ]);
 }
 
-// Ensure output is sent
 ob_end_flush();
 ?>

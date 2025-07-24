@@ -116,3 +116,40 @@ async function loadStatistics() {
         console.error('Error loading statistics:', error);
     }
 }
+
+// Add a flag to control ping requests
+let pingInterval = null;
+
+function startPing() {
+    // Clear any existing interval
+    if (pingInterval) {
+        clearInterval(pingInterval);
+    }
+    
+    pingInterval = setInterval(() => {
+        fetch('/nsikacart/api/auth/ping.php', {
+            method: 'GET',
+            credentials: 'include'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.success) {
+                console.log('Session expired, redirecting to login');
+                clearInterval(pingInterval);
+                window.location.href = '/nsikacart/auth/login.html';
+            }
+        })
+        .catch(error => {
+            console.error('Ping error:', error);
+            // Don't redirect on network errors, just log them
+        });
+    }, 5 * 60 * 1000); // 5 minutes
+}
+
+// Start ping when page loads
+startPing();
