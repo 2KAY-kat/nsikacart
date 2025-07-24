@@ -73,3 +73,25 @@ How: Try-catch blocks with user-friendly error messages
 Benefit: Better user experience during edge cases
 
 ***This implementation provides a secure, user-friendly deletion system that follows best practices for data integrity and user experience.***
+
+
+## How the permission system works:
+
+## **Admin Permissions:**
+
+* ✅ View all users
+* ✅ Suspend/activate any user (except themselves)
+* ✅ Delete any user (except themselves)
+* ✅ Change any user's role (except their own)
+
+## **Monitor Permissions:**
+
+* ✅ View all users
+* ✅ Suspend/activate regular users and other monitors (except themselves)
+* ❌ Cannot suspend/activate admins
+* ❌ Cannot delete any users
+* ❌ Cannot change user roles
+
+## **Regular User Permissions:**
+
+* ❌ Cannot access user management at all

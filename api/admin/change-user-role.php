@@ -93,22 +93,26 @@ try {
 
     if ($stmt->rowCount() > 0) {
         // Log the role change for audit purposes
-        error_log("Admin {$_SESSION['user']['name']} (ID: {$_SESSION['user']['id']}) changed user {$user['name']} (ID: $userId) role from {$user['role']} to $newRole");
+        $currentUserName = $_SESSION['user']['name'] ?? 'Unknown';
+        error_log("Admin {$currentUserName} (ID: {$_SESSION['user']['id']}) changed user {$user['name']} (ID: $userId) role from {$user['role']} to $newRole");
         
         echo json_encode([
             'success' => true,
-            'message' => 'User role updated successfully'
+            'message' => "User role successfully changed from {$user['role']} to $newRole"
         ]);
     } else {
         echo json_encode([
             'success' => false,
-            'message' => 'Failed to update user role. Please try again'
+            'message' => 'Failed to update user role'
         ]);
     }
+
 } catch (Exception $e) {
+    error_log("Change User Role Error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'An error occurred: ' . $e->getMessage()
+        'message' => 'Internal server error'
     ]);
 }
+?>

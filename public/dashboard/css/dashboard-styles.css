@@ -563,3 +563,48 @@ a {
     color: var(--app-content-main-color);
     opacity: 0.8;
 }
+
+/* Current user label */
+.current-user-label {
+    display: inline-block;
+    padding: 4px 8px;
+    background: rgba(108, 117, 125, 0.2);
+    color: #6c757d;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Hide action buttons for current user */
+.actions-cell .current-user-label {
+    font-style: italic;
+}
+
+/* Role-specific styling adjustments */
+.role-monitor .actions-cell .btn-danger {
+    display: none; /* Hide delete button for monitors via CSS as backup */
+}
+
+/* Tooltip for restricted actions */
+.restricted-action {
+    opacity: 0.5;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.restricted-action:hover::after {
+    content: "Insufficient permissions";
+    position: absolute;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}

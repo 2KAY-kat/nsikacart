@@ -7,7 +7,7 @@ require_once '../config/db.php';
 header('Content-Type: application/json');
 
 try {
-    // Check if user is authenticated and has admin privileges
+    // Check if user is authenticated and has admin or monitor privileges
     if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
         http_response_code(401);
         echo json_encode([
@@ -17,13 +17,13 @@ try {
         exit;
     }
 
-    // Check if user has admin role (only admin can suspend/activate users)
+    // Check if user has admin or monitor role
     $userRole = $_SESSION['user']['role'] ?? '';
-    if ($userRole !== 'admin') {
+    if ($userRole !== 'admin' && $userRole !== 'monitor') {
         http_response_code(403);
         echo json_encode([
             'success' => false,
-            'message' => 'Access denied. Admin privileges required.'
+            'message' => 'Access denied. Admin or Monitor privileges required.'
         ]);
         exit;
     }
@@ -42,12 +42,36 @@ try {
         exit;
     }
 
-    // Prevent admin from suspending themselves
+    // Prevent user from changing their own status
     if ($userId == $_SESSION['user']['id']) {
         http_response_code(400);
         echo json_encode([
             'success' => false,
             'message' => 'You cannot change your own status'
+        ]);
+        exit;
+    }
+
+    // Get user details for logging
+    $stmt = $pdo->prepare("SELECT name, email, role FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $targetUser = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$targetUser) {
+        http_response_code(404);
+        echo json_encode([
+            'success' => false,
+            'message' => 'User not found'
+        ]);
+        exit;
+    }
+
+    // Additional check: Monitors cannot change status of admins
+    if ($userRole === 'monitor' && $targetUser['role'] === 'admin') {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Monitors cannot change the status of administrators'
         ]);
         exit;
     }
@@ -59,9 +83,14 @@ try {
     $stmt->execute([$newStatus, $userId]);
 
     if ($stmt->rowCount() > 0) {
+        // Log the action for audit purposes
+        $currentUserName = $_SESSION['user']['name'] ?? 'Unknown';
+        $actionType = $newStatus === 'suspended' ? 'suspended' : 'activated';
+        error_log("{$userRole} {$currentUserName} (ID: {$_SESSION['user']['id']}) {$actionType} user {$targetUser['name']} (ID: $userId)");
+        
         echo json_encode([
             'success' => true,
-            'message' => "User status updated to {$newStatus}"
+            'message' => "User {$actionType} successfully"
         ]);
     } else {
         echo json_encode([

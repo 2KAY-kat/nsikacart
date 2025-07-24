@@ -184,7 +184,7 @@ async function loadStatistics() {
     }
 }
 
-// Update the loadUsers function to include role toggle
+// Update the loadUsers function to handle monitor permissions
 async function loadUsers() {
     const tableBody = document.querySelector('#userTable tbody');
     const usersTable = document.querySelector('#users-table');
@@ -209,7 +209,7 @@ async function loadUsers() {
         if (!data.success) {
             console.error('API Error:', data.message);
             if (tableBody) {
-                tableBody.innerHTML = `<tr><td colspan="6" class="error-message">Error: ${data.message}</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="5" class="error-message">Error: ${data.message}</td></tr>`;
             }
             return;
         }
@@ -224,14 +224,35 @@ async function loadUsers() {
                 const actionText = user.status === 'active' ? 'Suspend' : 'Activate';
                 const actionClass = user.status === 'active' ? 'btn-warning' : 'btn-success';
                 
-                // Check if current user is admin
+                // Check current user permissions
                 const currentUser = getCurrentUser();
                 const isCurrentUserAdmin = currentUser?.role === 'admin';
+                const isCurrentUserMonitor = currentUser?.role === 'monitor';
                 const isCurrentUser = user.id == currentUser?.id;
                 
                 let roleToggleButton = '';
+                let deleteButton = '';
+                let statusButton = '';
+                
+                // Only admins can change roles and only for other users
                 if (isCurrentUserAdmin && !isCurrentUser) {
                     roleToggleButton = `<button onclick="showRoleModal(${user.id}, '${user.role}', '${user.username || user.name}')" class="action-btn btn-info">Change Role</button>`;
+                }
+                
+                // Both admins and monitors can suspend/activate users (except themselves)
+                if ((isCurrentUserAdmin || isCurrentUserMonitor) && !isCurrentUser) {
+                    statusButton = `<button onclick="toggleUserStatus(${user.id}, '${user.status}')" class="action-btn ${actionClass}">${actionText}</button>`;
+                }
+                
+                // Only admins can delete users (except themselves)
+                if (isCurrentUserAdmin && !isCurrentUser) {
+                    deleteButton = `<button onclick="deleteUser(${user.id}, '${user.username || user.name}')" class="action-btn btn-danger">Delete</button>`;
+                }
+                
+                // Show different messages for current user's own row
+                if (isCurrentUser) {
+                    const currentUserActions = '<span class="current-user-label">Current User</span>';
+                    statusButton = currentUserActions;
                 }
                 
                 const row = `
@@ -242,8 +263,8 @@ async function loadUsers() {
                         <td><span class="status-badge ${statusClass}">${user.status || 'N/A'}</span></td>
                         <td class="actions-cell">
                             ${roleToggleButton}
-                            <button onclick="toggleUserStatus(${user.id}, '${user.status}')" class="action-btn ${actionClass}">${actionText}</button>
-                            <button onclick="deleteUser(${user.id}, '${user.username || user.name}')" class="action-btn btn-danger">Delete</button>
+                            ${statusButton}
+                            ${deleteButton}
                         </td>
                     </tr>`;
                 tableBody.innerHTML += row;

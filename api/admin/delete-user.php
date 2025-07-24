@@ -23,7 +23,7 @@ try {
         http_response_code(403);
         echo json_encode([
             'success' => false,
-            'message' => 'Access denied. Admin privileges required.'
+            'message' => 'Access denied. Only administrators can delete users.'
         ]);
         exit;
     }
@@ -55,6 +55,20 @@ try {
     $pdo->beginTransaction();
 
     try {
+        // Get user details for logging before deletion
+        $stmt = $pdo->prepare("SELECT name, email, role FROM users WHERE id = ?");
+        $stmt->execute([$userId]);
+        $userToDelete = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$userToDelete) {
+            $pdo->rollback();
+            echo json_encode([
+                'success' => false,
+                'message' => 'User not found'
+            ]);
+            exit;
+        }
+
         // Delete user's products first (if you have foreign key constraints)
         $stmt = $pdo->prepare("DELETE FROM products WHERE user_id = ?");
         $stmt->execute([$userId]);
@@ -65,6 +79,11 @@ try {
 
         if ($stmt->rowCount() > 0) {
             $pdo->commit();
+            
+            // Log the deletion for audit purposes
+            $currentUserName = $_SESSION['user']['name'] ?? 'Unknown';
+            error_log("Admin {$currentUserName} (ID: {$_SESSION['user']['id']}) deleted user {$userToDelete['name']} (ID: $userId, Role: {$userToDelete['role']})");
+            
             echo json_encode([
                 'success' => true,
                 'message' => 'User deleted successfully'
@@ -73,7 +92,7 @@ try {
             $pdo->rollback();
             echo json_encode([
                 'success' => false,
-                'message' => 'User not found'
+                'message' => 'Failed to delete user'
             ]);
         }
     } catch (Exception $e) {
