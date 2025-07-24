@@ -1,20 +1,33 @@
 <?php
-require_once '../config/db.php';
-require_once '../middleware/auth_required.php';
-
-// Check if user is admin or monitor
 session_start();
-if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] !== 'admin' && $_SESSION['user']['role'] !== 'monitor')) {
-    http_response_code(403);
-    echo json_encode([
-        'success' => false, 
-        'message' => 'Access denied'
-    ]);
-    exit;
-}
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
+require_once '../config/db.php';
+header('Content-Type: application/json');
 
 try {
-    
+    // Check if user is authenticated and has admin/monitor privileges
+    if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+        http_response_code(401);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Authentication required'
+        ]);
+        exit;
+    }
+
+    // Check if user has admin or monitor role
+    $userRole = $_SESSION['user']['role'] ?? '';
+    if ($userRole !== 'admin' && $userRole !== 'monitor') {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Access denied. Admin privileges required.'
+        ]);
+        exit;
+    }
+
     // Get total users count
     $stmt = $pdo->query("SELECT COUNT(*) as total FROM users");
     $totalUsers = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
@@ -42,10 +55,11 @@ try {
     ]);
     
 } catch (Exception $e) {
+    error_log("Statistics API Error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false, 
-        'message' => 'Database error'
+        'message' => 'Internal server error'
     ]);
 }
 ?>

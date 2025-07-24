@@ -93,15 +93,23 @@ export const sections = {
                     <div class="admin-subsection" id="admin-users" style="display: none;">
                         <h3>User Management</h3>
                         <div class="users-management">
-                            <div id="users-table">Loading users...</div>
-                            <table id="userTable">
-  <thead>
-    <tr>
-      <th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+                            <div class="users-table-container">
+                                <div id="users-table" class="loading-message">Loading users...</div>
+                                <div class="table-wrapper">
+                                    <table id="userTable" class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Email</th>
+                                                <th>Role</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -109,6 +117,23 @@ export const sections = {
                         <h3>System Settings</h3>
                         <div class="settings-panel">
                             <p>System configuration options will be available here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Delete User Modal -->
+            <div id="delete-user-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="modal-close" onclick="document.getElementById('delete-user-modal').style.display='none'">&times;</span>
+                    <div class="modal-body">
+                        <i class="fa fa-trash"></i>
+                        <h3>Delete User?</h3>
+                        <p>Are you sure you want to permanently delete user "<span id="delete-user-name"></span>"?</p>
+                        <p><strong>This action cannot be undone.</strong></p>
+                        <div class="modal-buttons">
+                            <button id="confirm-delete-user" class="modal-confirm-btn">Delete User</button>
+                            <button onclick="document.getElementById('delete-user-modal').style.display='none'" class="modal-cancel-btn">Cancel</button>
                         </div>
                     </div>
                 </div>

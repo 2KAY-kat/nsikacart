@@ -116,9 +116,11 @@ function setupAdminNavigation(activeSubsection = 'statistics') {
                 // Save current admin subsection to localStorage
                 localStorage.setItem('dashboard-admin-subsection', targetSection);
                 
-                // Load statistics if statistics section is selected
+                // Load data based on section
                 if (targetSection === 'statistics') {
                     loadStatistics();
+                } else if (targetSection === 'users') {
+                    loadUsers();
                 }
             }
         });
@@ -136,121 +138,199 @@ function setupAdminNavigation(activeSubsection = 'statistics') {
             setTimeout(() => {
                 loadStatistics();
             }, 100);
+        } else if (activeSubsection === 'users') {
+            setTimeout(() => {
+                loadUsers();
+            }, 100);
         }
     }
 }
 
+// Add the loadStatistics function
 async function loadStatistics() {
     try {
         const response = await fetch('/nsikacart/api/admin/get-statistics.php');
-        const data = await response.json();
-
-        if (data.success) {
-            const totalUsersEl = document.getElementById('total-users');
-            const totalProductsEl = document.getElementById('total-products');
-            const activeSessionsEl = document.getElementById('active-sessions');
-            const activeUsersEl = document.getElementById('active-users');
-
-            if (totalUsersEl) totalUsersEl.textContent = data.stats.totalUsers || '0';
-            if (totalProductsEl) totalProductsEl.textContent = data.stats.totalProducts || '0';
-            if (activeSessionsEl) activeSessionsEl.textContent = data.stats.activeSessions || '0';
-            if (activeUsersEl) activeUsersEl.textContent = data.stats.activeUsers || '0';
-        } else {
-            console.error('API Error:', data.message);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+            console.error('Statistics API Error:', data.message);
+            // Set error state for all stats
+            document.getElementById('total-users').textContent = 'Error';
+            document.getElementById('total-products').textContent = 'Error';
+            document.getElementById('active-sessions').textContent = 'Error';
+            document.getElementById('active-users').textContent = 'Error';
+            return;
+        }
+        
+        // Update the statistics in the DOM
+        const stats = data.stats;
+        document.getElementById('total-users').textContent = stats.totalUsers || '0';
+        document.getElementById('total-products').textContent = stats.totalProducts || '0';
+        document.getElementById('active-sessions').textContent = stats.activeSessions || '0';
+        document.getElementById('active-users').textContent = stats.activeUsers || '0';
+        
     } catch (error) {
         console.error('Error loading statistics:', error);
+        // Set error state for all stats
+        document.getElementById('total-users').textContent = 'Error';
+        document.getElementById('total-products').textContent = 'Error';
+        document.getElementById('active-sessions').textContent = 'Error';
+        document.getElementById('active-users').textContent = 'Error';
     }
 }
 
-// Add a flag to control ping requests
-let pingInterval = null;
-
-function startPing() {
-    // Clear any existing interval
-    if (pingInterval) {
-        clearInterval(pingInterval);
+// Add the loadUsers function
+async function loadUsers() {
+    const tableBody = document.querySelector('#userTable tbody');
+    const usersTable = document.querySelector('#users-table');
+    
+    if (usersTable) {
+        usersTable.textContent = 'Loading users...';
     }
     
-    pingInterval = setInterval(() => {
-        fetch('/nsikacart/api/auth/ping.php', {
-            method: 'GET',
-            credentials: 'include'
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+    try {
+        const response = await fetch('/nsikacart/api/admin/users.php');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (usersTable) {
+            usersTable.style.display = 'none';
+        }
+        
+        if (!data.success) {
+            console.error('API Error:', data.message);
+            if (tableBody) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="error-message">Error: ${data.message}</td></tr>`;
             }
-            return response.json();
-        })
-        .then(data => {
-            if (!data.success) {
-                console.log('Session expired, redirecting to login');
-                clearInterval(pingInterval);
-                window.location.href = '/nsikacart/auth/login.html';
-            }
-        })
-        .catch(error => {
-            console.error('Ping error:', error);
-            // Don't redirect on network errors, just log them
+            return;
+        }
+        
+        if (!tableBody) return;
+        
+        tableBody.innerHTML = ''; // Clear existing content
+        
+        if (data.data && data.data.length > 0) {
+            data.data.forEach(user => {
+                const statusClass = user.status === 'active' ? 'status-active' : 'status-inactive';
+                const actionText = user.status === 'active' ? 'Suspend' : 'Activate';
+                const actionClass = user.status === 'active' ? 'btn-warning' : 'btn-success';
+                
+                const row = `
+                    <tr>
+                        <td>${user.username || user.name || 'N/A'}</td>
+                        <td>${user.email || 'N/A'}</td>
+                        <td><span class="role-badge role-${user.role}">${user.role || 'N/A'}</span></td>
+                        <td><span class="status-badge ${statusClass}">${user.status || 'N/A'}</span></td>
+                        <td class="actions-cell">
+                            <button onclick="toggleUserStatus(${user.id}, '${user.status}')" class="action-btn ${actionClass}">${actionText}</button>
+                            <button onclick="deleteUser(${user.id}, '${user.username || user.name}')" class="action-btn btn-danger">Delete</button>
+                        </td>
+                    </tr>`;
+                tableBody.innerHTML += row;
+            });
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="5" class="no-data">No users found</td></tr>';
+        }
+        
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        if (usersTable) {
+            usersTable.style.display = 'none';
+        }
+        if (tableBody) {
+            tableBody.innerHTML = `<tr><td colspan="5" class="error-message">Error loading users: ${error.message}</td></tr>`;
+        }
+    }
+}
+
+// Update the user action functions
+window.toggleUserStatus = async function(userId, currentStatus) {
+    try {
+        const response = await fetch('/nsikacart/api/admin/toggle-user-status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_id: userId, current_status: currentStatus })
         });
-    }, 5 * 60 * 1000); // 5 minutes
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast(result.message, 'success');
+            loadUsers(); // Reload the users table
+        } else {
+            showToast(result.message || 'Failed to update user status', 'error');
+        }
+    } catch (error) {
+        console.error('Error toggling user status:', error);
+        showToast('An error occurred while updating user status', 'error');
+    }
+};
+
+window.deleteUser = function(userId, username) {
+    const modal = document.getElementById('delete-user-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.dataset.userId = userId;
+        const nameElement = document.getElementById('delete-user-name');
+        if (nameElement) {
+            nameElement.textContent = username;
+        }
+    } else {
+        if (confirm(`Are you sure you want to delete user "${username}"?`)) {
+            performDeleteUser(userId);
+        }
+    }
+};
+
+window.performDeleteUser = async function(userId) {
+    try {
+        const response = await fetch('/nsikacart/api/admin/delete-user.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_id: userId })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast(result.message, 'success');
+            loadUsers(); // Reload the users table
+        } else {
+            showToast(result.message || 'Failed to delete user', 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        showToast('An error occurred while deleting user', 'error');
+    }
 }
 
-// Start ping when page loads
-startPing();
-
-fetch('/nsikacart/api/admin/users.php')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (!data.success) {
-      console.error('API Error:', data.message);
-      return;
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    if (!toast) {
+        console.log(message);
+        return;
     }
     
-    const tableBody = document.querySelector('#userTable tbody');
-    if (!tableBody) return;
+    toast.textContent = message;
+    toast.className = `toast show ${type}`;
     
-    tableBody.innerHTML = ''; // Clear existing content
-    
-    data.data.forEach(user => {
-      const row = `
-        <tr>
-          <td>${user.username}</td>
-          <td>${user.email}</td>
-          <td>${user.role}</td>
-          <td>${user.status}</td>
-          <td>
-            <button onclick="toggleStatus(${user.id})">${user.status === 'active' ? 'Suspend' : 'Activate'}</button>
-            <button onclick="deleteUser(${user.id})">Delete</button>
-          </td>
-        </tr>`;
-      tableBody.innerHTML += row;
-    });
-  })
-  .catch(error => {
-    console.error('Error fetching users:', error);
-    const tableBody = document.querySelector('#userTable tbody');
-    if (tableBody) {
-      tableBody.innerHTML = '<tr><td colspan="5">Error loading users</td></tr>';
-    }
-  });
-
-function toggleStatus(userId) {
-  fetch('/api/admin/suspend_user.php', {
-    method: 'POST',
-    body: JSON.stringify({ user_id: userId })
-  }).then(response => response.json()).then(() => location.reload());
+    setTimeout(() => {
+        toast.className = 'toast';
+    }, 3000);
 }
 
-function deleteUser(userId) {
-  fetch('/api/admin/delete_user.php', {
-    method: 'POST',
-    body: JSON.stringify({ user_id: userId })
-  }).then(response => response.json()).then(() => location.reload());
-}
+// Remove the immediate fetch call - it should only happen when users tab is clicked
+// The old fetch code at the bottom should be deleted
