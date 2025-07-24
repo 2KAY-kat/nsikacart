@@ -27,7 +27,7 @@ export const sections = {
         `
     },
     admin: {
-        header: 'Welcome to Your Admin Panel <span id="username"></span> ',
+        header: 'Welcome to Your Admin Panel, <span id="username"></span> ',
         content: `
             <div class="admin-section">
                 <div class="admin-nav">

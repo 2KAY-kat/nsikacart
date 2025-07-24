@@ -215,6 +215,18 @@ a {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
+/* Style the username specifically in the admin welcome header */
+.app-content-headerText #username {
+    font-size: inherit;
+    font-weight: inherit;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    letter-spacing: inherit;
+    font-family: inherit;
+    color: var(--action-color);
+}
+
 .admin-nav {
     display: flex;
     background: var(--filter-reset);
