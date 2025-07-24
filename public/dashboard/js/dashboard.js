@@ -3,13 +3,24 @@ document.addEventListener('DOMContentLoaded', function() {
     function setWelcomeUsername() {
         const usernameEl = document.getElementById('username');
         const dashboardUsernameEl = document.getElementById('dashboard-username');
-        if (usernameEl && dashboardUsernameEl) {
+        
+        // Add this line to also update the admin panel header
+        const adminHeaderUsernameEl = document.querySelector('#section-admin #username');
+        
+        if (usernameEl && usernameEl.textContent && usernameEl.textContent.trim() !== "") {
             const username = usernameEl.textContent;
-            if (username && username.trim() !== "") {
+            
+            // Update dashboard username if exists
+            if (dashboardUsernameEl) {
                 dashboardUsernameEl.textContent = username;
-            } else {
-                setTimeout(setWelcomeUsername, 50);
             }
+            
+            // Update admin panel header username if exists
+            if (adminHeaderUsernameEl) {
+                adminHeaderUsernameEl.textContent = username;
+            }
+        } else {
+            setTimeout(setWelcomeUsername, 50);
         }
     }
     setWelcomeUsername();
