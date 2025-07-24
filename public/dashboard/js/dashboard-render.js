@@ -146,7 +146,6 @@ function setupAdminNavigation(activeSubsection = 'statistics') {
     }
 }
 
-// Add the loadStatistics function
 async function loadStatistics() {
     try {
         const response = await fetch('/nsikacart/api/admin/get-statistics.php');
@@ -184,7 +183,6 @@ async function loadStatistics() {
     }
 }
 
-// Update the loadUsers function to handle monitor permissions
 async function loadUsers() {
     const tableBody = document.querySelector('#userTable tbody');
     const usersTable = document.querySelector('#users-table');
@@ -257,11 +255,11 @@ async function loadUsers() {
                 
                 const row = `
                     <tr>
-                        <td>${user.username || user.name || 'N/A'}</td>
-                        <td>${user.email || 'N/A'}</td>
-                        <td><span class="role-badge role-${user.role}">${user.role || 'N/A'}</span></td>
-                        <td><span class="status-badge ${statusClass}">${user.status || 'N/A'}</span></td>
-                        <td class="actions-cell">
+                        <td data-label="Username">${user.username || user.name || 'N/A'}</td>
+                        <td data-label="Email">${user.email || 'N/A'}</td>
+                        <td data-label="Role"><span class="role-badge role-${user.role}">${user.role || 'N/A'}</span></td>
+                        <td data-label="Status"><span class="status-badge ${statusClass}">${user.status || 'N/A'}</span></td>
+                        <td data-label="Actions" class="actions-cell">
                             ${roleToggleButton}
                             ${statusButton}
                             ${deleteButton}
@@ -406,7 +404,7 @@ window.performDeleteUser = async function(userId) {
         console.error('Error deleting user:', error);
         showToast('An error occurred while deleting user', 'error');
     }
-}
+};
 
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
