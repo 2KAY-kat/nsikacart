@@ -94,6 +94,14 @@ export const sections = {
                         <h3>User Management</h3>
                         <div class="users-management">
                             <div id="users-table">Loading users...</div>
+                            <table id="userTable">
+  <thead>
+    <tr>
+      <th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
                         </div>
                     </div>
                     

@@ -199,3 +199,58 @@ function startPing() {
 
 // Start ping when page loads
 startPing();
+
+fetch('/nsikacart/api/admin/users.php')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (!data.success) {
+      console.error('API Error:', data.message);
+      return;
+    }
+    
+    const tableBody = document.querySelector('#userTable tbody');
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = ''; // Clear existing content
+    
+    data.data.forEach(user => {
+      const row = `
+        <tr>
+          <td>${user.username}</td>
+          <td>${user.email}</td>
+          <td>${user.role}</td>
+          <td>${user.status}</td>
+          <td>
+            <button onclick="toggleStatus(${user.id})">${user.status === 'active' ? 'Suspend' : 'Activate'}</button>
+            <button onclick="deleteUser(${user.id})">Delete</button>
+          </td>
+        </tr>`;
+      tableBody.innerHTML += row;
+    });
+  })
+  .catch(error => {
+    console.error('Error fetching users:', error);
+    const tableBody = document.querySelector('#userTable tbody');
+    if (tableBody) {
+      tableBody.innerHTML = '<tr><td colspan="5">Error loading users</td></tr>';
+    }
+  });
+
+function toggleStatus(userId) {
+  fetch('/api/admin/suspend_user.php', {
+    method: 'POST',
+    body: JSON.stringify({ user_id: userId })
+  }).then(response => response.json()).then(() => location.reload());
+}
+
+function deleteUser(userId) {
+  fetch('/api/admin/delete_user.php', {
+    method: 'POST',
+    body: JSON.stringify({ user_id: userId })
+  }).then(response => response.json()).then(() => location.reload());
+}
