@@ -149,7 +149,7 @@ body {
 }
 
 
-/* toast for user respponse  */
+/* toast for user respponse  
 /* Toast styles */
 .toast {
   visibility: hidden;
@@ -215,7 +215,7 @@ a {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-/* Style the username specifically in the admin welcome header */
+/* styles for the username specifically in the admin welcome header */
 .app-content-headerText #username {
     font-size: inherit;
     font-weight: inherit;
@@ -305,7 +305,7 @@ a {
     font-size: 14px;
 }
 
-/* User Management Styles */
+/* user Management Styles */
 .users-management {
     margin-top: 20px;
 }
@@ -326,7 +326,8 @@ a {
 
 .table-wrapper {
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    -ms-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: touch; 
 }
 
 .admin-table {
@@ -334,7 +335,7 @@ a {
     border-collapse: collapse;
     background: var(--app-content-secondary-color);
     color: var(--app-content-main-color);
-    min-width: 600px; /* Minimum width to prevent cramping */
+    min-width: 600px; 
 }
 
 .admin-table th {
@@ -364,7 +365,7 @@ a {
     border-bottom: none;
 }
 
-/* Role badges */
+/* role badges */
 .role-badge {
     display: inline-block;
     padding: 4px 8px;
@@ -390,7 +391,7 @@ a {
     color: #6c757d;
 }
 
-/* Status badges */
+/* status badges */
 .status-badge {
     display: inline-block;
     padding: 4px 8px;
@@ -411,7 +412,7 @@ a {
     color: #dc3545;
 }
 
-/* Action buttons */
+/* action buttons */
 .actions-cell {
     white-space: nowrap;
 }
@@ -463,7 +464,7 @@ a {
     transform: translateY(-1px);
 }
 
-/* Error and no data messages */
+/* error and no data messages */
 .error-message, .no-data {
     text-align: center;
     padding: 20px;
@@ -475,7 +476,7 @@ a {
     color: #dc3545;
 }
 
-/* Responsive design */
+/* responsive design */
 @media (max-width: 768px) {
     .admin-table {
         font-size: 14px;
@@ -543,7 +544,7 @@ a {
     box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
-/* Additional action button styles */
+/* other action button styles */
 .btn-info {
     background: #17a2b8;
     color: white;
@@ -554,7 +555,6 @@ a {
     transform: translateY(-1px);
 }
 
-/* Modal improvements */
 .modal-body i {
     font-size: 48px;
     color: var(--link-color);
@@ -567,7 +567,7 @@ a {
     opacity: 0.8;
 }
 
-/* Current user label */
+/* current user label */
 .current-user-label {
     display: inline-block;
     padding: 4px 8px;
@@ -580,14 +580,14 @@ a {
     letter-spacing: 0.5px;
 }
 
-/* Hide action buttons for current user */
+/* hide action buttons for current user */
 .actions-cell .current-user-label {
     font-style: italic;
 }
 
-/* Role-specific styling adjustments */
+/* role-specific styling adjustments */
 .role-monitor .actions-cell .btn-danger {
-    display: none; /* Hide delete button for monitors via CSS as backup */
+    display: none; 
 }
 
 /* Tooltip for restricted actions */
@@ -633,7 +633,8 @@ a {
 
 .table-wrapper {
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    -ms-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: touch; 
 }
 
 .admin-table {
@@ -641,7 +642,7 @@ a {
     border-collapse: collapse;
     background: var(--app-content-secondary-color);
     color: var(--app-content-main-color);
-    min-width: 600px; /* Minimum width to prevent cramping */
+    min-width: 600px;
 }
 
 .admin-table th {
@@ -674,7 +675,7 @@ a {
 /* Mobile-first responsive design */
 @media (max-width: 768px) {
     .users-table-container {
-        margin: 0 -10px; /* Extend to edges on mobile */
+        margin: 0 -10px; 
         border-radius: 0;
     }
     
@@ -685,7 +686,7 @@ a {
     
     .admin-table {
         font-size: 13px;
-        min-width: 650px; /* Ensure minimum width for readability */
+        min-width: 650px; 
     }
     
     .admin-table th,
@@ -727,7 +728,7 @@ a {
     }
     
     .admin-table {
-        min-width: 700px; /* Increase minimum width for better mobile experience */
+        min-width: 700px; 
     }
     
     .admin-table th,
@@ -836,7 +837,7 @@ a {
     }
     
     .form-control {
-        font-size: 16px; /* Prevent zoom on iOS */
+        font-size: 16px; 
     }
 }
 

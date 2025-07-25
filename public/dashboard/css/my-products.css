@@ -698,12 +698,12 @@ a {
         flex-direction: row;
         align-items: center;
         justify-content: center;
-        z-index: 1000; /* Always on top */
+        z-index: 1000; 
         border-radius: 0;
         padding: 0;
         box-shadow: 0 2px 8px rgba(0,0,0,0.12);
         background: var(--sidebar);
-        display: flex !important; /* Ensure sidebar is visible on mobile */
+        display: flex !important; 
     }
     .sidebar-header {
         display: none;
