@@ -60,7 +60,7 @@ $success = $stmt->execute([$name, $email, $phone, $hashpassword]);
 if ($success) {
     echo json_encode([
         "success" => true, 
-        "message" => "You Have Successfully Registered Into Storedambwe Marketplace"
+        "message" => "You Have Successfully Registered Into Nsikacart Marketplace"
     ]);
 } else {
     echo json_encode([
