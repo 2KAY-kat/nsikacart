@@ -183,7 +183,7 @@ async function loadStatistics() {
     }
 }
 
-async function loadUsers() {
+export async function loadUsers() {
     const tableBody = document.querySelector('#userTable tbody');
     const usersTable = document.querySelector('#users-table');
     
@@ -214,7 +214,7 @@ async function loadUsers() {
         
         if (!tableBody) return;
         
-        tableBody.innerHTML = ''; // Clear existing content
+        tableBody.innerHTML = ''; 
         
         if (data.data && data.data.length > 0) {
             data.data.forEach(user => {
@@ -227,10 +227,11 @@ async function loadUsers() {
                 const isCurrentUserAdmin = currentUser?.role === 'admin';
                 const isCurrentUserMonitor = currentUser?.role === 'monitor';
                 const isCurrentUser = user.id == currentUser?.id;
-                
+
                 let roleToggleButton = '';
                 let deleteButton = '';
                 let statusButton = '';
+                let addUserBtn = '';
                 
                 // Only admins can change roles and only for other users
                 if (isCurrentUserAdmin && !isCurrentUser) {
@@ -251,6 +252,10 @@ async function loadUsers() {
                 if (isCurrentUser) {
                     const currentUserActions = '<span class="current-user-label">Current User</span>';
                     statusButton = currentUserActions;
+                }
+
+                if (isCurrentUserAdmin && !isCurrentUser) {
+                    addUserBtn = '<button class="app-content-headerButton"><a href="/nsikacart/public/dashboard/user-management/add-user.html">Add User</a></button>';
                 }
                 
                 const row = `

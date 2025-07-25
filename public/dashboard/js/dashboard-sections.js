@@ -8,7 +8,7 @@ const productsStatus = Array.from(new Set(products.map(p => p.status)));
 productsStatus.unshift('All');
 
 */
-
+//import {loadUsers} from './dashboard-render';
 export const sections = {
     products: {
         header: 'Products',
@@ -48,6 +48,8 @@ export const sections = {
                 <div class="admin-content">
                     <div class="admin-subsection" id="admin-statistics" style="display: block;">
                         <h3>System Statistics</h3>
+                        <button class="app-content-headerButton"><a href="/nsikacart/logs/logs">View Statistics</a></button>
+                        <button class="app-content-headerButton"><a href="">Download Data</a></button>
                         <div class="stats-grid">
                             <div class="stat-card">
                                 <div class="stat-icon">
@@ -92,9 +94,8 @@ export const sections = {
                     
                     <div class="admin-subsection" id="admin-users" style="display: none;">
                         <h3>User Management</h3>
-                        <button class="app-content-headerButton">
-                            <a href="/nsikacart/public/dashboard/user-management/add-user.html">Add User</a>
-                        </button>
+                        <button class="app-content-headerButton"><a href="/nsikacart/public/dashboard/user-management/add-user.html">Add User</a></button>
+                        <button class="app-content-headerButton"><a href="">View User Activity</a></button>
                         <div class="users-management">
                             <div class="users-table-container">
                                 <div id="users-table" class="loading-message">Loading users...</div>
