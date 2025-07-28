@@ -23,26 +23,36 @@ try {
     }
 
     // Check if user is authenticated and has admin privileges
-    if (!in_array($_SESSION['role'], ['admin', 'monitor'])) {
+    // Use the actual session structure
+    $user_role = $_SESSION['user']['role'] ?? null;
+    
+    if (!in_array($user_role, ['admin', 'monitor'])) {
         http_response_code(403);
         echo json_encode([
-            'error' => 'Unathorised Area'
+            'error' => 'Unauthorised Area'
         ]);
         exit;
     }
 
     $data = json_decode(file_get_contents("php://input"), true);
+    
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid JSON data"
+        ]);
+        exit;
+    }
 
-    // we start validating the iputs on data here 
-
-    if (!isset($data['name'], $data['email'], $data['password'], $data['confirm_password'])) {
+    if (!isset($data['name'], $data['email'], $data['password'], $data['confirm_password'], $data['role'])) {
         echo json_encode(["success" => false, "message" => "All fields are required"]);
         exit;
     }
-    // sanitisation
 
-    $name = trim($data['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $email = trim($data['email'], FILTER_SANITIZE_EMAIL);
+    // Correct sanitization
+    $name = htmlspecialchars(trim($data['name']));
+    $email = filter_var(trim($data['email']), FILTER_SANITIZE_EMAIL);
+    
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo json_encode([
             "success" => false,
@@ -50,11 +60,11 @@ try {
         ]);
         exit;
     }
+    
     $phone = htmlspecialchars(trim($data['phone']));
     $password = trim($data['password']);
     $confirm_password = trim($data['confirm_password']);
-
-    // Password match check
+    
     if ($password !== $confirm_password) {
         echo json_encode([
             "success" => false,
@@ -62,7 +72,17 @@ try {
         ]);
         exit;
     }
-    $user_role = filter_var($_POST['role'], FILTER_SANITIZE_NUMBER_INT);
+    
+    // Fix role handling
+    $user_role = htmlspecialchars(trim($data['role']));
+    $allowed_roles = ['user', 'monitor', 'admin'];
+    if (!in_array($user_role, $allowed_roles)) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid role selected"
+        ]);
+        exit;
+    }
 
     // checking the availabilty of a potential user similarity in db
 

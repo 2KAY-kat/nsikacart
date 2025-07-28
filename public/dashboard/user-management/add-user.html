@@ -1,6 +1,6 @@
 <?php 
     require_once '../../api/middleware/auth_required.php';
-    if (!isset($_SESSION['user']['id']) || $_SESSION['role'] !== 'admin') {
+    if (!isset($_SESSION['role'] == 'admin') {
         header('Location: /../../../../auth/login.html');
         exit;
     }
@@ -28,6 +28,7 @@
             <input type="email" name="email" placeholder="Email" required>
             <input type="tel" name="phone" placeholder="Phone Number" required>
             <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="confirm_password" placeholder="Confirm Password" required>
 
             <label>Role</label>
             <select name="role">

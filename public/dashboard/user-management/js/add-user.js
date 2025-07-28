@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         const data = Object.fromEntries(new FormData(form).entries());
 
-        const response =  await fetch('/nsikacart/api/admin/add-user.php', {
+        const response =  await fetch('/nsikacart/api/admin/add-users.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
