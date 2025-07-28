@@ -76,5 +76,44 @@ button:hover {
 }
 
 #message.success {
-    color: #00ffa3;
+    color: var(--accent-color);
+}
+
+/* Toast notification styles */
+.toast {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  visibility: hidden;
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 16px 24px;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--accent-color);
+  transition: all 0.3s ease-in-out;
+  z-index: 1000;
+}
+.toast.show {
+  visibility: visible;
+  animation: fade-in 0.3s, fade-out 0.3s 2.7s;
+}
+.toast.success { background-color: #28a745 }
+.toast.error   { background-color: #dc3545 }
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.toast-icon.success {
+  background-image: url('../../assets/icons/check-circle.svg');
+}
+
+.toast-icon.error {
+  background-image: url('../../assets/icons/x-circle.svg');
 }
