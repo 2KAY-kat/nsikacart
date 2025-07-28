@@ -17,7 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const json = await res.json();
       showToast(json.message, json.success ? 'success' : 'error');
       if (json.success) form.reset();
-
+setTimeout(() => {
+                window.location.href = '/nsikacart/public/dashboard/index.html';
+            }, 2000);
     } catch (err) {
       console.error(err);
       showToast('An unexpected error occurred.', 'error');
