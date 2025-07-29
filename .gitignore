@@ -35,7 +35,7 @@ backup/
 
 # Session files
 /sessions/
-/api/auth/session-debugg.php
+/api/auth/session-debug.php
 /api/debug/session-check.php
 /api/products/debug-delete-verbose.php
 /api/products/debug-delete.php
