@@ -4,7 +4,7 @@ import { getCurrentUser } from './session-manager.js';
 
 // Add this function to handle URL hash navigation
 function getActiveStateFromURL() {
-    const hash = window.location.hash.substring(1); // Remove #
+    const hash = window.location.hash.substring(1); 
     if (hash) {
         const [section, subsection] = hash.split('/');
         return { section, subsection };
@@ -120,8 +120,9 @@ function setupAdminNavigation(activeSubsection = 'statistics') {
                 if (targetSection === 'statistics') {
                     loadStatistics();
                 } else if (targetSection === 'users') {
-                    loadUsers();
-                }
+                    loadUsers(1, 5); 
+                    setupPaginationEvents(); 
+                 }
             }
         });
     });
@@ -130,7 +131,7 @@ function setupAdminNavigation(activeSubsection = 'statistics') {
     document.querySelectorAll('.admin-subsection').forEach(section => {
         section.style.display = 'none';
     });
-    
+
     const activeElement = document.getElementById(`admin-${activeSubsection}`);
     if (activeElement) {
         activeElement.style.display = 'block';
@@ -140,9 +141,234 @@ function setupAdminNavigation(activeSubsection = 'statistics') {
             }, 100);
         } else if (activeSubsection === 'users') {
             setTimeout(() => {
-                loadUsers();
+                loadUsers(1, 5);
+                setupPaginationEvents();
             }, 100);
         }
+    }
+}
+
+// Global pagination state - update default page size
+let currentPage = 1;
+let currentPageSize = 5;
+let totalPages = 1;
+
+export async function loadUsers(page = 1, pageSize = 5) { 
+    const tableBody = document.querySelector('#userTable tbody');
+    const usersTable = document.querySelector('#users-table');
+    const paginationContainer = document.getElementById('pagination-container');
+    
+    if (usersTable) {
+        usersTable.textContent = 'Loading users...';
+    }
+    
+    try {
+        const response = await fetch(`/nsikacart/api/admin/users.php?page=${page}&limit=${pageSize}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Users loaded successfully:', data); // For debugging
+        
+        if (usersTable) {
+            usersTable.style.display = 'none';
+        }
+        
+        if (!data.success) {
+            console.error('API Error:', data.message);
+            if (tableBody) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="error-message">Error: ${data.message}</td></tr>`;
+            }
+            return;
+        }
+        
+        if (!tableBody) return;
+        
+        // Update pagination state
+        currentPage = data.pagination.current_page;
+        currentPageSize = data.pagination.limit;
+        totalPages = data.pagination.total_pages;
+        
+        tableBody.innerHTML = ''; 
+        
+        if (data.data && data.data.length > 0) {
+            data.data.forEach(user => {
+                const statusClass = user.status === 'active' ? 'status-active' : 'status-inactive';
+                const actionText = user.status === 'active' ? 'Suspend' : 'Activate';
+                const actionClass = user.status === 'active' ? 'btn-warning' : 'btn-success';
+                
+                // Check current user permissions
+                const currentUser = getCurrentUser();
+                const isCurrentUserAdmin = currentUser?.role === 'admin';
+                const isCurrentUserMonitor = currentUser?.role === 'monitor';
+                const isCurrentUser = user.id == currentUser?.id;
+
+                let roleToggleButton = '';
+                let deleteButton = '';
+                let statusButton = '';
+                
+                // Only admins can change roles and only for other users
+                if (isCurrentUserAdmin && !isCurrentUser) {
+                    roleToggleButton = `<button onclick="showRoleModal(${user.id}, '${user.role}', '${user.name}')" class="action-btn btn-info">Change Role</button>`;
+                }
+                
+                // Both admins and monitors can suspend/activate users (except themselves)
+                if ((isCurrentUserAdmin || isCurrentUserMonitor) && !isCurrentUser) {
+                    statusButton = `<button onclick="toggleUserStatus(${user.id}, '${user.status}')" class="action-btn ${actionClass}">${actionText}</button>`;
+                }
+                
+                // Only admins can delete users (except themselves)
+                if (isCurrentUserAdmin && !isCurrentUser) {
+                    deleteButton = `<button onclick="deleteUser(${user.id}, '${user.name}')" class="action-btn btn-danger">Delete</button>`;
+                }
+                
+                // Show different messages for current user's own row
+                if (isCurrentUser) {
+                    statusButton = '<span class="current-user-label">Current User</span>';
+                }
+                
+                // Format the created date
+                const createdDate = new Date(user.created_at).toLocaleDateString();
+                
+                const row = `
+                    <tr>
+                        <td data-label="Username">${user.name || 'N/A'}</td>
+                        <td data-label="Email">${user.email || 'N/A'}</td>
+                        <td data-label="Role"><span class="role-badge role-${user.role}">${user.role || 'N/A'}</span></td>
+                        <td data-label="Status"><span class="status-badge ${statusClass}">${user.status || 'N/A'}</span></td>
+                        <td data-label="Actions" class="actions-cell">
+                            ${roleToggleButton}
+                            ${statusButton}
+                            ${deleteButton}
+                        </td>
+                    </tr>`;
+                tableBody.innerHTML += row;
+            });
+            
+            // Show pagination
+            updatePagination(data.pagination);
+            if (paginationContainer) {
+                paginationContainer.style.display = 'flex';
+            }
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="5" class="no-data">No users found</td></tr>';
+            if (paginationContainer) {
+                paginationContainer.style.display = 'none';
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        if (usersTable) {
+            usersTable.style.display = 'none';
+        }
+        if (tableBody) {
+            tableBody.innerHTML = `<tr><td colspan="5" class="error-message">Error loading users: ${error.message}</td></tr>`;
+        }
+        if (paginationContainer) {
+            paginationContainer.style.display = 'none';
+        }
+    }
+}
+
+function updatePagination(pagination) {
+    const infoText = document.getElementById('pagination-info-text');
+    const buttonsContainer = document.getElementById('pagination-buttons');
+    const pageSizeSelect = document.getElementById('page-size');
+    
+    if (!pagination) return;
+    
+    // Update info text - Fix the calculation
+    const start = ((pagination.current_page - 1) * pagination.limit) + 1;
+    const end = Math.min(pagination.current_page * pagination.limit, pagination.total_records);
+    if (infoText) {
+        infoText.textContent = `Showing ${start}-${end} of ${pagination.total_records} users`;
+    }
+    
+    // Update page size selector
+    if (pageSizeSelect && pageSizeSelect.value != pagination.limit) {
+        pageSizeSelect.value = pagination.limit;
+    }
+    
+    // Generate pagination buttons
+    if (buttonsContainer) {
+        buttonsContainer.innerHTML = '';
+        
+        // Previous button
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'pagination-btn';
+        prevBtn.textContent = '‹ Previous';
+        prevBtn.disabled = !pagination.has_prev;
+        prevBtn.onclick = () => pagination.has_prev && loadUsers(pagination.current_page - 1, pagination.limit);
+        buttonsContainer.appendChild(prevBtn);
+        
+        // Page numbers
+        const startPage = Math.max(1, pagination.current_page - 2);
+        const endPage = Math.min(pagination.total_pages, pagination.current_page + 2);
+        
+        // First page if not in range
+        if (startPage > 1) {
+            const firstBtn = createPageButton(1, pagination.current_page, pagination.limit);
+            buttonsContainer.appendChild(firstBtn);
+            
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.className = 'pagination-ellipsis';
+                buttonsContainer.appendChild(ellipsis);
+            }
+        }
+        
+        // Page range
+        for (let i = startPage; i <= endPage; i++) {
+            const pageBtn = createPageButton(i, pagination.current_page, pagination.limit);
+            buttonsContainer.appendChild(pageBtn);
+        }
+        
+        // Last page if not in range
+        if (endPage < pagination.total_pages) {
+            if (endPage < pagination.total_pages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.className = 'pagination-ellipsis';
+                buttonsContainer.appendChild(ellipsis);
+            }
+            
+            const lastBtn = createPageButton(pagination.total_pages, pagination.current_page, pagination.limit);
+            buttonsContainer.appendChild(lastBtn);
+        }
+        
+        // Next button
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'pagination-btn';
+        nextBtn.textContent = 'Next ›';
+        nextBtn.disabled = !pagination.has_next;
+        nextBtn.onclick = () => pagination.has_next && loadUsers(pagination.current_page + 1, pagination.limit);
+        buttonsContainer.appendChild(nextBtn);
+    }
+}
+
+function createPageButton(pageNumber, currentPage, pageSize) {
+    const btn = document.createElement('button');
+    btn.className = `pagination-btn ${pageNumber === currentPage ? 'active' : ''}`;
+    btn.textContent = pageNumber;
+    btn.onclick = () => loadUsers(pageNumber, pageSize);
+    return btn;
+}
+
+// Setup pagination event listeners
+function setupPaginationEvents() {
+    const pageSizeSelect = document.getElementById('page-size');
+    if (pageSizeSelect) {
+
+        pageSizeSelect.value = currentPageSize;
+        
+        pageSizeSelect.addEventListener('change', function() {
+            const newPageSize = parseInt(this.value);
+            loadUsers(1, newPageSize); 
+        });
     }
 }
 
@@ -180,110 +406,6 @@ async function loadStatistics() {
         document.getElementById('total-products').textContent = 'Error';
         document.getElementById('active-sessions').textContent = 'Error';
         document.getElementById('active-users').textContent = 'Error';
-    }
-}
-
-export async function loadUsers() {
-    const tableBody = document.querySelector('#userTable tbody');
-    const usersTable = document.querySelector('#users-table');
-    
-    if (usersTable) {
-        usersTable.textContent = 'Loading users...';
-    }
-    
-    try {
-        const response = await fetch('/nsikacart/api/admin/users.php');
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (usersTable) {
-            usersTable.style.display = 'none';
-        }
-        
-        if (!data.success) {
-            console.error('API Error:', data.message);
-            if (tableBody) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="error-message">Error: ${data.message}</td></tr>`;
-            }
-            return;
-        }
-        
-        if (!tableBody) return;
-        
-        tableBody.innerHTML = ''; 
-        
-        if (data.data && data.data.length > 0) {
-            data.data.forEach(user => {
-                const statusClass = user.status === 'active' ? 'status-active' : 'status-inactive';
-                const actionText = user.status === 'active' ? 'Suspend' : 'Activate';
-                const actionClass = user.status === 'active' ? 'btn-warning' : 'btn-success';
-                
-                // Check current user permissions
-                const currentUser = getCurrentUser();
-                const isCurrentUserAdmin = currentUser?.role === 'admin';
-                const isCurrentUserMonitor = currentUser?.role === 'monitor';
-                const isCurrentUser = user.id == currentUser?.id;
-
-                let roleToggleButton = '';
-                let deleteButton = '';
-                let statusButton = '';
-                let addUserBtn = '';
-                
-                // Only admins can change roles and only for other users
-                if (isCurrentUserAdmin && !isCurrentUser) {
-                    roleToggleButton = `<button onclick="showRoleModal(${user.id}, '${user.role}', '${user.username || user.name}')" class="action-btn btn-info">Change Role</button>`;
-                }
-                
-                // Both admins and monitors can suspend/activate users (except themselves)
-                if ((isCurrentUserAdmin || isCurrentUserMonitor) && !isCurrentUser) {
-                    statusButton = `<button onclick="toggleUserStatus(${user.id}, '${user.status}')" class="action-btn ${actionClass}">${actionText}</button>`;
-                }
-                
-                // Only admins can delete users (except themselves)
-                if (isCurrentUserAdmin && !isCurrentUser) {
-                    deleteButton = `<button onclick="deleteUser(${user.id}, '${user.username || user.name}')" class="action-btn btn-danger">Delete</button>`;
-                }
-                
-                // Show different messages for current user's own row
-                if (isCurrentUser) {
-                    const currentUserActions = '<span class="current-user-label">Current User</span>';
-                    statusButton = currentUserActions;
-                }
-
-                if (isCurrentUserAdmin && !isCurrentUser) {
-                    addUserBtn = '<button class="app-content-headerButton"><a href="/nsikacart/public/dashboard/user-management/add-user.html">Add User</a></button>';
-                }
-                
-                const row = `
-                    <tr>
-                        <td data-label="Username">${user.username || user.name || 'N/A'}</td>
-                        <td data-label="Email">${user.email || 'N/A'}</td>
-                        <td data-label="Role"><span class="role-badge role-${user.role}">${user.role || 'N/A'}</span></td>
-                        <td data-label="Status"><span class="status-badge ${statusClass}">${user.status || 'N/A'}</span></td>
-                        <td data-label="Actions" class="actions-cell">
-                            ${roleToggleButton}
-                            ${statusButton}
-                            ${deleteButton}
-                        </td>
-                    </tr>`;
-                tableBody.innerHTML += row;
-            });
-        } else {
-            tableBody.innerHTML = '<tr><td colspan="5" class="no-data">No users found</td></tr>';
-        }
-        
-    } catch (error) {
-        console.error('Error fetching users:', error);
-        if (usersTable) {
-            usersTable.style.display = 'none';
-        }
-        if (tableBody) {
-            tableBody.innerHTML = `<tr><td colspan="5" class="error-message">Error loading users: ${error.message}</td></tr>`;
-        }
     }
 }
 
@@ -335,7 +457,7 @@ window.changeUserRole = async function() {
         
         if (result.success) {
             showToast(result.message, 'success');
-            loadUsers(); // Reload the users table
+            loadUsers(currentPage, currentPageSize); 
             modal.style.display = 'none';
         } else {
             showToast(result.message || 'Failed to change user role', 'error');
@@ -361,7 +483,7 @@ window.toggleUserStatus = async function(userId, currentStatus) {
         
         if (result.success) {
             showToast(result.message, 'success');
-            loadUsers(); // Reload the users table
+            loadUsers(currentPage, currentPageSize); 
         } else {
             showToast(result.message || 'Failed to update user status', 'error');
         }
@@ -401,7 +523,7 @@ window.performDeleteUser = async function(userId) {
         
         if (result.success) {
             showToast(result.message, 'success');
-            loadUsers(); // Reload the users table
+            loadUsers(currentPage, currentPageSize); // Reload current page
         } else {
             showToast(result.message || 'Failed to delete user', 'error');
         }

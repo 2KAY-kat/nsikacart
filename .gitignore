@@ -41,5 +41,9 @@ backup/
 /api/products/debug-delete.php
 /api/auth/cleanup-sessions.php
 
+# API tests pages / users pages
+/api/admin/test.php
+/api/admin/users-debug.php 
+
 # Miscellaneous
 Product-Delete-Design-Decisions.md

@@ -854,3 +854,112 @@ a {
         font-size: 14px;
     }
 }
+
+/* Pagination Styles */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--app-content-secondary-color);
+    border-top: 1px solid var(--table-border);
+    border-radius: 0 0 8px 8px;
+    margin-top: 0;
+}
+
+.pagination-info {
+    color: var(--app-content-main-color);
+    font-size: 14px;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.page-size-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--app-content-main-color);
+}
+
+.page-size-selector select {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: var(--app-content-secondary-color);
+    color: var(--app-content-main-color);
+    font-size: 14px;
+}
+
+.pagination-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.pagination-btn {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    background: var(--app-content-secondary-color);
+    color: var(--app-content-main-color);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    min-width: 40px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #f0f0f0;
+    border-color: #999;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-btn.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination-ellipsis {
+    padding: 8px 4px;
+    color: var(--app-content-main-color);
+}
+
+/* Mobile responsive pagination */
+@media (max-width: 768px) {
+    .pagination-container {
+        flex-direction: column;
+        gap: 15px;
+        padding: 10px 15px;
+    }
+    
+    .pagination-controls {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+    
+    .pagination-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .pagination-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+        min-width: 35px;
+    }
+    
+    .pagination-info {
+        text-align: center;
+        font-size: 12px;
+    }
+}

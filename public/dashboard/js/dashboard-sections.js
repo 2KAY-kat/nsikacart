@@ -113,6 +113,27 @@ export const sections = {
                                         <tbody></tbody>
                                     </table>
                                 </div>
+                                <div class="pagination-container" id="pagination-container" style="display: none;">
+                                    <div class="pagination-info">
+                                        <span id="pagination-info-text">Showing 0-0 of 0 users</span>
+                                    </div>
+                                    <div class="pagination-controls">
+                                        <div class="page-size-selector">
+                                            <label for="page-size">Show:</label>
+                                            <select id="page-size">
+                                                <option value="5" selected>5</option>
+                                                <option value="6">6</option>
+                                                <option value="10">10</option>
+                                                <option value="20">20</option>
+                                                <option value="50">50</option>
+                                            </select>
+                                            <span>users per page</span>
+                                        </div>
+                                        <div class="pagination-buttons" id="pagination-buttons">
+                                            <!-- Pagination buttons will be generated here -->
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
