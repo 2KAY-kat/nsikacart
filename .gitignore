@@ -7,12 +7,29 @@
 .env.local
 .env.production
 
+# Environment specific configurations
+.env.development
+.env.staging
+.env.testing
+config/local.php
+config/development.php
+config/production.php
 
-# User uploads
+# Email and authentication sensitive files
+/helpers/PHPMailer-master/examples/
+/helpers/PHPMailer-master/test/
+/api/auth/*-debug.php
+/api/auth/test*.php
+
+# User uploads and data
 /public/dashboard/uploads/
+/uploads/
+/user-uploads/
 
 # Vendor directories
 /public/package/
+/vendor/
+/node_modules/
 
 # FontAwesome (already in your ignore)
 css/fontawesome-free-6.6.0-web/
@@ -22,12 +39,16 @@ public/css/fontawesome-free-6.6.0-web/
 .vscode/
 .idea/
 .DS_Store
+*.swp
+*.swo
+*~
 
-# Database backups
+# Database backups and files
 *.sql
 *.sqlite
 *.db
 backup/
+/database/backups/
 
 # Compiled files
 *.min.js
@@ -35,6 +56,7 @@ backup/
 
 # Session files
 /sessions/
+/tmp/sessions/
 /api/auth/session-debug.php
 /api/debug/session-check.php
 /api/products/debug-delete-verbose.php
@@ -44,6 +66,59 @@ backup/
 # API tests pages / users pages
 /api/admin/test.php
 /api/admin/users-debug.php 
+/api/*/test*.php
+/api/*/debug*.php
+
+# Logs
+*.log
+/logs/
+error.log
+access.log
+
+# Temporary files
+/tmp/
+/temp/
+*.tmp
+*.cache
+
+# OS generated files
+Thumbs.db
+.DS_Store
+*.bak
+
+# Email testing files
+/helpers/PHPMailer-master/examples/
+/helpers/PHPMailer-master/test/
+
+# Reset tokens and sensitive data (if stored in files)
+/reset-tokens/
+/password-resets/
 
 # Miscellaneous
 Product-Delete-Design-Decisions.md
+README-local.md
+*.local.md
+
+# Backup and old files
+*.backup
+*.old
+*-backup.*
+*-old.*
+
+# Helper files that contain sensitive examples
+/helpers/PHPMailer-master/
+
+# Email configuration backups
+email-config.backup
+smtp-settings.txt
+oauth-tokens.txt
+/helpers/email-credentials.*
+
+# Security files
+*.key
+*.pem
+*.p12
+*.pfx
+certificates/
+keys/
+secrets/
