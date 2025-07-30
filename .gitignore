@@ -1,5 +1,4 @@
 # Configuration and sensitive files
-/api/config/db.php
 /api/config/*.ini
 /api/config/*.env
 .env
