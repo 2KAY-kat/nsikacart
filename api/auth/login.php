@@ -10,6 +10,10 @@ header("Cache-Control: no-cache, must-revalidate");
 require_once '../config/db.php';
 
 try {
+    if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+        throw new Exception("Only POST requests allowed");
+    }
+
     // Get raw input
     $raw_input = file_get_contents("php://input");
     
@@ -49,10 +53,10 @@ try {
 
     // Check if input is an email or username
     if (filter_var($login_input, FILTER_VALIDATE_EMAIL)) {
-        $query = "SELECT id, name, email, password, role FROM users WHERE email = ?";
+        $query = "SELECT id, name, email, password, role, email_verified FROM users WHERE email = ?";
         $params = [$login_input];
     } else {
-        $query = "SELECT id, name, email, password, role FROM users WHERE name = ?";
+        $query = "SELECT id, name, email, password, role, email_verified FROM users WHERE name = ?";
         $params = [$login_input];
     }
 
@@ -62,6 +66,16 @@ try {
 
     if (!$user || !password_verify($password, $user['password'])) {
         throw new Exception("Invalid username/email or password");
+    }
+
+    // Check if email is verified
+    if (!$user['email_verified']) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Please verify your email address before logging in. Check your inbox for the verification link.",
+            "email_not_verified" => true
+        ]);
+        exit;
     }
 
     // Set session variables
@@ -82,29 +96,9 @@ try {
         setcookie('remember_token', $token, $expires, '/', '', false, true);
     }
 
-    $userId =  $user['id'];
-    $sessionToken = bin2hex(random_bytes(32));
-    $userAgent = $_SERVER['REMOTE_ADDR'];
-    $ipAddress = $_SERVER['HTTP_USER_AGENT'];
-    $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour'));
-
-    $stmt = $pdo->prepare("INSERT INTO sessions (user_id, session_token, ip_address, user_agent, last_active, expires_at) VALUES (:user_id, :token, :ip, :ua, NOW(), :expires)");
-
-    $stmt->execute([
-        ':user_id' => $userId,
-        ':token' => $sessionToken,
-        ':ip' => $ipAddress,
-        ':ua' => $userAgent,
-        ':expires' => $expiresAt
-    ]);
-
-    $_SESSION['session_token'] = $sessionToken;
-
-    // Clear output buffering and send clean response
-    ob_clean();
     echo json_encode([
         "success" => true,
-        "message" => "Login successful! Welcome back, " . $user['name'],
+        "message" => "Login successful!",
         "user" => [
             "id" => $user['id'],
             "name" => $user['name'],

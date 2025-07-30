@@ -62,14 +62,15 @@ function handleSignup(e) {
     .then(result => {
         if (result.success) {
             if (typeof window.showToast === 'function') {
-                window.showToast(result.message || 'Account created successfully!', 'success');
+                window.showToast(result.message || 'Account created successfully! Please check your email to verify your account.', 'success');
             }
             
             // Clear form
             form.reset();
             
-            // Redirect after delay
+            // Show verification notice with 15-minute warning
             setTimeout(() => {
+                alert('Registration successful! Please check your email and click the verification link within 15 minutes before logging in.');
                 window.location.href = "./login.html";
             }, 2000);
         } else {
