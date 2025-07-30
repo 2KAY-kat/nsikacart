@@ -56,15 +56,16 @@ backup/
 
 # Session files
 /sessions/
+/api/debug/
 /tmp/sessions/
 /api/auth/session-debug.php
-/api/debug/session-check.php
-/api/products/debug-delete-verbose.php
-/api/products/debug-delete.php
+/api/debug/session.check.php
+/api/products/debug.delete.verbose.php
+/api/products/debug.delete.php
 /api/auth/cleanup-sessions.php
 
 # API tests pages / users pages
-/api/admin/test.php
+/api/admin/pagination.api.test.php
 /api/admin/users-debug.php 
 /api/*/test*.php
 /api/*/debug*.php

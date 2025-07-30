@@ -78,12 +78,23 @@ try {
         exit;
     }
 
+    // Generate session token for tracking
+    $session_token = bin2hex(random_bytes(32));
+    $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+    $expires_at = date('Y-m-d H:i:s', time() + (86400 * 30)); // 30 days
+
+    // Insert session into database
+    $stmt_session = $pdo->prepare("INSERT INTO sessions (user_id, session_token, ip_address, user_agent, expires_at, last_active) VALUES (?, ?, ?, ?, ?, NOW())");
+    $stmt_session->execute([$user['id'], $session_token, $ip_address, $user_agent, $expires_at]);
+
     // Set session variables
     $_SESSION['user'] = [
         'id' => $user['id'],
         'name' => $user['name'],
         'role' => $user['role']
     ];
+    $_SESSION['session_token'] = $session_token;
 
     // Remember me logic
     if ($remember) {
