@@ -31,7 +31,7 @@ config/production.php
 /vendor/
 /node_modules/
 
-# FontAwesome (already in your ignore)
+# FontAwesome 
 css/fontawesome-free-6.6.0-web/
 public/css/fontawesome-free-6.6.0-web/
 
