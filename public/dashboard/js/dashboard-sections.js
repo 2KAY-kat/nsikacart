@@ -126,12 +126,14 @@ export const sections = {
                                             <tr>
                                                 <th>Username</th>
                                                 <th>Email</th>
+                                                <th>Registered On</th>
                                                 <th>Role</th>
                                                 <th>Status</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody></tbody>
+                                        <tbody>
+                                        </tbody>
                                     </table>
                                 </div>
                                 <div class="pagination-container" id="pagination-container" style="display: none;">

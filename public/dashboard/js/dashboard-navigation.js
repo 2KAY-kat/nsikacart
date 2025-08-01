@@ -1,4 +1,4 @@
-import { renderProductsTable } from './dashboard-table.js';
+import { renderProductsTable, setupProductsSearch } from './dashboard-table.js';
 import { getCurrentUser } from './session-manager.js';
 
 export function setupSidebarNavigation() {
@@ -33,10 +33,8 @@ export function setupSidebarNavigation() {
                     // Setup section-specific functionality
                     if (section === 'products') {
                         setTimeout(() => {
-                            import('./dashboard-table.js').then(module => {
-                                module.renderProductsTable(1, 5);
-                                module.setupProductsSearch();
-                            });
+                            renderProductsTable(1, 5);
+                            setupProductsSearch();
                         }, 100);
                     }
                 }

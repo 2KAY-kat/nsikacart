@@ -143,7 +143,7 @@ export function setupProductsSearch() {
         // Debounce search to avoid too many API calls
         searchDebounceTimer = setTimeout(() => {
             renderProductsTable(1, currentProductsPageSize, searchTerm);
-        }, 300); // 300ms delay
+        }, 300); 
     });
     
     // Clear search button functionality

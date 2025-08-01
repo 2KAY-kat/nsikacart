@@ -46,6 +46,17 @@ export function renderSidebar() {
             </a>
         </li>
     `).join('');
+
+    // Add click event listeners to update URL
+    sidebarList.addEventListener('click', function(e) {
+        const link = e.target.closest('a[data-section]');
+        if (link) {
+            e.preventDefault();
+            const section = link.getAttribute('data-section');
+            updateURL(section);
+            localStorage.setItem('dashboard-active-section', section);
+        }
+    });
 }
 
 export function renderSections() {
@@ -116,6 +127,9 @@ function setupAdminNavigation(activeSubsection = 'statistics') {
                 // Save current admin subsection to localStorage
                 localStorage.setItem('dashboard-admin-subsection', targetSection);
                 
+                // Update URL with admin subsection
+                updateURL('admin', targetSection);
+                
                 // Load data based on section
                 if (targetSection === 'statistics') {
                     loadStatistics();
@@ -148,7 +162,7 @@ function setupAdminNavigation(activeSubsection = 'statistics') {
     }
 }
 
-// Global pagination state - update default page size
+// Global pagination state
 let currentPage = 1;
 let currentPageSize = 5;
 let totalPages = 1;
@@ -170,7 +184,7 @@ export async function loadUsers(page = 1, pageSize = 5) {
         }
         
         const data = await response.json();
-        console.log('Users loaded successfully:', data); // For debugging
+        // console.log('Users loaded successfully:', data);
         
         if (usersTable) {
             usersTable.style.display = 'none';
@@ -211,7 +225,7 @@ export async function loadUsers(page = 1, pageSize = 5) {
                 
                 // Only admins can change roles and only for other users
                 if (isCurrentUserAdmin && !isCurrentUser) {
-                    roleToggleButton = `<button onclick="showRoleModal(${user.id}, '${user.role}', '${user.name}')" class="action-btn btn-info">Change Role</button>`;
+                    roleToggleButton = `<button onclick="showRoleModal(${user.id}, '${user.role}', '${user.name}')" class="action-btn btn-info">Promote</button>`;
                 }
                 
                 // Both admins and monitors can suspend/activate users (except themselves)
@@ -226,16 +240,26 @@ export async function loadUsers(page = 1, pageSize = 5) {
                 
                 // Show different messages for current user's own row
                 if (isCurrentUser) {
-                    statusButton = '<span class="current-user-label">Current User</span>';
+                    statusButton = '<span class="current-user-label">Current</span>';
                 }
                 
                 // Format the created date
-                const createdDate = new Date(user.created_at).toLocaleDateString();
-                
+                let createdDate = 'N/A';
+                if (user.created_at) {
+                    const dateObj = new Date(user.created_at);
+                    createdDate = dateObj.toLocaleDateString(undefined, {
+                        year: '2-digit',
+                        month: 'short',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                }
                 const row = `
                     <tr>
                         <td data-label="Username">${user.name || 'N/A'}</td>
                         <td data-label="Email">${user.email || 'N/A'}</td>
+                         <td data-label="Created">${createdDate}</td>
                         <td data-label="Role"><span class="role-badge role-${user.role}">${user.role || 'N/A'}</span></td>
                         <td data-label="Status"><span class="status-badge ${statusClass}">${user.status || 'N/A'}</span></td>
                         <td data-label="Actions" class="actions-cell">
@@ -279,8 +303,7 @@ function updatePagination(pagination) {
     const pageSizeSelect = document.getElementById('page-size');
     
     if (!pagination) return;
-    
-    // Update info text - Fix the calculation
+
     const start = ((pagination.current_page - 1) * pagination.limit) + 1;
     const end = Math.min(pagination.current_page * pagination.limit, pagination.total_records);
     if (infoText) {
@@ -504,7 +527,7 @@ window.deleteUser = function(userId, username) {
         }
     } else {
         if (confirm(`Are you sure you want to delete user "${username}"?`)) {
-            performDeleteUser(userId);
+            window.performDeleteUser(userId);
         }
     }
 };
@@ -523,7 +546,7 @@ window.performDeleteUser = async function(userId) {
         
         if (result.success) {
             showToast(result.message, 'success');
-            loadUsers(currentPage, currentPageSize); // Reload current page
+            loadUsers(currentPage, currentPageSize);
         } else {
             showToast(result.message || 'Failed to delete user', 'error');
         }
