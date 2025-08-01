@@ -49,7 +49,7 @@ function initDashboard() {
     if (currentSection === 'products') {
         const productsSection = document.getElementById('section-products');
         if (productsSection && productsSection.style.display !== 'none') {
-            renderProductsTable();
+            renderProductsTable(1, 5); // Start with first page and default page size
         }
     }
 }

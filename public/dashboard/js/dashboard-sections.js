@@ -24,6 +24,27 @@ export const sections = {
               
             </div>
             <div class="products-area-wrapper tableView" id="dashboard-products-table"></div>
+            <div class="pagination-container" id="products-pagination-container" style="display: none;">
+                <div class="pagination-info">
+                    <span id="products-pagination-info-text">Showing 0-0 of 0 products</span>
+                </div>
+                <div class="pagination-controls">
+                    <div class="page-size-selector">
+                        <label for="products-page-size">Show:</label>
+                        <select id="products-page-size">
+                            <option value="5" selected>5</option>
+                            <option value="6">6</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span>products per page</span>
+                    </div>
+                    <div class="pagination-buttons" id="products-pagination-buttons">
+                        <!-- Pagination buttons will be generated here -->
+                    </div>
+                </div>
+            </div>
         `
     },
     admin: {

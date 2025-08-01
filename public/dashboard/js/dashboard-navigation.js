@@ -32,7 +32,7 @@ export function setupSidebarNavigation() {
                 if (el) {
                     el.style.display = '';
                     if (section === 'products') {
-                        renderProductsTable();
+                        renderProductsTable(1, 5); // Start with first page and default page size
                     }
                 }
             }

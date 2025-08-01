@@ -1,7 +1,12 @@
 import { formatCurrency } from '../../scripts/utilities/calculate_cash.js';
 import { getCurrentUser, validateSession } from './session-manager.js';
 
-export async function renderProductsTable() {
+// Global pagination state for products
+let currentProductsPage = 1;
+let currentProductsPageSize = 5;
+let totalProductsPages = 1;
+
+export async function renderProductsTable(page = 1, pageSize = 5) {
     // First validate session
     await validateSession();
     
@@ -13,6 +18,7 @@ export async function renderProductsTable() {
     }
 
     const table = document.getElementById('dashboard-products-table');
+    const paginationContainer = document.getElementById('products-pagination-container');
     if (!table) return;
 
     table.style.maxHeight = "400px";
@@ -31,8 +37,8 @@ export async function renderProductsTable() {
     `;
 
     try {
-        // add user_id to the request
-        const response = await fetch(`/nsikacart/api/products/get-products-individual.php`);
+        // Add pagination parameters to the request
+        const response = await fetch(`/nsikacart/api/products/get-products-individual.php?page=${page}&limit=${pageSize}`);
         const contentType = response.headers.get('content-type');
         
         if (!contentType || !contentType.includes('application/json')) {
@@ -46,6 +52,13 @@ export async function renderProductsTable() {
         }
 
         const products = data.products;
+        
+        // Update pagination state
+        if (data.pagination) {
+            currentProductsPage = data.pagination.current_page;
+            currentProductsPageSize = data.pagination.limit;
+            totalProductsPages = data.pagination.total_pages;
+        }
 
         const productsHTML = products.map(product => {
             const imgSrc = `uploads/${product.main_image}`;
@@ -76,8 +89,23 @@ export async function renderProductsTable() {
 
         table.innerHTML = html + productsHTML;
 
+        // Show pagination if we have data
+        if (data.pagination && data.pagination.total_records > 0) {
+            updateProductsPagination(data.pagination);
+            if (paginationContainer) {
+                paginationContainer.style.display = 'flex';
+            }
+        } else {
+            if (paginationContainer) {
+                paginationContainer.style.display = 'none';
+            }
+        }
+
         // Add event listeners for delete buttons
         setupDeleteHandlers();
+        
+        // Setup pagination events
+        setupProductsPaginationEvents();
 
     } catch (error) {
         console.error('Fetch error:', error);
@@ -86,6 +114,107 @@ export async function renderProductsTable() {
                 Failed to load your products. Please try again later.
             </div>
         `;
+        if (paginationContainer) {
+            paginationContainer.style.display = 'none';
+        }
+    }
+}
+
+function updateProductsPagination(pagination) {
+    const infoText = document.getElementById('products-pagination-info-text');
+    const buttonsContainer = document.getElementById('products-pagination-buttons');
+    const pageSizeSelect = document.getElementById('products-page-size');
+    
+    if (!pagination) return;
+    
+    // Update info text
+    const start = ((pagination.current_page - 1) * pagination.limit) + 1;
+    const end = Math.min(pagination.current_page * pagination.limit, pagination.total_records);
+    if (infoText) {
+        infoText.textContent = `Showing ${start}-${end} of ${pagination.total_records} products`;
+    }
+    
+    // Update page size selector
+    if (pageSizeSelect && pageSizeSelect.value != pagination.limit) {
+        pageSizeSelect.value = pagination.limit;
+    }
+    
+    // Generate pagination buttons
+    if (buttonsContainer) {
+        buttonsContainer.innerHTML = '';
+        
+        // Previous button
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'pagination-btn';
+        prevBtn.textContent = '‹ Previous';
+        prevBtn.disabled = !pagination.has_prev;
+        prevBtn.onclick = () => pagination.has_prev && renderProductsTable(pagination.current_page - 1, pagination.limit);
+        buttonsContainer.appendChild(prevBtn);
+        
+        // Page numbers
+        const startPage = Math.max(1, pagination.current_page - 2);
+        const endPage = Math.min(pagination.total_pages, pagination.current_page + 2);
+        
+        // First page if not in range
+        if (startPage > 1) {
+            const firstBtn = createProductsPageButton(1, pagination.current_page, pagination.limit);
+            buttonsContainer.appendChild(firstBtn);
+            
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.className = 'pagination-ellipsis';
+                buttonsContainer.appendChild(ellipsis);
+            }
+        }
+        
+        // Page range
+        for (let i = startPage; i <= endPage; i++) {
+            const pageBtn = createProductsPageButton(i, pagination.current_page, pagination.limit);
+            buttonsContainer.appendChild(pageBtn);
+        }
+        
+        // Last page if not in range
+        if (endPage < pagination.total_pages) {
+            if (endPage < pagination.total_pages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.className = 'pagination-ellipsis';
+                buttonsContainer.appendChild(ellipsis);
+            }
+            
+            const lastBtn = createProductsPageButton(pagination.total_pages, pagination.current_page, pagination.limit);
+            buttonsContainer.appendChild(lastBtn);
+        }
+        
+        // Next button
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'pagination-btn';
+        nextBtn.textContent = 'Next ›';
+        nextBtn.disabled = !pagination.has_next;
+        nextBtn.onclick = () => pagination.has_next && renderProductsTable(pagination.current_page + 1, pagination.limit);
+        buttonsContainer.appendChild(nextBtn);
+    }
+}
+
+function createProductsPageButton(pageNumber, currentPage, pageSize) {
+    const btn = document.createElement('button');
+    btn.className = `pagination-btn ${pageNumber === currentPage ? 'active' : ''}`;
+    btn.textContent = pageNumber;
+    btn.onclick = () => renderProductsTable(pageNumber, pageSize);
+    return btn;
+}
+
+// Setup pagination event listeners for products
+function setupProductsPaginationEvents() {
+    const pageSizeSelect = document.getElementById('products-page-size');
+    if (pageSizeSelect) {
+        pageSizeSelect.value = currentProductsPageSize;
+        
+        pageSizeSelect.addEventListener('change', function() {
+            const newPageSize = parseInt(this.value);
+            renderProductsTable(1, newPageSize);
+        });
     }
 }
 
