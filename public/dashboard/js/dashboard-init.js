@@ -1,6 +1,6 @@
 import { renderSidebar, renderSections } from './dashboard-render.js';
 import { setupSidebarNavigation } from './dashboard-navigation.js';
-import { renderProductsTable } from './dashboard-table.js';
+import { renderProductsTable, setupProductsSearch } from './dashboard-table.js';
 
 function setupDeleteUserModal() {
     const confirmBtn = document.getElementById('confirm-delete-user');
@@ -50,6 +50,7 @@ function initDashboard() {
         const productsSection = document.getElementById('section-products');
         if (productsSection && productsSection.style.display !== 'none') {
             renderProductsTable(1, 5); // Start with first page and default page size
+            setupProductsSearch(); // Setup search functionality
         }
     }
 }

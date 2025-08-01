@@ -17,15 +17,28 @@ try {
     $limit = max(5, min(50, intval($_GET['limit'] ?? 10)));
     $offset = ($page - 1) * $limit;
     
-    // Get total count
-    $countStmt = $pdo->prepare("SELECT COUNT(*) as total FROM products WHERE user_id = ?");
-    $countStmt->execute([$user_id]);
+    // Search parameter
+    $search = trim($_GET['search'] ?? '');
+    
+    // Build WHERE clause for search
+    $whereClause = "WHERE user_id = ?";
+    $params = [$user_id];
+    
+    if (!empty($search)) {
+        $whereClause .= " AND (name LIKE ? OR description LIKE ? OR category LIKE ? OR location LIKE ?)";
+        $searchParam = "%{$search}%";
+        $params = array_merge($params, [$searchParam, $searchParam, $searchParam, $searchParam]);
+    }
+    
+    // Get total count with search
+    $countStmt = $pdo->prepare("SELECT COUNT(*) as total FROM products {$whereClause}");
+    $countStmt->execute($params);
     $totalRecords = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
     $totalPages = ceil($totalRecords / $limit);
     
-    // Get paginated products
-    $stmt = $pdo->prepare("SELECT * FROM products WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?");
-    $stmt->execute([$user_id, $limit, $offset]);
+    // Get paginated products with search
+    $stmt = $pdo->prepare("SELECT * FROM products {$whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?");
+    $stmt->execute(array_merge($params, [$limit, $offset]));
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     foreach ($products as &$product) {
@@ -37,6 +50,7 @@ try {
     echo json_encode([
         "success" => true,
         "products" => $products,
+        "search_term" => $search,
         "pagination" => [
             'current_page' => $page,
             'total_pages' => $totalPages,

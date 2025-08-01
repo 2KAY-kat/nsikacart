@@ -14,7 +14,7 @@ export const sections = {
         header: 'Products',
         content: `
             <div class="app-content-actions">
-                <input class="search-bar" placeholder="Search..." type="text">
+                <input class="search-bar" id="products-search" placeholder="Search products..." type="text">
                 
                 <div class="app-content-actions-wrapper">
                     <button class="action-button list" title="The products are highly secured">

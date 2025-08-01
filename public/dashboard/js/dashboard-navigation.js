@@ -2,11 +2,10 @@ import { renderProductsTable } from './dashboard-table.js';
 import { getCurrentUser } from './session-manager.js';
 
 export function setupSidebarNavigation() {
-    document.querySelectorAll('.sidebar-list-item a').forEach(link => {
-        link.addEventListener('click', function(e) {
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('[data-section]')) {
             e.preventDefault();
-            
-            const section = this.getAttribute('data-section');
+            const section = e.target.closest('[data-section]').dataset.section;
             const user = getCurrentUser();
             
             // Check if user has permission to access admin section
@@ -24,19 +23,25 @@ export function setupSidebarNavigation() {
             }
             
             document.querySelectorAll('.sidebar-list-item').forEach(li => li.classList.remove('active'));
-            this.parentElement.classList.add('active');
+            e.target.closest('.sidebar-list-item').classList.add('active');
             document.querySelectorAll('.dashboard-section').forEach(sec => sec.style.display = 'none');
             
             if (section) {
                 const el = document.getElementById('section-' + section);
                 if (el) {
                     el.style.display = '';
+                    // Setup section-specific functionality
                     if (section === 'products') {
-                        renderProductsTable(1, 5); // Start with first page and default page size
+                        setTimeout(() => {
+                            import('./dashboard-table.js').then(module => {
+                                module.renderProductsTable(1, 5);
+                                module.setupProductsSearch();
+                            });
+                        }, 100);
                     }
                 }
             }
-        });
+        }
     });
 }
 

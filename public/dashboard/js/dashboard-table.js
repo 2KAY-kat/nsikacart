@@ -5,8 +5,10 @@ import { getCurrentUser, validateSession } from './session-manager.js';
 let currentProductsPage = 1;
 let currentProductsPageSize = 5;
 let totalProductsPages = 1;
+let currentSearchTerm = '';
+let searchDebounceTimer = null;
 
-export async function renderProductsTable(page = 1, pageSize = 5) {
+export async function renderProductsTable(page = 1, pageSize = 5, searchTerm = '') {
     // First validate session
     await validateSession();
     
@@ -37,8 +39,13 @@ export async function renderProductsTable(page = 1, pageSize = 5) {
     `;
 
     try {
-        // Add pagination parameters to the request
-        const response = await fetch(`/nsikacart/api/products/get-products-individual.php?page=${page}&limit=${pageSize}`);
+        // Add search parameter to the request
+        let apiUrl = `/nsikacart/api/products/get-products-individual.php?page=${page}&limit=${pageSize}`;
+        if (searchTerm) {
+            apiUrl += `&search=${encodeURIComponent(searchTerm)}`;
+        }
+        
+        const response = await fetch(apiUrl);
         const contentType = response.headers.get('content-type');
         
         if (!contentType || !contentType.includes('application/json')) {
@@ -120,6 +127,34 @@ export async function renderProductsTable(page = 1, pageSize = 5) {
     }
 }
 
+// Setup search functionality
+export function setupProductsSearch() {
+    const searchInput = document.getElementById('products-search');
+    if (!searchInput) return;
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.trim();
+        
+        // Clear previous timer
+        if (searchDebounceTimer) {
+            clearTimeout(searchDebounceTimer);
+        }
+        
+        // Debounce search to avoid too many API calls
+        searchDebounceTimer = setTimeout(() => {
+            renderProductsTable(1, currentProductsPageSize, searchTerm);
+        }, 300); // 300ms delay
+    });
+    
+    // Clear search button functionality
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            this.value = '';
+            renderProductsTable(1, currentProductsPageSize, '');
+        }
+    });
+}
+
 function updateProductsPagination(pagination) {
     const infoText = document.getElementById('products-pagination-info-text');
     const buttonsContainer = document.getElementById('products-pagination-buttons');
@@ -148,7 +183,7 @@ function updateProductsPagination(pagination) {
         prevBtn.className = 'pagination-btn';
         prevBtn.textContent = '‹ Previous';
         prevBtn.disabled = !pagination.has_prev;
-        prevBtn.onclick = () => pagination.has_prev && renderProductsTable(pagination.current_page - 1, pagination.limit);
+        prevBtn.onclick = () => pagination.has_prev && renderProductsTable(pagination.current_page - 1, pagination.limit, currentSearchTerm);
         buttonsContainer.appendChild(prevBtn);
         
         // Page numbers
@@ -192,7 +227,7 @@ function updateProductsPagination(pagination) {
         nextBtn.className = 'pagination-btn';
         nextBtn.textContent = 'Next ›';
         nextBtn.disabled = !pagination.has_next;
-        nextBtn.onclick = () => pagination.has_next && renderProductsTable(pagination.current_page + 1, pagination.limit);
+        nextBtn.onclick = () => pagination.has_next && renderProductsTable(pagination.current_page + 1, pagination.limit, currentSearchTerm);
         buttonsContainer.appendChild(nextBtn);
     }
 }
@@ -201,7 +236,7 @@ function createProductsPageButton(pageNumber, currentPage, pageSize) {
     const btn = document.createElement('button');
     btn.className = `pagination-btn ${pageNumber === currentPage ? 'active' : ''}`;
     btn.textContent = pageNumber;
-    btn.onclick = () => renderProductsTable(pageNumber, pageSize);
+    btn.onclick = () => renderProductsTable(pageNumber, pageSize, currentSearchTerm);
     return btn;
 }
 
@@ -213,7 +248,7 @@ function setupProductsPaginationEvents() {
         
         pageSizeSelect.addEventListener('change', function() {
             const newPageSize = parseInt(this.value);
-            renderProductsTable(1, newPageSize);
+            renderProductsTable(1, newPageSize, currentSearchTerm);
         });
     }
 }
