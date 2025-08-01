@@ -13,7 +13,7 @@ export function getProduct(productId) {
 export const header = [{
     image: 'assets/Storedambwe-logo-v1.0-03.png',
     name: 'NSIKACART',
-    link: 'checkout.html'
+    link: 'saved-list.html'
 }];
 
 export const hero = [{
