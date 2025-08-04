@@ -1,5 +1,4 @@
 import { otherHeader } from './otherheader-data.js';
-import { products } from './data.js';
 import { formatCurrency } from './utilities/calculate_cash.js';
 import { cart, addToCart } from './cart.js';
 
@@ -38,16 +37,47 @@ document.querySelector('.checkout-header').innerHTML = otherHeaderHTML;
 const urlParams = new URLSearchParams(window.location.search);
 const productId = urlParams.get('id');
 
-// Find the product
-const product = products.find(p => p.id === productId);
+// Fetch and display product details
+async function fetchAndDisplayProduct(productId) {
+    try {
+        const response = await fetch('/nsikacart/api/products/get-public-products.php');
+        const data = await response.json();
 
-if (product) {
+        if (data.success) {
+            // change API data to match expected format
+            const products = data.products.map(product => ({
+                id: product.id,
+                name: product.name,
+                dollar: parseFloat(product.price),
+                category: product.category,
+                description: product.description,
+                image: product.main_image || (product.images && product.images[0]) || 'assets/placeholder.png'
+            }));
+
+            // Find the product
+            const product = products.find(p => p.id === productId);
+
+            if (product) {
+                displayProductDetails(product);
+            } else {
+                displayProductNotFound();
+            }
+        } else {
+            console.error('Failed to fetch products:', data.message);
+            displayProductNotFound();
+        }
+    } catch (error) {
+        console.error('Error fetching product details:', error);
+        displayProductNotFound();
+    }
+}
+
+function displayProductDetails(product) {
     const productDetails = document.getElementById('productDetails');
     productDetails.innerHTML = `
-    
-    <div class="row">
+        <div class="row">
             <div class="col-2">
-                <img src="${product.image}" alt="${product.name} id="productImage">
+                <img src="${product.image}" alt="${product.name}" id="productImage">
                 <div class="small-img-row">
                     <div class="small-img-col">
                         <img src="${product.image}" alt="${product.name}" class="small-img">
@@ -61,58 +91,56 @@ if (product) {
                 <h4 class="view-details-price">MK ${formatCurrency(product.dollar)}</h4>
                 <button class="btn btn1 js-add-to-cart" data-product-id="${product.id}"><i class="fa fa-heart"></i> Add Saved List</button>
                 
-                <div  class="account-info-name details-seller-name">
-                <h3>Product Details<i class="fa fa-indent"></i></h3>
-                <br>
-
-                
-                <h3><i class="fa fa-user"> </i> Seller Name</h3>
-                <p class="location">Blantyre</p>
-                <p>
-
-                 <ul class="seller-socails">
-                     <li> 
-                        <!-- later after messaging integration <a href="./dashboard/index.html#section-inbox"> -->
-                            <i class="fab fa-whatsapp"></i> - (265) XXX XXX XXX
-                        <!-- </a> -->
-                    </li>
-<!--
-                    <li> 
-                        <a href="./dashboard/index.html#section-inbox">
-                            <i class="fas fa-comment"></i> - Message Seller
-                        </a>
-                    </li>
-
-                    -->
-                    
-                  </ul>
-
-                </p>
-                
-                <p>${product.description || 'No description available'}</p>
+                <div class="account-info-name details-seller-name">
+                    <h3>Product Details<i class="fa fa-indent"></i></h3>
+                    <br>
+                    <h3><i class="fa fa-user"> </i> Seller Name</h3>
+                    <p class="location">Blantyre</p>
+                    <p>
+                        <ul class="seller-socails">
+                            <li> 
+                                <i class="fab fa-whatsapp"></i> - (265) XXX XXX XXX
+                            </li>
+                        </ul>
+                    </p>
+                    <p>${product.description || 'No description available'}</p>
+                </div>
             </div>
-            
-            </div>
-
-
         </div>
-    
     `;
 
-       const addToCartBtn = document.querySelector('.js-add-to-cart');
-        addToCartBtn.addEventListener('click', () => {
-            addToCartBtn.classList.add('animate__animated', 'animate__pulse');
-            addToCart(productId);
-            showToast(`${product.name} Has been added to cart!`);
-            
-            // Remove animation classes after animation completes
-            setTimeout(() => {
-                addToCartBtn.classList.remove('animate__animated', 'animate__pulse');
-            }, 1000);
-        });
-    }
+    // Add event listener for add to cart button
+    const addToCartBtn = document.querySelector('.js-add-to-cart');
+    addToCartBtn.addEventListener('click', () => {
+        addToCartBtn.classList.add('animate__animated', 'animate__pulse');
+        addToCart(productId);
+        showToast(`${product.name} Has been added to cart!`);
+        
+        setTimeout(() => {
+            addToCartBtn.classList.remove('animate__animated', 'animate__pulse');
+        }, 1000);
+    });
+}
 
-    function showToast(message) {
+function displayProductNotFound() {
+    const productDetails = document.getElementById('productDetails');
+    productDetails.innerHTML = `
+        <div class="product-not-found">
+            <h2>Product Not Found</h2>
+            <p>Sorry, the product you're looking for doesn't exist or is no longer available.</p>
+            <a href="index.html" class="btn btn2">Back to Shop</a>
+        </div>
+    `;
+}
+
+// Initialize when page loads
+if (productId) {
+    fetchAndDisplayProduct(productId);
+} else {
+    displayProductNotFound();
+}
+
+function showToast(message) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
     toast.classList.add('show', 'animate__animated', 'animate__fadeInUp');
@@ -126,27 +154,6 @@ if (product) {
         }, 300);
     }, 3000);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const productImg = document.querySelector('#productImage');
 const smallImg = document.querySelectorAll('.small-img');

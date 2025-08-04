@@ -20,6 +20,8 @@ export function addToCart(productId) {
     // Validate inputs
     if (!productId) return false;
 
+    // Get products from window (set by index.js after API fetch)
+    const products = window.products || [];
     const product = products.find(p => p.id === productId);
     if (!product) return false;
 
@@ -47,6 +49,7 @@ export function addToCart(productId) {
 export function removeFromCart(productId) {
     // Find the product before removing it to get its name
     const productToRemove = cart.find(item => item.productId === productId);
+    const products = window.products || [];
     const product = products.find(p => p.id === productId);
 
     const newCart = [];

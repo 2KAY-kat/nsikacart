@@ -1,5 +1,5 @@
 import { cart, addToCart } from './cart.js';
-import { header, hero, products, /*nav*/ } from './data.js';
+import { header, hero, /*nav*/ } from './data.js';
 import { formatCurrency } from './utilities/calculate_cash.js';
 
 // initialise the variables for the queries in the loop function
@@ -34,7 +34,7 @@ header.forEach((header) => {
 
 document.querySelector('.navbar').innerHTML = headerHTML;
 
-// --- Loading Screen HTML Injection (CSS moved to separate file) ---
+// --- Loading Screen HTML Injection ---
 const loadingScreenHTML = `
   <div id="dashboard-loading-screen" class="dashboard-loading-screen">
     <div class="dashboard-loading-content">
@@ -71,8 +71,41 @@ hero.forEach((hero) => {
 document.querySelector('.hero').innerHTML = heroHTML;
 
 
-//NOTED UPDATE: Removed the initial products.forEach rendering engine
+// NOTED UPDATE: Removed the initial products.forEach rendering engine
 // Instead, defined a function to render products by category we going places and yeah its rough...
+
+let products = []; 
+
+async function fetchPublicProducts() {
+    try {
+        const response = await fetch('/nsikacart/api/products/get-public-products.php');
+        const data = await response.json();
+
+        if (data.success) {
+            // change API data to match expected format
+            products = data.products.map(product => ({
+                id: product.id,
+                name: product.name,
+                dollar: parseFloat(product.price),
+                category: product.category,
+                description: product.description,
+                image: product.main_image || (product.images && product.images[0]) || 'assets/placeholder.png'
+            }));
+            
+            // Render products after fetching
+            renderProductsByCategory('All');
+            
+            // resturn state category selection after products are loaded
+            if (window.restoreCategorySelection) {
+                window.restoreCategorySelection();
+            }
+        } else {
+            console.error('Failed to fetch products:', data.message);
+        }
+    } catch (error) {
+        console.error('Error fetching public products:', error);
+    }
+}
 
 function renderProductsByCategory(categoryName) {
     let productsHTML = '';
@@ -146,11 +179,13 @@ function renderProductsByCategory(categoryName) {
 
 // Expose to window for categories.js to call
 window.renderProductsByCategory = renderProductsByCategory;
+window.products = products; // Expose products globally
 
-// Restore category selection and products after renderProductsByCategory is ready
-if (window.restoreCategorySelection) {
-    window.restoreCategorySelection();
-}
+// Initialize products on page load
+document.addEventListener('DOMContentLoaded', () => {
+    fetchPublicProducts();
+    updateCartQuantity();
+});
 
 // Remove this line (let restoreCategorySelection handle initial render):
 // renderProductsByCategory('All');
