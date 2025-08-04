@@ -17,7 +17,7 @@ otherHeader.forEach((otherHeader) => {
             </div>
     
             <div class="checkout-header-middle-section">
-            <a href="checkout.html" class="icon-bag btn"><i class="fas fa-shopping-bag"></i> View Basket</a>
+            <a href="saved-list.html" class="icon-bag btn"><i class="fas fa-shopping-bag"></i> View Basket</a>
 
             </div>
     

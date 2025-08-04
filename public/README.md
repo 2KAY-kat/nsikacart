@@ -4,9 +4,47 @@ This project is an ecomerce rather a market place web app am working on using HT
 
 #### The Main Featues
 
-* A home page in index.html
-* A products page which is typically the store page where to get the products being sold
-* There is also some money calculating logic in the Utilities folder and the calculate_cash.js file which helps convert Dollars to Kwachas since its targeting Malawian. So why not Kwacha
-* There is a checkout Page which i havent fineshed yet am now working on it will finish it soon just that I have just found a good tutorial on that much later. But anyways its never too late. Right?
-* thinking of adding the authentication feature for users to log in obviously also add a database. If you know please work on it and contribute.
-* # For Now Lets Code!!!
+NOTE: especially in the store front files/market/however you might call it ... some files have function, selectors, and maybe comments that are called checkout and the reason is that the original plan was to have a checkout page like in many other e-cornmercr/market palce platforms and later changed to make it into the now reknowned saved-list page.
+
+#### Reason for the Change
+
+as i did alot of research on online market places i discovered every region/country have their own digital implementations of different platforms be it social media, commerce or any other in that matter.... so i thought it wise to look deep into the MAlawian tech sector and digital adaptability, thats when i realised that most online markets are targeted at certain group of people and Malawians aint the targets 
+
+...
+
+###### WHY
+
+Most malawians dont have a VISA card and Paypal or any other bank to do online payments at least not most... and this is a huge factor considering we are targeting the very population that only got Airtel Money and TNM Mpamba and thats a huge blow.
+
+###### SOLUTION
+
+first ... integrate Malawi's popular mobile payments Airtel Money and TM Mpamba into the market place for payemets ... we have a payment gateway PayChangu ad its somewhat easy to integrate into any market place thats the first.
+
+second ... allow for on get cash pay system.. basically buyers and sellers meet in person and do the transactions on their own
+
+###### DOWN SIDE
+
+not convinient for buyers who just want everything done on the platform
+
+not consistant
+
+not scalable 
+
+not future proof
+
+###### UP SIDE
+
+easy to implement
+
+less code
+
+secure since no transtactions are done on the platfrom and yes
+
+scalable
+
+
+#### GOALS
+
+work on the payment system with a well planned archtecture just like  i did on the oher parts of the code .
+
+as of now the MVP is a bliss working and yes deployable.
