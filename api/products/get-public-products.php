@@ -2,12 +2,24 @@
 require_once '../config/db.php';
 header('Content-Type: application/json');
 
-try {
+try { // joining the users table and the products table lets as refernce the sellers details and their uploaded products i the sche,a its doen with FKs
+    // a trick i leanrned in some book
     $stmt = $pdo->query("
-        SELECT id, name, price, description, category, location, images, main_image 
-        FROM products 
-        WHERE status = 'active' 
-        ORDER BY created_at DESC
+        SELECT 
+            p.id, 
+            p.name, 
+            p.price, 
+            p.description, 
+            p.category, 
+            p.location, 
+            p.images, 
+            p.main_image,
+            u.phone as seller_phone,
+            u.name as seller_name
+        FROM products p 
+        LEFT JOIN users u ON p.user_id = u.id 
+        WHERE p.status = 'active' 
+        ORDER BY p.created_at DESC
     ");
 
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -39,6 +51,11 @@ try {
         
         // Convert price to float
         $product['price'] = floatval($product['price']);
+        
+        // the phone number formated for whats chani chnai
+        if (!empty($product['seller_phone'])) {
+            $product['seller_phone'] = preg_replace('/[^0-9]/', '', $product['seller_phone']);
+        }
     }
 
     echo json_encode([

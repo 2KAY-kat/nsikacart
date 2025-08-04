@@ -2,7 +2,6 @@ import { otherHeader } from './otherheader-data.js';
 import { formatCurrency } from './utilities/calculate_cash.js';
 import { cart, addToCart } from './cart.js';
 
-
 let otherHeaderHTML = '';
 
 otherHeader.forEach((otherHeader) => {
@@ -16,16 +15,13 @@ otherHeader.forEach((otherHeader) => {
             </div>
     
             <div class="checkout-header-middle-section">
-            <a href="saved-list.html" class="icon-bag btn"><i class="fas fa-shopping-bag"></i> View Basket</a>
-
+                <a href="saved-list.html" class="icon-bag btn"><i class="fas fa-shopping-bag"></i> View Basket</a>
             </div>
     
             <div class="checkout-header-right-section">
-    
                 <a href="dashboard/index.html" class="js-dashboard-link">
                     <div class="fa-solid fa-gauge"> </div>
                 </a>
-    
             </div>
         </div>
     `;
@@ -46,12 +42,16 @@ async function fetchAndDisplayProduct(productId) {
         if (data.success) {
             // change API data to match expected format
             const products = data.products.map(product => ({
-                id: product.id,
+                id: product.id.toString(), 
                 name: product.name,
                 dollar: parseFloat(product.price),
                 category: product.category,
                 description: product.description,
-                image: product.main_image || (product.images && product.images[0]) || 'assets/placeholder.png'
+                location: product.location,
+                images: product.images || [],
+                image: product.main_image || (product.images && product.images[0]) || '/nsikacart/public/assets/placeholder.png',
+                seller_phone: product.seller_phone,
+                seller_name: product.seller_name
             }));
 
             // Find the product
@@ -59,6 +59,9 @@ async function fetchAndDisplayProduct(productId) {
 
             if (product) {
                 displayProductDetails(product);
+                // open product globally for cart functionality
+                window.currentProduct = product;
+                window.products = products;
             } else {
                 displayProductNotFound();
             }
@@ -72,38 +75,115 @@ async function fetchAndDisplayProduct(productId) {
     }
 }
 
+// Helper function to format phone for display
+function formatPhoneForDisplay(phone) {
+    if (!phone) return '';
+    
+    // Remove all non-digits
+    const digits = phone.replace(/\D/g, '');
+    
+    // Format as (265) XXX XXX XXX for Malawi numbers
+    if (digits.startsWith('265')) {
+        return `(265) ${digits.slice(3, 6)} ${digits.slice(6, 9)} ${digits.slice(9)}`;
+    } else if (digits.startsWith('0')) {
+        // Local format starting with 0
+        return `(265) ${digits.slice(1, 4)} ${digits.slice(4, 7)} ${digits.slice(7)}`;
+    } else {
+        // Assume it's already without country code
+        return `(265) ${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}`;
+    }
+}
+
+// Helper function to format phone for WhatsApp
+function formatPhoneForWhatsApp(phone) {
+    if (!phone) return '';
+    
+    // Remove all non-digits
+    const digits = phone.replace(/\D/g, '');
+    
+    // Ensure it starts with 265 (Malawi country code)
+    if (digits.startsWith('265')) {
+        return digits;
+    } else if (digits.startsWith('0')) {
+        return '265' + digits.slice(1);
+    } else {
+        return '265' + digits;
+    }
+}
+
 function displayProductDetails(product) {
     const productDetails = document.getElementById('productDetails');
+    
+    // Prepare additional images for gallery
+    const allImages = [product.image, ...product.images].filter(img => img && img !== product.image);
+    const uniqueImages = [...new Set(allImages)]; // Remove duplicates
+    
+    // Generate small image gallery
+    let smallImagesHTML = '';
+    uniqueImages.forEach(image => {
+        smallImagesHTML += `
+            <div class="small-img-col">
+                <img src="${image}" alt="${product.name}" class="small-img">
+            </div>
+        `;
+    });
+    
+    // Fallback if no additional images
+    if (smallImagesHTML === '') {
+        smallImagesHTML = `
+            <div class="small-img-col">
+                <img src="${product.image}" alt="${product.name}" class="small-img">
+            </div>
+        `;
+    }
+
+    // Format phone number for display and WhatsApp link
+    const displayPhone = formatPhoneForDisplay(product.seller_phone);
+    const whatsappPhone = formatPhoneForWhatsApp(product.seller_phone);
+    const whatsappMessage = encodeURIComponent(`Hi! I'm interested in "${product.name}" listed on Nsikacart. Is it still available?`);
+
     productDetails.innerHTML = `
         <div class="row">
             <div class="col-2">
                 <img src="${product.image}" alt="${product.name}" id="productImage">
                 <div class="small-img-row">
-                    <div class="small-img-col">
-                        <img src="${product.image}" alt="${product.name}" class="small-img">
-                    </div>
+                    ${smallImagesHTML}
                 </div>
             </div>
 
             <div class="col-2">
-                <p><a href="index.html">Home</a> / ${product.category}</p>
+                <p><a href="index.html">Home</a> / ${product.category || 'General'}</p>
                 <h1>${product.name}</h1>
                 <h4 class="view-details-price">MK ${formatCurrency(product.dollar)}</h4>
-                <button class="btn btn1 js-add-to-cart" data-product-id="${product.id}"><i class="fa fa-heart"></i> Add Saved List</button>
+                <button class="btn btn1 js-add-to-cart" data-product-id="${product.id}">
+                    <i class="fa fa-heart"></i> Add to Saved List
+                </button>
                 
                 <div class="account-info-name details-seller-name">
-                    <h3>Product Details<i class="fa fa-indent"></i></h3>
+                    <h3>Product Details <i class="fa fa-indent"></i></h3>
                     <br>
-                    <h3><i class="fa fa-user"> </i> Seller Name</h3>
-                    <p class="location">Blantyre</p>
+                    <h3><i class="fa fa-user"></i> Seller Information</h3>
+                    ${product.seller_name ? `<p><strong>Seller:</strong> ${product.seller_name}</p>` : ''}
+                    <p class="location">
+                        <i class="fa fa-map-marker-alt"></i> ${product.location || 'Location not specified'}
+                    </p>
                     <p>
                         <ul class="seller-socails">
                             <li> 
-                                <i class="fab fa-whatsapp"></i> - (265) XXX XXX XXX
+                                <i class="fab fa-whatsapp"></i> 
+                                ${product.seller_phone ? 
+                                    `<a href="https://wa.me/${whatsappPhone}?text=${whatsappMessage}" target="_blank" class="whatsapp-link">
+                                        Contact Seller: ${displayPhone}
+                                    </a>` : 
+                                    'Contact Seller: Phone not available'
+                                }
                             </li>
                         </ul>
                     </p>
-                    <p>${product.description || 'No description available'}</p>
+                    <div class="product-description">
+                        <h4>Description:</h4>
+                        <p>${product.description || 'No description available for this product.'}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -111,26 +191,81 @@ function displayProductDetails(product) {
 
     // Add event listener for add to cart button
     const addToCartBtn = document.querySelector('.js-add-to-cart');
-    addToCartBtn.addEventListener('click', () => {
-        addToCartBtn.classList.add('animate__animated', 'animate__pulse');
-        addToCart(productId);
-        showToast(`${product.name} Has been added to cart!`);
-        
-        setTimeout(() => {
-            addToCartBtn.classList.remove('animate__animated', 'animate__pulse');
-        }, 1000);
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', () => {
+            addToCartBtn.classList.add('animate__animated', 'animate__pulse');
+            const result = addToCart(productId);
+            
+            if (result) {
+                showToast(`${product.name} has been added to your saved list!`);
+                updateCartQuantity();
+            }
+            
+            setTimeout(() => {
+                addToCartBtn.classList.remove('animate__animated', 'animate__pulse');
+            }, 1000);
+        });
+    }
+
+    // Add image gallery functionality
+    setupImageGallery();
+}
+
+function setupImageGallery() {
+    const productImg = document.querySelector('#productImage');
+    const smallImgs = document.querySelectorAll('.small-img');
+
+    smallImgs.forEach((img, index) => {
+        img.addEventListener('click', function() {
+            productImg.src = this.src;
+            
+            // Remove active class from all thumbnails
+            smallImgs.forEach(thumb => thumb.classList.remove('active'));
+            
+            // Add active class to clicked thumbnail
+            this.classList.add('active');
+        });
     });
+
+    // Set first image as active by default
+    if (smallImgs.length > 0) {
+        smallImgs[0].classList.add('active');
+    }
 }
 
 function displayProductNotFound() {
     const productDetails = document.getElementById('productDetails');
     productDetails.innerHTML = `
         <div class="product-not-found">
+            <div class="not-found-icon">
+                <i class="fa fa-exclamation-triangle" style="font-size: 48px; color: #ff6b6b;"></i>
+            </div>
             <h2>Product Not Found</h2>
             <p>Sorry, the product you're looking for doesn't exist or is no longer available.</p>
-            <a href="index.html" class="btn btn2">Back to Shop</a>
+            <p>It may have been removed or the link is incorrect.</p>
+            <div class="not-found-actions">
+                <a href="index.html" class="btn btn2">
+                    <i class="fa fa-home"></i> Back to Shop
+                </a>
+                <a href="javascript:history.back()" class="btn btn1">
+                    <i class="fa fa-arrow-left"></i> Go Back
+                </a>
+            </div>
         </div>
     `;
+}
+
+// Cart quantity update function
+function updateCartQuantity() {
+    let cartQuantity = 0;
+    cart.forEach((cartItem) => {
+        cartQuantity += cartItem.quantity;
+    });
+
+    const cartCountElement = document.querySelector('.js-cart-quantity');
+    if (cartCountElement) {
+        cartCountElement.innerHTML = cartQuantity;
+    }
 }
 
 // Initialize when page loads
@@ -140,8 +275,9 @@ if (productId) {
     displayProductNotFound();
 }
 
+// Toast notification function
 function showToast(message) {
-    const toast = document.getElementById('toast');
+    const toast = document.getElementById('toast') || createToastElement();
     toast.textContent = message;
     toast.classList.add('show', 'animate__animated', 'animate__fadeInUp');
     
@@ -155,14 +291,28 @@ function showToast(message) {
     }, 3000);
 }
 
-const productImg = document.querySelector('#productImage');
-const smallImg = document.querySelectorAll('.small-img');
-
-for (let i = 0; i < smallImg.length; i++) {
-    smallImg[i].onclick = function () {
-        productImg.src = smallImg[i].src;
-    };
+// Create toast element if it doesn't exist
+function createToastElement() {
+    const toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+    return toast;
 }
+
+// Dashboard redirect functionality
+document.addEventListener('DOMContentLoaded', () => {
+    updateCartQuantity();
+    
+    // Dashboard link handler
+    document.querySelectorAll('.js-dashboard-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Add loading state or redirect logic here
+            window.location.href = '/nsikacart/public/dashboard/index.html';
+        });
+    });
+});
 
 
 

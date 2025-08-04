@@ -141,3 +141,20 @@ p.location {
 .icon-bag {
     border: #002a46 solid 1px;
 }
+
+.whatsapp-link {
+    color: #25D366;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.whatsapp-link:hover {
+    color: #128C7E;
+    text-decoration: underline;
+}
+
+.seller-socails .fab.fa-whatsapp {
+    color: #25D366;
+    margin-right: 8px;
+}
