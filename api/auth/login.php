@@ -1,5 +1,5 @@
 <?php
-// Start output buffering and clear any previous output
+// buffer cleanup and session start
 ob_start();
 ob_clean();
 
@@ -11,47 +11,75 @@ require_once '../config/db.php';
 
 try {
     if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-        throw new Exception("Only POST requests allowed");
+        http_response_code(405);
+        echo json_encode([
+            "success" => false,
+            "message" => "This method is not allowed"
+        ]);
+        exit;
     }
 
-    // Get raw input
+    // raw input without the clutter and stuff
     $raw_input = file_get_contents("php://input");
     
-    // Log the raw input for debugging (remove in production)
-    error_log("Raw login input: " . $raw_input);
-    
-    // Check if input is empty
-    if (empty(trim($raw_input))) {
-        throw new Exception("No data received");
+    // check if input is empty helps us prevet security edge cases and yes no data can be dangourous as bad data
+    if (empty(trim($raw_input))) { // ad ofcouser the trim to avoid unncessary and spaced out data
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "there was no data sent to the server, please try again"
+        ]);
+        exit;
     }
     
-    // Decode JSON
+    // since our data is being ecoded over and over ... we got to decode it so that its readable for the php engine to process it
     $data = json_decode($raw_input, true);
 
-    // Check for JSON decode errors
+    // check for JSON decode errors
     if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception("Invalid JSON data: " . json_last_error_msg());
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid JSON data format: " . json_last_error_msg()
+        ]);
+        exit;
     }
     
-    // Check if data is array
+    // check if data is array on sending
     if (!is_array($data)) {
-        throw new Exception("Invalid data format");
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid data format, try again"
+        ]);
+        exit;
     }
 
-    // Validate required fields
+    // making sure the fields are validated if are required fields
     if (!isset($data['email']) || !isset($data['password'])) {
-        throw new Exception("Email/Username and password are required");
+        echo json_encode([
+            "success" => false,
+            "message" => "Email/Username and password are required"
+        ]);
+        exit;
     }
 
     $login_input = trim($data['email']);
     $password = trim($data['password']);
-    $remember = isset($data['remember']) && $data['remember'] ? true : false;
+    $remember = isset($data['remember']) && $data['remember'] ? true : false; // if the remember me check bos is ever ticked store it into the db
 
+    // you jsut cant sent an empty password or field itno the processing engine
     if (empty($login_input) || empty($password)) {
-        throw new Exception("Email/Username and password cannot be empty");
+        echo json_encode([
+            "success" => false,
+            "message" => "Email/Username and password cannot be empty"
+        ]);
+        exit;
     }
 
-    // Check if input is an email or username
+    // check if input is an email or username
+    /* since the first input besides the password is either email or username ... we check if the inputs is either of those by by checking it against the their other details.
+    */
     if (filter_var($login_input, FILTER_VALIDATE_EMAIL)) {
         $query = "SELECT id, name, email, password, role, email_verified FROM users WHERE email = ?";
         $params = [$login_input];
@@ -59,16 +87,21 @@ try {
         $query = "SELECT id, name, email, password, role, email_verified FROM users WHERE name = ?";
         $params = [$login_input];
     }
-
+    
+    // actual prepared statement to avoid sql injections and yeah to be safe so afar...
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);
     $user = $stmt->fetch();
 
     if (!$user || !password_verify($password, $user['password'])) {
-        throw new Exception("Invalid username/email or password");
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid username/email or password"
+        ]);
+        exit;
     }
 
-    // Check if email is verified
+    // check if email is verified/ this helps us to identify if the currently logging in user is actaually verified and if not and email is sent actual genius...
     if (!$user['email_verified']) {
         echo json_encode([
             "success" => false,
@@ -78,7 +111,7 @@ try {
         exit;
     }
 
-    // Generate session token for tracking
+    // generate session token for tracking
     $session_token = bin2hex(random_bytes(32));
     $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
@@ -99,7 +132,7 @@ try {
     // Remember me logic
     if ($remember) {
         $token = bin2hex(random_bytes(32));
-        $expires = time() + (86400 * 30);
+        $expires = time() + (86400 * 30); // expires after 30 days 
 
         $stmtToken = $pdo->prepare("INSERT INTO user_remember_tokens (user_id, token, expires_at) VALUES (?, ?, ?)");
         $stmtToken->execute([$user['id'], hash('sha256', $token), $expires]);

@@ -4,7 +4,7 @@ session_start();
 header("Content-Type: application/json");
 
 /**
- * authentication middleware to check if a user is logged in
+ * authentication middleware to check if a user is logged in and some session storage abd authorisation shitt
  */
 
 // ensure session is started (only if not already started)

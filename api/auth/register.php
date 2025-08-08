@@ -1,10 +1,10 @@
 <?php
-// Clean any previous output
+// cleanisng the buffer 
 if (ob_get_level()) {
     ob_end_clean();
 }
 
-// Include required files FIRST and load environment
+// Include required files FIRST and load environment 
 require_once '../../helpers/env.php';
 loadEnv('../../.env');
 
@@ -13,7 +13,7 @@ require_once '../../helpers/PHPMailer-master/src/Exception.php';
 require_once '../../helpers/PHPMailer-master/src/PHPMailer.php';
 require_once '../../helpers/PHPMailer-master/src/SMTP.php';
 
-// USE statements must come AFTER the require statements
+// stage PHPMailer variables and then the headers
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -22,22 +22,33 @@ header("Content-Type: application/json");
 header("Cache-Control: no-cache, must-revalidate");
 
 try {
-    // Only process POST requests
+    // as ussual only process POST requests
     if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-        throw new Exception("Only POST requests allowed");
-    }
-
-    $data = json_decode(file_get_contents("php://input"), true);
-
-    // Validate inputs
-    if (!isset($data['name'], $data['email'], $data['password'], $data['confirm_password'])) {
-        echo json_encode(["success" => false, "message" => "All fields are required"]);
+       http_response_code(405);
+        echo json_encode([
+            "success" => false,
+            "message" => "Method not allowed"
+        ]);
         exit;
     }
 
+    $input = file_get_contents("php://input");
+    $data = json_decode($input, true);
+
+    // validate all the register filed inputs
+    if (!isset($data['name'], $data['email'], $data['password'], $data['confirm_password'])) {
+        echo json_encode([
+            "success" => false, 
+            "message" => "All fields are required"
+        ]);
+        exit;
+    }
+
+    // trims and filter and sanotize the inputs 
     $name = htmlspecialchars(trim($data['name']));
     $email = filter_var(trim($data['email']), FILTER_SANITIZE_EMAIL);
     
+    // and errror hundling for all any if needed to after soem failrure
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo json_encode([
             "success" => false, 
@@ -50,7 +61,10 @@ try {
     $password = trim($data['password']);
     $confirm_password = trim($data['confirm_password']);
 
-    // Password match check
+    // checking the password if it marches 
+    /* NOTE:
+    on signup we already front end check for the password matchability done in javascript frontend validation system so this is a seecond stage of securitt
+    */
     if ($password !== $confirm_password) {
         echo json_encode([
             "success" => false, 
@@ -59,7 +73,7 @@ try {
         exit;
     }
 
-    // Password length check
+    // the leng of the password is also checked on the front but since this shti is kinda future proof i bult it for other projects future proof
     if (strlen($password) < 6) {
         echo json_encode([
             "success" => false, 
@@ -68,11 +82,12 @@ try {
         exit;
     }
 
-    // Check if user already exists
+    // check if user already exists especialy the email aad the name 
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ? OR name = ?");
     $stmt->execute([$email, $name]);
     $exists = $stmt->fetchColumn();
 
+    /// and ofcourse error hundling
     if ($exists > 0) {
         echo json_encode([
             "success" => false, 
@@ -81,28 +96,34 @@ try {
         exit;
     }
 
-    // Generate verification token
+    // run the randomizer algorith and runa random verification code and amke sure it stayes for 5 mins befire it expires
     $verificationToken = bin2hex(random_bytes(32));
     $tokenExpiry = date("Y-m-d H:i:s", strtotime('+15 minutes')); // 15 minute expiry
 
-    // Hash password
+    // obvious
     $hashpassword = password_hash($password, PASSWORD_DEFAULT);
 
-    // Insert user with email_verified = FALSE
+    // insert user with email_verified = FALSE and sends the verify wnmail token awaiting verification
     $stmt = $pdo->prepare("INSERT INTO users (name, email, phone, password, email_verified, verification_token, verification_expires_at) VALUES(?, ?, ?, ?, FALSE, ?, ?)");
     $success = $stmt->execute([$name, $email, $phone, $hashpassword, $verificationToken, $tokenExpiry]);
 
+    // error hundling and mesage feedback
     if (!$success) {
-        throw new Exception("Failed to create user account");
+        echo json_encode([
+            "success" => false,
+            "message" => "Failed to create user account"
+        ]);
+        exit;
     }
 
-    // Send verification email
+    // send verification email and fcourse with PHPMailer
     $appUrl = env('APP_URL', 'http://localhost/nsikacart');
     $verificationLink = $appUrl . "/auth/verify-email.html?token=" . urlencode($verificationToken);
+    // sends verification links with a token that leads us to teh verify page 
 
-    // Send email using PHPMailer
     $mail = new PHPMailer(true);
     
+    // content is on the .env file for security resons 
     $mail->isSMTP();
     $mail->Host = env('SMTP_HOST');
     $mail->SMTPAuth = true;
@@ -114,6 +135,7 @@ try {
     $mail->setFrom(env('SMTP_USERNAME'), env('SMTP_FROM_NAME', 'Nsikacart'));
     $mail->addAddress($email, $name);
 
+    // teh email format in html for our clients
     $mail->isHTML(true);
     $mail->Subject = 'Welcome to ' . env('APP_NAME', 'Nsikacart') . ' - Verify Your Email';
     $mail->Body = "
@@ -392,6 +414,7 @@ This email was sent from " . env('APP_NAME', 'Nsikacart') . "
 
     $mail->send();
 
+    // feedback on sent email with teh verify link email
     echo json_encode([
         "success" => true, 
         "message" => "Registration successful! Please check your email to verify your account. The verification link will expire in 15 minutes."

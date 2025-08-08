@@ -1,5 +1,5 @@
 <?php
-// Clean any previous output
+// keeping the output buffer c=in checke and clean for any unwanted data 
 if (ob_get_level()) {
     ob_end_clean();
 }
@@ -13,42 +13,63 @@ require_once '../../helpers/PHPMailer-master/src/Exception.php';
 require_once '../../helpers/PHPMailer-master/src/PHPMailer.php';
 require_once '../../helpers/PHPMailer-master/src/SMTP.php';
 
-// USE statements must come AFTER the require statements
+// classes that define phpmailer and whtawver it does under the hood 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-// Now start the session and set headers
+// as usual start the session and set headers
 session_start();
 header("Content-Type: application/json");
 header("Cache-Control: no-cache, must-revalidate");
 
 try {
-    // Only process POST requests
+    // a littel post security check for that forgot password request
     if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-        throw new Exception("Only POST requests allowed");
+        http_response_code(405);
+        echo json_encode([
+            "success" => false,
+            "message" => "Method not allowed"
+        ]);
+        exit;
     }
 
-    // Get JSON input
+    //  we make sure we get the data in inputs in  JSON 
     $input = file_get_contents("php://input");
     $data = json_decode($input, true);
 
     if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception("Invalid JSON data");
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "the data is not i a proper JSON frmat"
+        ]);
+        exit;
     }
 
-    // Validate required fields
+    // validation of the inputs  
     if (empty($data['email'])) {
-        throw new Exception("Email address is required");
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "Email address is required, please try again"
+        ]);
+        exit;
     }
 
+    // making sure that the eamil is well sanitized ad valideted itno correct format for ....
     $email = filter_var(trim($data['email']), FILTER_SANITIZE_EMAIL);
-    
+    // ikakanika , incase ili content ya bhobho like @ and any otehr formatinggs we get
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        throw new Exception("Invalid email format");
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "your email address is not valid, try again"
+        ]);
+        exit;
     }
 
-    // Check if user exists
+    // i realy dotn have to explain this check if user exists
     $stmt = $pdo->prepare("SELECT id, email, name FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch();
@@ -62,19 +83,23 @@ try {
         exit;
     }
 
-    // Generate reset token
+    // generating a reset toke uses the bin2hex advanced algorithm for extar security
     $token = bin2hex(random_bytes(32));
-    $tokenExpiry = date("Y-m-d H:i:s", strtotime('+1 hour'));
+    $tokenExpiry = date("Y-m-d H:i:s", strtotime('+30 minutes'));
 
-    // Update user with reset token
+    // upadate the user who requested the reset token 
     $updateStmt = $pdo->prepare("UPDATE users SET reset_token = ?, reset_expires_at = ? WHERE email = ?");
     $success = $updateStmt->execute([$token, $tokenExpiry, $email]);
 
     if (!$success) {
-        throw new Exception("Failed to generate reset token");
+        echo json_encode ([
+            "success" => false,
+            "message" => "failed to update the the reset token, please try again later"
+        ]);
+        exit;
     }
 
-    // Create reset link
+    // now we jump into the phpmailing system and the email format and its markup for the rest link email
     $appUrl = env('APP_URL', 'http://localhost/nsikacart');
     $resetLink = $appUrl . "/auth/reset-password.html?token=" . urlencode($token);
 
@@ -117,8 +142,8 @@ try {
     echo json_encode([
         "success" => true,
         "message" => "Password reset link sent successfully! Please check your email."
-    ]);
-
+    ]); // after successful email sending w eget this one fr the reset link confirmation
+// errro hundling ... classic
 } catch (Exception $e) {
     error_log("Forgot password error: " . $e->getMessage());
     
