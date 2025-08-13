@@ -56,6 +56,10 @@ export const sections = {
                         <i class="fa-solid fa-chart-pie"></i>
                         Statistics
                     </button>
+                    <button class="admin-nav-btn" data-admin-section="activity-analytics">
+                        <i class="fa-solid fa-chart-line"></i>
+                        Activity Analytics
+                    </button>
                     <button class="admin-nav-btn" data-admin-section="users">
                         <i class="fa-solid fa-users"></i>
                         User Management
@@ -108,6 +112,81 @@ export const sections = {
                                 <div class="stat-info">
                                     <h4 id="active-users">Loading...</h4>
                                     <p>Active Users</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-subsection" id="admin-activity-analytics" style="display: none;">
+                        <div class="analytics-container">
+                            <div class="analytics-header">
+                                <h3>Site Activity Analytics</h3>
+                                <div class="analytics-controls">
+                                    <select id="analytics-period" class="form-control">
+                                        <option value="7">Last 7 days</option>
+                                        <option value="30" selected>Last 30 days</option>
+                                        <option value="90">Last 90 days</option>
+                                    </select>
+                                    <button id="refresh-analytics" class="app-content-headerButton">
+                                        <i class="fa-solid fa-refresh"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-content">
+                                <div class="analytics-overview">
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <i class="fa-solid fa-activity"></i>
+                                        </div>
+                                        <div class="stat-info">
+                                            <h4 id="total-activities">0</h4>
+                                            <p>Total Activities</p>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <i class="fa-solid fa-users"></i>
+                                        </div>
+                                        <div class="stat-info">
+                                            <h4 id="unique-users">0</h4>
+                                            <p>Active Users</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="analytics-charts">
+                                    <div class="chart-container">
+                                        <h4>Activity by Hour</h4>
+                                        <canvas id="hourly-chart"></canvas>
+                                    </div>
+                                    <div class="chart-container">
+                                        <h4>Daily Activity Trend</h4>
+                                        <canvas id="daily-chart"></canvas>
+                                    </div>
+                                    <div class="chart-container">
+                                        <h4>Actions Breakdown</h4>
+                                        <canvas id="actions-chart"></canvas>
+                                    </div>
+                                    <div class="chart-container">
+                                        <h4>Browser Usage</h4>
+                                        <canvas id="browsers-chart"></canvas>
+                                    </div>
+                                </div>
+                                
+                                <div class="analytics-tables">
+                                    <div class="table-section">
+                                        <h4>Top Users</h4>
+                                        <div id="top-users-table"></div>
+                                    </div>
+                                    <div class="table-section">
+                                        <h4>Popular Endpoints</h4>
+                                        <div id="top-endpoints-table"></div>
+                                    </div>
+                                    <div class="table-section">
+                                        <h4>Recent Activities</h4>
+                                        <div id="recent-activities-table"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -4,6 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 0); 
 require_once '../config/db.php';
 require_once '../middleware/auth_required.php';
+require_once '../middleware/activity_logger.php';
 
 header('Content-Type: application/json');
 
@@ -21,6 +22,13 @@ function logDebug($data) {
 }
 
 try {
+    // starts writting into the activity log file for the current uplading activity
+    ActivityLogger::logActivity('product_upload_start', [
+        'product_name' => $name ?? 'unknown',
+        'category' => $category ?? 'unknown',
+        'file_count' => count($_FILES['images']['name'] ?? [])
+    ]);
+
     // check if request is multipart/form-data
     if (!isset($_SERVER['CONTENT_TYPE']) || strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') === false) {
         throw new Exception('Invalid content type. Must be multipart/form-data');
@@ -150,7 +158,7 @@ try {
         )
     ");
 
-    $result = $stmt->execute([
+    if ($stmt->execute([
         trim($_POST['name']),
         trim($_POST['description']),
         (float)$_POST['price'],
@@ -160,34 +168,49 @@ try {
         $main_image_name,
         $images_json,
         $user_id
-    ]);
+    ])) {
+        $product_id = $pdo->lastInsertId();
+        
+        // writes into the log file for the uplaod sucess helpful to track error on uplaods and some common traits of users upload activity
+        ActivityLogger::logDatabaseActivity('INSERT', 'products', $product_id, [
+            'name' => $name,
+            'category' => $category,
+            'price' => $price,
+            'location' => $location
+        ]);
+        
+        ActivityLogger::logAudit('PRODUCT_CREATED', "Product '$name' created successfully", 'INFO');
+        
+        // add debug logging
+        logDebug([
+            'session' => $_SESSION,
+            'user_id' => $user_id ?? 'not set',
+            'post_data' => $_POST
+        ]);
 
-    if (!$result) {
-        $error = $stmt->errorInfo();
-        logError("Database error: " . json_encode($error));
-        throw new Exception("Failed to save product to database");
+        // file upload handling
+        foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
+            $target_file = $upload_dir . uniqid() . '_' . basename($_FILES['images']['name'][$key]);
+            
+            if (move_uploaded_file($tmp_name, $target_file)) {
+                // Log file upload
+                ActivityLogger::logFileActivity('upload', $target_file, $_FILES['images']['size'][$key]);
+            }
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Product uploaded successfully',
+            'product_id' => $product_id
+        ]);
     }
-
-    // get the newly inserted product ID
-    $productId = $pdo->lastInsertId();
-
-    // add debug logging
-    logDebug([
-        'session' => $_SESSION,
-        'user_id' => $user_id ?? 'not set',
-        'post_data' => $_POST
-    ]);
-
-    echo json_encode([
-        'success' => true,
-        'message' => 'Product uploaded successfully',
-        'productId' => $productId
-    ]);
-
 } catch (Exception $e) {
-    http_response_code(400);
+    // Log upload failure
+    ActivityLogger::logAudit('PRODUCT_UPLOAD_FAILED', $e->getMessage(), 'ERROR');
+    logError($e->getMessage());
+    
     echo json_encode([
         'success' => false,
-        'message' => $e->getMessage()
+        'message' => 'Upload failed: ' . $e->getMessage()
     ]);
 }

@@ -476,6 +476,7 @@ a {
 }
 
 .error-message {
+    margin-bottom: 1rem;
     color: #dc3545;
 }
 
@@ -964,5 +965,544 @@ a {
     .pagination-info {
         text-align: center;
         font-size: 12px;
+    }
+}
+
+/**** analytics styles NOTE: i didnt write any of it its AI generated so i just monitored and refactored were needed but dont blame me if it breaks */
+
+/* Make admin content scrollable */
+.admin-content {
+    padding: 0 20px;
+    height: calc(100vh - 140px); /* Adjust based on your header height */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Make admin subsections scrollable */
+.admin-subsection {
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 20px;
+}
+
+/* Specific styling for activity analytics section */
+#admin-activity-analytics {
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
+    margin: 0 -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* Analytics header should stay sticky at top */
+.analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: sticky;
+    top: 0;
+    background: var(--app-content-secondary-color);
+    z-index: 10;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Ensure analytics content flows properly */
+.analytics-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.analytics-charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.analytics-tables {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Analytics specific styles */
+.analytics-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.analytics-controls select {
+    padding: 8px 12px;
+    border: 1px solid var(--table-border);
+    border-radius: 6px;
+    background: var(--app-content-secondary-color);
+    color: var(--app-content-main-color);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.analytics-controls select:hover {
+    border-color: var(--main-color);
+}
+
+.analytics-controls select:focus {
+    outline: none;
+    border-color: var(--main-color);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* Enhanced chart containers */
+.chart-container {
+    background: var(--app-content-secondary-color);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 1px solid var(--table-border);
+    transition: all 0.3s ease;
+}
+
+.chart-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.chart-container h4 {
+    margin-bottom: 1.5rem;
+    color: var(--app-content-main-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--main-color);
+}
+
+/* Add icons to chart titles */
+.chart-container h4:before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    color: var(--main-color);
+}
+
+.chart-container h4[data-chart="hourly"]:before {
+    content: "\f017"; /* clock icon */
+}
+
+.chart-container h4[data-chart="daily"]:before {
+    content: "\f073"; /* calendar icon */
+}
+
+.chart-container h4[data-chart="actions"]:before {
+    content: "\f200"; /* pie chart icon */
+}
+
+.chart-container h4[data-chart="browsers"]:before {
+    content: "\f0ac"; /* globe icon */
+}
+
+/* Enhanced table sections */
+.table-section {
+    background: var(--app-content-secondary-color);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 1px solid var(--table-border);
+    transition: all 0.3s ease;
+}
+
+.table-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.table-section h4 {
+    margin-bottom: 1.5rem;
+    color: var(--app-content-main-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--main-color);
+}
+
+/* Add icons to table section titles */
+.table-section h4:before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    color: var(--main-color);
+    font-size: 1.1rem;
+}
+
+#top-users-table ~ .table-section h4:before,
+.table-section:has(#top-users-table) h4:before {
+    content: "\f406"; /* user crown icon */
+}
+
+#top-endpoints-table ~ .table-section h4:before,
+.table-section:has(#top-endpoints-table) h4:before {
+    content: "\f0c1"; /* link icon */
+}
+
+#recent-activities-table ~ .table-section h4:before,
+.table-section:has(#recent-activities-table) h4:before {
+    content: "\f1da"; /* list icon */
+}
+
+/* Enhanced analytics table styling */
+.analytics-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    background: var(--app-content-secondary-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.analytics-table th {
+    background: linear-gradient(135deg, var(--main-color), #2980b9);
+    color: white;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.analytics-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--table-border);
+    color: var(--app-content-main-color);
+    vertical-align: middle;
+}
+
+.analytics-table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.analytics-table tbody tr:hover {
+    background: var(--sidebar-hover-link);
+    transform: scale(1.01);
+}
+
+.analytics-table tbody tr:nth-child(even) {
+    background: rgba(0,0,0,0.02);
+}
+
+.analytics-table tbody tr:nth-child(even):hover {
+    background: var(--sidebar-hover-link);
+}
+
+/* Top Users table specific styling */
+#top-users-table .analytics-table td:first-child {
+    font-weight: 600;
+    color: var(--main-color);
+}
+
+#top-users-table .analytics-table td:last-child {
+    font-weight: bold;
+    background: linear-gradient(135deg, #e8f4f8, #d1ecf1);
+    color: #155724;
+    text-align: center;
+    border-radius: 20px;
+    margin: 2px;
+    position: relative;
+}
+
+#top-users-table .analytics-table tr:first-child td:last-child {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #8b6914;
+}
+
+#top-users-table .analytics-table tr:first-child td:last-child:before {
+    content: "\f521"; /* medal icon */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    margin-right: 5px;
+}
+
+/* Popular Endpoints table specific styling */
+#top-endpoints-table .analytics-table {
+    font-family: 'Courier New', monospace;
+}
+
+.endpoint-cell {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: rgba(0,0,0,0.05);
+    padding: 8px 12px !important;
+    border-radius: 4px;
+    position: relative;
+}
+
+.endpoint-cell:hover {
+    background: rgba(0,0,0,0.1);
+    white-space: normal;
+    word-wrap: break-word;
+    max-width: none;
+    position: relative;
+    z-index: 10;
+}
+
+#top-endpoints-table .analytics-table td:last-child {
+    font-weight: bold;
+    text-align: center;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    color: #1565c0;
+    border-radius: 15px;
+}
+
+/* Recent Activities table specific styling */
+#recent-activities-table .analytics-table {
+    font-size: 0.85rem;
+}
+
+.details-cell {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: #666;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: rgba(0,0,0,0.03);
+    padding: 6px 10px !important;
+    border-radius: 4px;
+}
+
+.details-cell:hover {
+    background: rgba(0,0,0,0.08);
+    white-space: normal;
+    word-wrap: break-word;
+    max-width: none;
+    position: relative;
+    z-index: 10;
+}
+
+.action-badge {
+    background: linear-gradient(135deg, var(--main-color), #2980b9);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Different colors for different actions */
+.action-badge[data-action="login"] {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.action-badge[data-action="page_access"] {
+    background: linear-gradient(135deg, #007bff, #6610f2);
+}
+
+.action-badge[data-action="product_upload"] {
+    background: linear-gradient(135deg, #fd7e14, #e83e8c);
+}
+
+.action-badge[data-action="logout"] {
+    background: linear-gradient(135deg, #dc3545, #e83e8c);
+}
+
+/* Enhanced stat cards in analytics overview */
+.analytics-overview .stat-card {
+    background: var(--app-content-secondary-color);
+    border-radius: 15px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid var(--table-border);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.analytics-overview .stat-card:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--main-color);
+}
+
+.analytics-overview .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.analytics-overview .stat-icon {
+    background: var(--main-color);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.analytics-overview .stat-info h4 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.analytics-overview .stat-info p {
+    margin: 8px 0 0 0;
+    color: var(--app-content-main-color);
+    font-size: 1rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+/* Empty state styling */
+.analytics-empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--app-content-main-color);
+    opacity: 0.7;
+}
+
+.analytics-empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: var(--main-color);
+    opacity: 0.3;
+}
+
+.analytics-empty-state h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.analytics-empty-state p {
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Loading state for analytics */
+.analytics-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 2rem;
+    color: var(--app-content-main-color);
+    font-size: 1.1rem;
+}
+
+.analytics-loading i {
+    animation: spin 1s linear infinite;
+    color: var(--main-color);
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Alert styling for error messages */
+.alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c2c7);
+    border-color: #f5c2c7;
+    color: #842029;
+}
+
+.alert strong {
+    font-weight: 600;
+}
+
+.alert small {
+    opacity: 0.8;
+    font-size: 0.875rem;
+    display: block;
+    margin-top: 5px;
+}
+
+/* responsive design */
+@media (max-width: 768px) {
+    .chart-container,
+    .table-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .analytics-overview .stat-card {
+        padding: 1.5rem;
+        gap: 15px;
+    }
+    
+    .analytics-overview .stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .analytics-overview .stat-info h4 {
+        font-size: 2rem;
+    }
+    
+    .endpoint-cell,
+    .details-cell {
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-container,
+    .table-section {
+        padding: 0.8rem;
+    }
+    
+    .analytics-table th,
+    .analytics-table td {
+        padding: 8px 12px;
+    }
+    
+    .endpoint-cell,
+    .details-cell {
+        max-width: 150px;
+        font-size: 0.75rem;
+    }
+    
+    .action-badge {
+        font-size: 0.65rem;
+        padding: 3px 6px;
     }
 }

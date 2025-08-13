@@ -97,68 +97,461 @@ export function renderSections() {
 }
 
 function setupAdminNavigation(activeSubsection = 'statistics') {
-    document.querySelectorAll('.admin-nav-btn').forEach(btn => {
-        // Set active state based on saved subsection
-        const btnSection = btn.getAttribute('data-admin-section');
-        if (btnSection === activeSubsection) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
+    const adminNavBtns = document.querySelectorAll('.admin-nav-btn');
+    const adminSubsections = document.querySelectorAll('.admin-subsection');
+    
+    // Remove active class from all buttons
+    adminNavBtns.forEach(btn => btn.classList.remove('active'));
+    
+    // Hide all subsections
+    adminSubsections.forEach(section => section.style.display = 'none');
+    
+    // Show active subsection
+    const activeSection = document.getElementById(`admin-${activeSubsection}`);
+    if (activeSection) {
+        activeSection.style.display = 'block';
         
-        btn.addEventListener('click', function() {
-            // Remove active class from all buttons
-            document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
-            
-            // Add active class to clicked button
-            this.classList.add('active');
-            
-            // Hide all admin subsections
-            document.querySelectorAll('.admin-subsection').forEach(section => {
-                section.style.display = 'none';
-            });
-            
-            // Show selected subsection
-            const targetSection = this.getAttribute('data-admin-section');
-            const targetElement = document.getElementById(`admin-${targetSection}`);
-            if (targetElement) {
-                targetElement.style.display = 'block';
-                
-                // Save current admin subsection to localStorage
+        // Add active class to corresponding button
+        const activeBtn = document.querySelector(`[data-admin-section="${activeSubsection}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+    }
+    
+    // Add click handlers
+    adminNavBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetSection = btn.getAttribute('data-admin-section');
+            if (targetSection) {
+                // Update localStorage
                 localStorage.setItem('dashboard-admin-subsection', targetSection);
                 
-                // Update URL with admin subsection
-                updateURL('admin', targetSection);
+                // Update UI
+                adminNavBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
                 
-                // Load data based on section
-                if (targetSection === 'statistics') {
-                    loadStatistics();
-                } else if (targetSection === 'users') {
-                    loadUsers(1, 5); 
-                    setupPaginationEvents(); 
-                 }
+                adminSubsections.forEach(section => section.style.display = 'none');
+                const targetEl = document.getElementById(`admin-${targetSection}`);
+                if (targetEl) {
+                    targetEl.style.display = 'block';
+                    
+                    if (targetSection === 'statistics') {
+                        loadStatistics();
+                    } else if (targetSection === 'activity-analytics') {
+                        loadActivityAnalytics();
+                    } else if (targetSection === 'users') {
+                        loadUsers();
+                    }
+                }
             }
         });
     });
     
-    // Show the active subsection on load
-    document.querySelectorAll('.admin-subsection').forEach(section => {
-        section.style.display = 'none';
-    });
+    // Load initial data
+    if (activeSubsection === 'statistics') {
+        setTimeout(() => {
+            loadStatistics();
+        }, 100);
+    } else if (activeSubsection === 'activity-analytics') {
+        setTimeout(() => {
+            loadActivityAnalytics();
+        }, 100);
+    }
+}
 
-    const activeElement = document.getElementById(`admin-${activeSubsection}`);
-    if (activeElement) {
-        activeElement.style.display = 'block';
-        if (activeSubsection === 'statistics') {
-            setTimeout(() => {
-                loadStatistics();
-            }, 100);
-        } else if (activeSubsection === 'users') {
-            setTimeout(() => {
-                loadUsers(1, 5);
-                setupPaginationEvents();
-            }, 100);
+// Add Chart.js loading
+function loadChartJS() {
+    return new Promise((resolve, reject) => {
+        if (window.Chart) {
+            resolve();
+            return;
         }
+        
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+}
+
+// Add analytics loading function
+async function loadActivityAnalytics() {
+    try {
+        await loadChartJS();
+        
+        const period = document.getElementById('analytics-period')?.value || 30;
+        const response = await fetch(`/nsikacart/api/analytics/activity-stats.php?days=${period}`);
+        
+        // Check if response is ok
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // Get response text first to debug
+        const responseText = await response.text();
+        
+        // Try to parse as JSON
+        let result;
+        try {
+            result = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('JSON Parse Error:', parseError);
+            console.error('Response text:', responseText.substring(0, 500)); // Log first 500 chars
+            throw new Error('Invalid JSON response from server');
+        }
+        
+        if (!result.success) {
+            throw new Error(result.message || 'Failed to load analytics');
+        }
+        
+        const data = result.data;
+        
+        // Update overview stats
+        document.getElementById('total-activities').textContent = data.total_activities || '0';
+        document.getElementById('unique-users').textContent = data.unique_users || '0';
+        
+        // Create charts
+        createHourlyChart(data.hourly_distribution);
+        createDailyChart(data.daily_distribution);
+        createActionsChart(data.actions_breakdown);
+        createBrowsersChart(data.user_agents);
+        
+        // Create tables
+        createTopUsersTable(data.top_users);
+        createTopEndpointsTable(data.endpoints);
+        createRecentActivitiesTable(data.recent_activities);
+        
+        // Setup refresh handler
+        setupAnalyticsControls();
+        
+    } catch (error) {
+        console.error('Error loading analytics:', error);
+        
+        // Show user-friendly error message
+        document.getElementById('total-activities').textContent = 'Error';
+        document.getElementById('unique-users').textContent = 'Error';
+        
+        // Show error message to user
+        const analyticsContainer = document.getElementById('admin-activity-analytics');
+        if (analyticsContainer) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <strong>Error:</strong> Failed to load analytics data. Please try refreshing the page.
+                    <br><small>Error details: ${error.message}</small>
+                </div>
+            `;
+            analyticsContainer.insertBefore(errorDiv, analyticsContainer.firstChild);
+        }
+    }
+}
+
+function createHourlyChart(hourlyData) {
+    const ctx = document.getElementById('hourly-chart')?.getContext('2d');
+    if (!ctx) return;
+    
+    // Add data attribute to the container for styling
+    const container = ctx.canvas.closest('.chart-container');
+    if (container) {
+        const title = container.querySelector('h4');
+        if (title) title.setAttribute('data-chart', 'hourly');
+    }
+    
+    // Destroy existing chart
+    if (window.hourlyChart) {
+        window.hourlyChart.destroy();
+    }
+    
+    window.hourlyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+            datasets: [{
+                label: 'Activities per Hour',
+                data: hourlyData,
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#3498db',
+                pointBorderColor: '#2980b9',
+                pointHoverBackgroundColor: '#2980b9',
+                pointHoverBorderColor: '#3498db'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createDailyChart(dailyData) {
+    const ctx = document.getElementById('daily-chart')?.getContext('2d');
+    if (!ctx || !dailyData) return;
+    
+    // Add data attribute to the container for styling
+    const container = ctx.canvas.closest('.chart-container');
+    if (container) {
+        const title = container.querySelector('h4');
+        if (title) title.setAttribute('data-chart', 'daily');
+    }
+    
+    if (window.dailyChart) {
+        window.dailyChart.destroy();
+    }
+    
+    const sortedDates = Object.keys(dailyData).sort();
+    const values = sortedDates.map(date => dailyData[date]);
+    
+    window.dailyChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: sortedDates.map(date => {
+                const d = new Date(date);
+                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            }),
+            datasets: [{
+                label: 'Daily Activities',
+                data: values,
+                backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                borderColor: '#e74c3c',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createActionsChart(actionsData) {
+    const ctx = document.getElementById('actions-chart')?.getContext('2d');
+    if (!ctx || !actionsData) return;
+    
+    // Add data attribute to the container for styling
+    const container = ctx.canvas.closest('.chart-container');
+    if (container) {
+        const title = container.querySelector('h4');
+        if (title) title.setAttribute('data-chart', 'actions');
+    }
+    
+    if (window.actionsChart) {
+        window.actionsChart.destroy();
+    }
+    
+    const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#34495e'];
+    
+    window.actionsChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(actionsData),
+            datasets: [{
+                data: Object.values(actionsData),
+                backgroundColor: colors.slice(0, Object.keys(actionsData).length),
+                borderWidth: 3,
+                borderColor: '#fff',
+                hoverBorderWidth: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createBrowsersChart(browsersData) {
+    const ctx = document.getElementById('browsers-chart')?.getContext('2d');
+    if (!ctx || !browsersData) return;
+    
+    // Add data attribute to the container for styling
+    const container = ctx.canvas.closest('.chart-container');
+    if (container) {
+        const title = container.querySelector('h4');
+        if (title) title.setAttribute('data-chart', 'browsers');
+    }
+    
+    if (window.browsersChart) {
+        window.browsersChart.destroy();
+    }
+    
+    const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6'];
+    
+    window.browsersChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(browsersData),
+            datasets: [{
+                data: Object.values(browsersData),
+                backgroundColor: colors.slice(0, Object.keys(browsersData).length),
+                borderWidth: 3,
+                borderColor: '#fff',
+                hoverBorderWidth: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createTopUsersTable(topUsers) {
+    const container = document.getElementById('top-users-table');
+    if (!container || !topUsers) return;
+    
+    const table = `
+        <table class="analytics-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Activities</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${Object.entries(topUsers).map(([userId, count]) => `
+                    <tr>
+                        <td>${userId}</td>
+                        <td>${count}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+    
+    container.innerHTML = table;
+}
+
+function createTopEndpointsTable(endpoints) {
+    const container = document.getElementById('top-endpoints-table');
+    if (!container || !endpoints) return;
+    
+    const table = `
+        <table class="analytics-table">
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Hits</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${Object.entries(endpoints).map(([endpoint, count]) => `
+                    <tr>
+                        <td class="endpoint-cell">${endpoint}</td>
+                        <td>${count}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+    
+    container.innerHTML = table;
+}
+
+function createRecentActivitiesTable(activities) {
+    const container = document.getElementById('recent-activities-table');
+    if (!container || !activities) {
+        if (container) {
+            container.innerHTML = '<div class="analytics-empty-state"><i class="fa-solid fa-list"></i><h4>No Recent Activities</h4><p>No activity data available</p></div>';
+        }
+        return;
+    }
+    
+    const table = `
+        <table class="analytics-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${activities.map(activity => `
+                    <tr>
+                        <td>${new Date(activity.timestamp).toLocaleString()}</td>
+                        <td><strong>User ${activity.user_id}</strong></td>
+                        <td><span class="action-badge" data-action="${activity.action}">${activity.action}</span></td>
+                        <td class="details-cell" title="${JSON.stringify(activity.details || {})}">${JSON.stringify(activity.details || {}).slice(0, 100)}...</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+    
+    container.innerHTML = table;
+}
+
+function setupAnalyticsControls() {
+    const periodSelect = document.getElementById('analytics-period');
+    const refreshBtn = document.getElementById('refresh-analytics');
+    
+    if (periodSelect) {
+        periodSelect.addEventListener('change', loadActivityAnalytics);
+    }
+    
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', loadActivityAnalytics);
     }
 }
 
@@ -559,7 +952,7 @@ window.performDeleteUser = async function(userId) {
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     if (!toast) {
-        console.log(message);
+     console.log(message);
         return;
     }
     

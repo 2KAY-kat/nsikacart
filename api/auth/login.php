@@ -8,6 +8,7 @@ header("Content-Type: application/json");
 header("Cache-Control: no-cache, must-revalidate");
 
 require_once '../config/db.php';
+require_once '../middleware/activity_logger.php';
 
 try {
     if ($_SERVER["REQUEST_METHOD"] !== "POST") {
@@ -148,6 +149,14 @@ try {
             "name" => $user['name'],
             "role" => $user['role']
         ]
+    ]);
+
+    // logs the success of logging in for tracking active logged in users to the site
+    ActivityLogger::logAudit('USER_LOGIN', "User '{$user['name']}' logged in successfully", 'INFO', $user['id']);
+    ActivityLogger::logActivity('login', [
+        'user_name' => $user['name'],
+        'user_role' => $user['role'],
+        'login_method' => 'password'
     ]);
 
 } catch (Exception $e) {

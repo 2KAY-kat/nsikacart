@@ -3,6 +3,8 @@ session_start();
 
 header("Content-Type: application/json");
 
+require_once 'activity_logger.php';
+
 /**
  * authentication middleware to check if a user is logged in and some session storage abd authorisation shitt
  */
@@ -14,6 +16,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // check if user is authenticated 
 if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+    // logs every loggin activity for unauthorised access into the site
+    ActivityLogger::logAudit('UNAUTHORIZED_ACCESS', 'Attempt to access protected resource without authentication', 'WARNING');
+    
     header('Content-Type: application/json');
     http_response_code(401); // Unauthorized
     echo json_encode([
@@ -22,6 +27,12 @@ if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
     ]);
     exit;
 }
+
+// every successful access to protected resource is also logged for security reasons amd site improvement on commn pitfalls
+ActivityLogger::logActivity('page_access', [
+    'endpoint' => $_SERVER['REQUEST_URI'] ?? 'unknown',
+    'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown'
+]);
 
 // set common variables for convenience in other scripts
 $current_user_id = $_SESSION['user']['id'];
