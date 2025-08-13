@@ -31,7 +31,10 @@ switch ($action) {
             }
         }
         
-        echo json_encode(['success' => true, 'message' => 'Log rotation completed']);
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Log rotation completed'
+        ]);
         break;
         
     case 'export':
@@ -41,7 +44,10 @@ switch ($action) {
         $log_file = "../../logs/{$log_type}.log";
         
         if (!file_exists($log_file)) {
-            echo json_encode(['success' => false, 'message' => 'Log file not found']);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Log file not found'
+            ]);
             exit;
         }
         
@@ -53,5 +59,8 @@ switch ($action) {
         exit;
         
     default:
-        echo json_encode(['success' => false, 'message' => 'Invalid action']);
+        echo json_encode([   
+            'success' => false, 
+            'message' => 'Invalid action'
+        ]);
 }
