@@ -381,7 +381,7 @@ function createActionsChart(actionsData) {
     const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#34495e'];
     
     window.actionsChart = new Chart(ctx, {
-        type: 'doughnut',
+        type: 'pie',
         data: {
             labels: Object.keys(actionsData),
             datasets: [{
