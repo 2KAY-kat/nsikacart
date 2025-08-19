@@ -117,8 +117,8 @@ try {
     }
 
     // send verification email and fcourse with PHPMailer
-    $appUrl = env('APP_URL', 'http://localhost/nsikacart');
-    $verificationLink = $appUrl . "/auth/verify-email.html?token=" . urlencode($verificationToken);
+    $baseUrl = env('APP_URL', 'http://localhost/nsikacart');
+    $verificationLink = rtrim($baseUrl, '/') .  "/auth/verify-email.html?token=" . urlencode($verificationToken);
     // sends verification links with a token that leads us to teh verify page 
 
     $mail = new PHPMailer(true);

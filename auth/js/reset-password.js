@@ -3,12 +3,20 @@ let isSubmitting = false;
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('#reset-password-form');
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    const token = decodeURIComponent(urlParams.get('token'));
     
     if (!token) {
         if (typeof window.showToast === 'function') {
             window.showToast('Invalid reset link', 'error');
         }
+        setTimeout(() => {
+            window.location.href = '/nsikacart/auth/forgot-password.html';
+        }, 2000);
+        return;
+    }
+
+    if (token.length < 64) { // tokens are 64 chars (32 bytes hex encoded)
+        window.showToast('Invalid reset token format', 'error');
         setTimeout(() => {
             window.location.href = '/nsikacart/auth/forgot-password.html';
         }, 2000);

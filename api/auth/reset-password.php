@@ -60,15 +60,22 @@ try {
     }
 
     // Verify token and check expiry DATE AND TIME OF THEH TOKEN into db
-    $stmt = $pdo->prepare("SELECT id, email FROM users WHERE reset_token = ? AND reset_expires_at > NOW()");
+    $stmt = $pdo->prepare("SELECT id, email, reset_expires_at FROM users WHERE reset_token = ?");
     $stmt->execute([$token]);
     $user = $stmt->fetch();
 
-    // if on failure and invalid or expired tokens feedback error hundling
     if (!$user) {
         echo json_encode([
             "success" => false,
-            "message" => "Your token is invalid due to expiration or some error on our end, please try again later"
+            "message" => "Invalid reset token. Please request a new password reset."
+        ]);
+        exit;
+    }
+
+    if (strtotime($user['reset_expires_at']) < time()) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Reset token has expired. Please request a new password reset."
         ]);
         exit;
     }

@@ -85,7 +85,7 @@ try {
 
     // generating a reset toke uses the bin2hex advanced algorithm for extar security
     $token = bin2hex(random_bytes(32));
-    $tokenExpiry = date("Y-m-d H:i:s", strtotime('+30 minutes'));
+    $tokenExpiry = date("Y-m-d H:i:s", strtotime('+1 hour'));
 
     // upadate the user who requested the reset token 
     $updateStmt = $pdo->prepare("UPDATE users SET reset_token = ?, reset_expires_at = ? WHERE email = ?");
@@ -100,8 +100,8 @@ try {
     }
 
     // now we jump into the phpmailing system and the email format and its markup for the rest link email
-    $appUrl = env('APP_URL', 'http://localhost/nsikacart');
-    $resetLink = $appUrl . "/auth/reset-password.html?token=" . urlencode($token);
+    $baseUrl = env('APP_URL', 'http://localhost/nsikacart');
+    $resetLink = rtrim($baseUrl, '/') . "/auth/reset-password.html?token=" . urlencode($token);
 
     // Send email using PHPMailer
     $mail = new PHPMailer(true);
