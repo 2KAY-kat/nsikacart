@@ -9,8 +9,11 @@ otherHeader.forEach((otherHeader) => {
         <div class="header-content">
             <div class="checkout-header-left-section">
                 <a href="${otherHeader.link}">
-                    <img class="dambwe-logo" src="${otherHeader.image}">
-                    <img class="dambwe-mobile-logo" src="${otherHeader.image}">
+                    <div class="nav-logo">
+                        <img class="dambwe-logo" src="${otherHeader.image}">
+                        <img class="dambwe-mobile-logo" src="${otherHeader.image}">
+                        <span class="beta-tag">Beta</span>
+                    </div>
                 </a>
             </div>
     
