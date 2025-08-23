@@ -64,9 +64,24 @@ a {
 }
 
 .nav-logo {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.beta-tag {
+  position: absolute;
+  top: -5px;
+  right: -25px;
+  background: #ff4757;
+  color: white;
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: bold;
+  transform: rotate(20deg);
+  text-transform: uppercase;
 }
 
 .searchIn {

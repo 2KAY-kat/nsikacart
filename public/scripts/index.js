@@ -11,50 +11,25 @@ let heroHTML = '';
 
 header.forEach((header) => {
     headerHTML += `
-
     <a href="index.html">
         <div class="nav-logo">
-
             <img class="logo-navlogo-nav" src="${header.image}" alt="" />
             <p class="dambwe">${header.name}</p>
+            <span class="beta-tag">Beta</span>
         </div>
+    </a>
+    <div class="nav-login-cart">
+        <div class="searchIn fa-solid fa-search"> </div>
+        <a href="${header.link}"><i class="fa fa-bag-shopping"></i></a>
+        <div class="nav-cart-count cart-quantity js-cart-quantity">0</div>
+        <a href="#" class="js-dashboard-link">
+           <div class="fa-solid fa-gauge"> </div>
         </a>
-           
-        <div class="nav-login-cart">
-            <div class="searchIn fa-solid fa-search"> </div>
-            <a href="${header.link}"><i class="fa fa-bag-shopping"></i></a>
-            <div class="nav-cart-count cart-quantity js-cart-quantity">0</div>
-            <a href="#" class="js-dashboard-link">
-               <div class="fa-solid fa-gauge"> </div>
-            </a>
-        </div>
-    `;
+    </div>`;
 })
 
 
 document.querySelector('.navbar').innerHTML = headerHTML;
-
-// --- Loading Screen HTML Injection ---
-const loadingScreenHTML = `
-  <div id="dashboard-loading-screen" class="dashboard-loading-screen">
-    <div class="dashboard-loading-content">
-      <div class="loader">
-        <svg width="48" height="48" viewBox="0 0 50 50">
-          <circle cx="25" cy="25" r="20" fill="none" stroke="#007bff" stroke-width="5" stroke-linecap="round" stroke-dasharray="31.4 31.4" transform="rotate(-90 25 25)">
-            <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite"/>
-          </circle>
-        </svg>
-      </div>
-      <div class="dashboard-loading-message">
-        <strong>Login Required</strong><br>
-        You must log in before accessing the dashboard.<br>
-        Redirecting you to the login page...
-      </div>
-    </div>
-  </div>
-`;
-document.body.insertAdjacentHTML('beforeend', loadingScreenHTML);
-
 
 hero.forEach((hero) => {
     heroHTML += `
@@ -156,7 +131,7 @@ function renderProductsByCategory(categoryName) {
 
     document.querySelector('.js-products-grid').innerHTML = productsHTML;
 
-    // Re-attach add-to-cart event listeners if there are products
+    // Re-attach add-to-cart event listeners if
     if (filteredProducts.length > 0) {
         document.querySelectorAll('.js-add-to-cart')
             .forEach((button) => {
@@ -282,18 +257,11 @@ backToTop.addEventListener('click', (e) => {
 
 // --- Dashboard Redirect Handler ---
 document.addEventListener('DOMContentLoaded', () => {
-  // Attach dashboard loading handler
+  // Simplified dashboard link handler
   document.querySelectorAll('.js-dashboard-link').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
-      const loadingScreen = document.getElementById('dashboard-loading-screen');
-      if (loadingScreen) {
-        loadingScreen.style.display = 'flex';
-      }
-      setTimeout(() => {
-       window.location.href = '/nsikacart/public/dashboard/index.html';
-        
-      }, 3200); 
+      window.location.href = '/nsikacart/public/dashboard/index.html';
     });
   });
 });
