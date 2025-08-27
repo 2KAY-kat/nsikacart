@@ -12,8 +12,8 @@ try {
     if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
         http_response_code(401);
         echo json_encode([
-            'success' => false,
-            'message' => 'Authentication required'
+            "success" => false,
+            "message" => "Authentication required"
         ]);
         exit;
     }
@@ -23,8 +23,8 @@ try {
     if ($userRole !== 'admin') {
         http_response_code(403);
         echo json_encode([
-            'success' => false,
-            'message' => 'Access denied. Only administrators can delete users.'
+            "success" => false,
+            "message" => "Access denied. Only administrators can delete users."
         ]);
         exit;
     }
@@ -36,8 +36,8 @@ try {
     if (!$userId) { // check is the user's id is rendered for delete
         http_response_code(400);
         echo json_encode([
-            'success' => false,
-            'message' => 'User ID is required'
+            "success" => false,
+            "message" => "User ID is required"
         ]);
         exit;
     }
@@ -46,8 +46,8 @@ try {
     if ($userId == $_SESSION['user']['id']) {
         http_response_code(400);
         echo json_encode([
-            'success' => false,
-            'message' => 'You cannot delete your own account'
+            "success" => false,
+            "message" => "You cannot delete your own account"
         ]);
         exit;
     }
@@ -65,8 +65,8 @@ try {
         if (!$userToDelete) {
             $pdo->rollback();
             echo json_encode([
-                'success' => false,
-                'message' => 'User not found'
+                "success" => false,
+                "message" => "User not found"
             ]);
             exit;
         }
@@ -88,14 +88,14 @@ try {
             
             // feed back
             echo json_encode([
-                'success' => true,
-                'message' => 'User deleted successfully'
+                "success" => true,
+                "message" => "User deleted successfully"
             ]);
         } else { // but if its failed we rolback
             $pdo->rollback();
             echo json_encode([
-                'success' => false,
-                'message' => 'Failed to delete user'
+                "success" => false,
+                "message" => "Failed to delete user"
             ]);
         }
     } catch (Exception $e) {
@@ -107,8 +107,8 @@ try {
     error_log("Delete User Error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
-        'success' => false,
-        'message' => 'Internal server error'
+        "success" => false,
+        "message" => "Internal server error"
     ]);
 }
 ?>

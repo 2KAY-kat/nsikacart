@@ -17,7 +17,11 @@ require_once '../middleware/auth_required.php';
 
 try {
     if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-        throw new Exception('Invalid product ID');
+       json_encode([
+        "success" => false,
+        "message" => "Invalid product ID"
+       ]);
+        exit;
     }
     
     $product_id = (int)$_GET['id'];
@@ -29,7 +33,11 @@ try {
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$product) {
-        throw new Exception('Product not found or access denied');
+        json_encode([
+        "success" => false,
+        "message" => "Product not found or access denied"
+       ]);
+       exit;
     }
     
     // Decode images JSON

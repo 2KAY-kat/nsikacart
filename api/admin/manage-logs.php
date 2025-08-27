@@ -5,7 +5,8 @@ require_once '../middleware/activity_logger.php';
 // Only allow admin access
 if ($current_user_role !== 'admin') {
     http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Admin access required']);
+    echo json_encode([
+        'success' => false, 'message' => 'Admin access required']);
     exit;
 }
 

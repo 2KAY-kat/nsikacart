@@ -11,8 +11,8 @@ try {
     if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
         http_response_code(401);
         echo json_encode([
-            'success' => false,
-            'message' => 'Authentication required'
+            "success" => false,
+            "message" => "Authentication required"
         ]);
         exit;
     }
@@ -22,8 +22,8 @@ try {
     if ($userRole !== 'admin' && $userRole !== 'monitor') {
         http_response_code(403);
         echo json_encode([
-            'success' => false,
-            'message' => 'Access denied. Admin privileges required.'
+            "success" => false,
+            "message" => "Access denied. Admin privileges required."
         ]);
         exit;
     }
@@ -45,12 +45,12 @@ try {
     $activeUsers = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
     echo json_encode([
-        'success' => true,
-        'stats' => [
-            'totalUsers' => $totalUsers,
-            'totalProducts' => $totalProducts,
-            'activeSessions' => $activeSessions,
-            'activeUsers' => $activeUsers
+        "success" => true,
+        "stats" => [
+            "totalUsers" => $totalUsers,
+            "totalProducts" => $totalProducts,
+            "activeSessions" => $activeSessions,
+            "activeUsers" => $activeUsers
         ]
     ]);
     
@@ -58,8 +58,8 @@ try {
     error_log("Statistics API Error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
-        'success' => false, 
-        'message' => 'Internal server error'
+        "success" => false, 
+        "message" => "Internal server error"
     ]);
 }
 ?>

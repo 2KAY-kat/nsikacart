@@ -22,7 +22,7 @@ header.forEach((header) => {
         <div class="searchIn fa-solid fa-search"> </div>
         <a href="${header.link}"><i class="fa fa-bag-shopping"></i></a>
         <div class="nav-cart-count cart-quantity js-cart-quantity">0</div>
-        <a href="#" class="js-dashboard-link">
+        <a href="/nsikacart/public/dashboard/index.html" class="js-dashboard-link">
            <div class="fa-solid fa-gauge"> </div>
         </a>
     </div>`;
@@ -253,15 +253,4 @@ backToTop.addEventListener('click', (e) => {
 backToTop.addEventListener('click', (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-// --- Dashboard Redirect Handler ---
-document.addEventListener('DOMContentLoaded', () => {
-  // Simplified dashboard link handler
-  document.querySelectorAll('.js-dashboard-link').forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = '/nsikacart/public/dashboard/index.html';
-    });
-  });
 });
