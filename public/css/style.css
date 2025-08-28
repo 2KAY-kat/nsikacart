@@ -72,15 +72,15 @@ a {
 
 .beta-tag {
   position: absolute;
-  top: -5px;
-  right: -25px;
-  background: #ff4757;
+  top: 1px;
+  right: -35px;
+  background: #0f3a74;
   color: white;
   font-size: 0.6rem;
   padding: 2px 6px;
   border-radius: 3px;
   font-weight: bold;
-  transform: rotate(20deg);
+  /*transform: rotate(20deg);*/
   text-transform: uppercase;
 }
 
