@@ -1,115 +1,80 @@
-import { products } from './data.js';
 import { showToast } from './utilities/toast.js';
 import { TOAST_MESSAGES } from './utilities/messages.js';
+import { cartState } from './utilities/cartState.js';
 
-export let cart = (() => {
-    const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
-    
-    // Validate saved cart items against current products
-    return savedCart.filter(item => {
-        const productExists = products.some(p => p.id === item.productId);
-        return productExists;
-    });
-})();
+// Initialize cart state
+cartState.initialize();
 
-function saveToStorage() {
-    localStorage.setItem('cart', JSON.stringify(cart));
+// Export cart state for other modules
+export const cart = cartState;
+
+// Update the cart icon count
+function updateCartIcon(count) {
+    const cartCounter = document.querySelector('.cart-counter');
+    if (cartCounter) {
+        cartCounter.textContent = count;
+        cartCounter.style.display = count > 0 ? 'block' : 'none';
+    }
 }
 
-export function addToCart(productId) {
-    // Validate inputs
-    if (!productId) return false;
+// Subscribe to cart state changes
+cartState.subscribe(updateCartIcon);
 
-    // Get products from window (set by index.js after API fetch)
-    const products = window.products || [];
-    const product = products.find(p => p.id === productId);
-    if (!product) return false;
+export async function addToCart(productId) {
+    try {
+        const response = await fetch('/nsikacart/api/products/saved-list/add-to-saved.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                quantity: 1
+            })
+        });
 
-    // Check if item exists in cart using strict comparison
-    const exists = cart.some(item => item.productId === productId);
-    
-    if (exists) {
-        showToast(TOAST_MESSAGES.ALREADY_IN_LIST(product.name));
+        const data = await response.json();
+        
+        if (data.success) {
+            await cartState.refreshCount();
+            showToast(TOAST_MESSAGES.ADDED_TO_LIST(data.product_name));
+            return true;
+        } else {
+            showToast(data.message);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error adding to saved list:', error);
+        showToast('Failed to add item to saved list');
         return false;
     }
-
-    // Add new item with fresh state
-    const newItem = {
-        productId: productId,
-        quantity: 1,
-        deliveryOptionId: '1'
-    };
-
-    cart.push(newItem);
-    saveToStorage();
-    showToast(TOAST_MESSAGES.ADDED_TO_LIST(product.name));
-    return true;
 }
 
-export function removeFromCart(productId) {
-    // Find the product before removing it to get its name
-    const productToRemove = cart.find(item => item.productId === productId);
-    const products = window.products || [];
-    const product = products.find(p => p.id === productId);
+export async function removeFromCart(productId) {
+    try {
+        const response = await fetch('/nsikacart/api/products/saved-list/remove-saved-item.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                product_id: productId
+            })
+        });
 
-    const newCart = [];
-
-    cart.forEach((cartItem) => {
-        if (cartItem.productId !== productId) {
-            newCart.push(cartItem);
-        }
-    });
-
-    cart = newCart;
-    saveToStorage();
-
-    // Show toast notification after removing item
-    if (product) {
-        showToast(TOAST_MESSAGES.REMOVED_FROM_LIST(product.name));
-    }
-}
-
-/** */
-export function updateDeliveryOption(productId, deliveryOptionId) {
-    let matchingItem;
-
-    cart.forEach((cartItem) => {
-        if (productId === cartItem.productId) {
-            matchingItem = cartItem;
-        }
+        const data = await response.json();
         
-    });
-
-    matchingItem.deliveryOptionId = deliveryOptionId;
-
-    saveToStorage();
-
-}
-
-export function updateQuantity(productId, newQuantity) {
-    let matchingItem;
-  
-    cart.forEach((cartItem) => {
-      if (productId === cartItem.productId) {
-        matchingItem = cartItem;
-      }
-    });
-  
-    matchingItem.quantity = newQuantity;
-  
-    saveToStorage();
-}
-
-
-export function clearCart() {
-    cart = [];
-    saveToStorage();
-    showToast(TOAST_MESSAGES.REMOVED_ALL_ITEMS);
-}
-
-export function toggleDeleteButton() {
-    const deleteButton = document.getElementById('clear-cart-btn');
-    if (deleteButton) {
-        deleteButton.style.display = cart.length > 0 ? 'inline-block' : 'none';
+        if (data.success) {
+            await cartState.refreshCount();
+            showToast(TOAST_MESSAGES.REMOVED_FROM_LIST(data.product_name));
+            return true;
+        } else {
+            showToast(data.message);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error removing from saved list:', error);
+        showToast('Failed to remove item from saved list');
+        return false;
     }
 }

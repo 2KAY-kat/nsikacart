@@ -2,6 +2,11 @@ import { cart, addToCart } from './cart.js';
 import { header, hero, /*nav*/ } from './data.js';
 import { formatCurrency } from './utilities/calculate_cash.js';
 
+// Now cart is cartState instance with methods like:
+// cart.getCount() - get current count
+// cart.getItems() - get saved items
+// cart.subscribe() - subscribe to changes
+
 // initialise the variables for the queries in the loop function
 let headerHTML = '';
 let heroHTML = '';
@@ -189,35 +194,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // by default the cart count be 0 (zero) 
 function updateCartQuantity() {
-    let cartQuantity = 0;
-
-    cart.forEach((cartItem) => {
-        cartQuantity += cartItem.quantity;
-    });
-
     const cartCountElement = document.querySelector('.js-cart-quantity');
     if (cartCountElement) {
-        cartCountElement.innerHTML = cartQuantity;
+        cartCountElement.innerHTML = cart.getCount();
     }
 }
 
-// Initialisiation of the toastification of the adding to cart that displays the product name on the toast as its being added to the cart while updating the cart count  
-const addToCartBtn = document.querySelector('.js-add-to-cart');
+// Subscribe to cart state changes
+cart.subscribe(count => {
+    const cartCountElement = document.querySelector('.js-cart-quantity');
+    if (cartCountElement) {
+        cartCountElement.innerHTML = count;
+    }
+});
+
+// Update event listener to use cart state
 document.querySelectorAll('.js-add-to-cart')
     .forEach((button) => {
-        button.addEventListener('click', () => {
-            addToCartBtn.classList.add('animate__animated', 'animate__pulse');
+        button.addEventListener('click', async () => {
+            button.classList.add('animate__animated', 'animate__pulse');
             const productId = button.dataset.productId;
-            addToCart(productId);
-            updateCartQuantity();
+            await addToCart(productId);
 
             // Find the product name
             const product = products.find(p => p.id === productId);
-            //showToast(`${product.name} added to cart`);
 
-            // Remove of animation classes after animation completes
             setTimeout(() => {
-                addToCartBtn.classList.remove('animate__animated', 'animate__pulse');
+                button.classList.remove('animate__animated', 'animate__pulse');
             }, 1000);
         });
     });

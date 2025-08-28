@@ -1,0 +1,105 @@
+<?php
+// Start output buffering
+ob_start();
+
+// Enable error logging but disable display
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/../../../logs/debug.log');
+
+session_start();
+require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../middleware/auth_required.php';
+
+// Clear any previous output
+ob_clean();
+header('Content-Type: application/json');
+
+try {
+    // First check if database connection exists
+    if (!isset($pdo)) {
+        throw new Exception('Database connection not established');
+    }
+
+    // Check if user is authenticated
+    if (!isset($current_user_id)) {
+        throw new Exception('User not authenticated');
+    }
+
+    // Check if the saved_items table exists
+    $tableCheck = $pdo->query("SHOW TABLES LIKE 'saved_items'");
+    if ($tableCheck->rowCount() === 0) {
+        // Create the table if it doesn't exist
+        $pdo->exec("CREATE TABLE IF NOT EXISTS saved_items (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            user_id INT NOT NULL,
+            product_id INT NOT NULL,
+            quantity INT DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+            UNIQUE KEY unique_user_product (user_id, product_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        
+        error_log("[" . date('Y-m-d H:i:s') . "] Created saved_items table");
+    }
+
+    // Get saved items with error logging
+    try {
+        // Modified query to get location from products table instead of users
+        $stmt = $pdo->prepare("
+            SELECT 
+                si.id as saved_item_id,
+                si.product_id,
+                si.quantity,
+                p.name,
+                p.price as dollar,
+                p.description,
+                p.main_image as image,
+                p.created_at as posted_date,
+                p.location,           
+                u.name as seller_name
+            FROM saved_items si
+            JOIN products p ON si.product_id = p.id
+            JOIN users u ON p.user_id = u.id
+            WHERE si.user_id = ?
+            ORDER BY si.created_at DESC
+        ");
+
+        $stmt->execute([$current_user_id]);
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            'success' => true,
+            'saved_items' => $items,
+            'user_id' => $current_user_id
+        ]);
+
+    } catch (PDOException $e) {
+        error_log("[" . date('Y-m-d H:i:s') . "] Query error: " . $e->getMessage());
+        throw new Exception('Failed to fetch saved items');
+    }
+
+} catch (PDOException $e) {
+    error_log("[" . date('Y-m-d H:i:s') . "] Database error in get-saved-items.php: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Database error occurred',
+        'debug' => [
+            'error' => $e->getMessage(),
+            'code' => $e->getCode()
+        ]
+    ]);
+} catch (Exception $e) {
+    error_log("[" . date('Y-m-d H:i:s') . "] General error in get-saved-items.php: " . $e->getMessage());
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
+}
+
+// Ensure all output is flushed
+ob_end_flush();

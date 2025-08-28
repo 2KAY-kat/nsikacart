@@ -1,19 +1,18 @@
 <?php
-require_once '../../helpers/env.php';
+require_once __DIR__ . '/../../helpers/env.php';
 
 // Load environment variables
-loadEnv('../../.env');
-
-$host = env('DB_HOST');
-$dbname = env('DB_NAME');
-$username = env('DB_USER');
-$password = env('DB_PASS');
+loadEnv(__DIR__ . '/../../.env');
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password, [
+    $dsn = "mysql:host=" . env('DB_HOST') . ";dbname=" . env('DB_NAME');
+    $username = env('DB_USER');
+    $password = env('DB_PASS');
+
+    $pdo = new PDO($dsn, $username, $password, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES => false,
+        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
     ]);
 } catch (PDOException $e) {
     error_log("Database connection failed: " . $e->getMessage());
