@@ -124,3 +124,4 @@ keys/
 secrets/
 
 # temp ignore
+test.db.php
