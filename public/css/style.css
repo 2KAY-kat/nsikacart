@@ -2,7 +2,6 @@
 @import url(./fontawesome-free-6.6.0-web/fontawesome-free-6.6.0-web/css/all.css); /*** fallback for local devenv offline typeshit .gitignored ***/
 @import url(style-footer.css);
 @import url(./../auth/css/auth-styles.css);
-@import url(dashboard-loading.css);
 @import url(./product-details-styles.css);
 
 :root {
