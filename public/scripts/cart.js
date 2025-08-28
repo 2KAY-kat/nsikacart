@@ -5,10 +5,42 @@ import { cartState } from './utilities/cartState.js';
 // Initialize cart state
 cartState.initialize();
 
-// Export cart state for other modules
-export const cart = cartState;
+// Export cart instance with additional methods
+class Cart {
+    constructor(state) {
+        this.state = state;
+    }
 
-// Update the cart icon count
+    getCount() {
+        return this.state.getCount();
+    }
+
+    getItems() {
+        return this.state.getItems();
+    }
+
+    forEach(callback) {
+        this.getItems().forEach(callback);
+    }
+
+    reduce(callback, initialValue) {
+        return this.getItems().reduce(callback, initialValue);
+    }
+
+    // Add subscription methods
+    subscribe(callback) {
+        return this.state.subscribe(callback);
+    }
+
+    unsubscribe(callback) {
+        return this.state.unsubscribe(callback);
+    }
+}
+
+// Create and export cart instance
+export const cart = new Cart(cartState);
+
+// Move updateCartIcon into Cart class methods
 function updateCartIcon(count) {
     const cartCounter = document.querySelector('.cart-counter');
     if (cartCounter) {
@@ -17,8 +49,8 @@ function updateCartIcon(count) {
     }
 }
 
-// Subscribe to cart state changes
-cartState.subscribe(updateCartIcon);
+// Subscribe to cart state changes using the Cart instance
+cart.subscribe(updateCartIcon);
 
 export async function addToCart(productId) {
     try {
@@ -76,5 +108,46 @@ export async function removeFromCart(productId) {
         console.error('Error removing from saved list:', error);
         showToast('Failed to remove item from saved list');
         return false;
+    }
+}
+
+export async function updateDeliveryOption(productId, optionId) {
+    // ...existing implementation...
+}
+
+export async function updateQuantity(productId, quantity) {
+    // ...existing implementation...
+}
+
+export async function clearCart() {
+    try {
+        const response = await fetch('/nsikacart/api/products/saved-list/clear-cart.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            await cartState.refreshItems();
+            await cartState.refreshCount();
+            showToast('Cart cleared successfully');
+            return true;
+        }
+        showToast(data.message || 'Failed to clear cart');
+        return false;
+    } catch (error) {
+        console.error('Error clearing cart:', error);
+        showToast('Failed to clear cart');
+        return false;
+    }
+}
+
+export function toggleDeleteButton() {
+    const clearCartBtn = document.getElementById('clear-cart-btn');
+    if (clearCartBtn) {
+        const hasItems = cart.getCount() > 0;
+        clearCartBtn.style.display = hasItems ? 'inline-block' : 'none';
     }
 }

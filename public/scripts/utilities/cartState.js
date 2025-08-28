@@ -12,20 +12,33 @@ class CartState {
     }
 
     async initialize() {
-        await this.refreshCount();
         await this.refreshItems();
-        // Refresh count every minute
-        setInterval(() => this.refreshCount(), 60000);
+        await this.refreshCount();
     }
 
     async refreshItems() {
         try {
             const response = await fetch('/nsikacart/api/products/saved-list/get-saved-items.php');
-            const data = await response.json();
+            const text = await response.text();
             
-            if (data.success) {
-                this.#items = data.saved_items;
-                this.notifyObservers();
+            try {
+                const data = JSON.parse(text);
+                if (data.success) {
+                    this.#items = data.saved_items.map(item => ({
+                        productId: item.product_id.toString(),
+                        quantity: item.quantity,
+                        name: item.name,
+                        dollar: parseFloat(item.dollar),
+                        description: item.description,
+                        image: item.main_image,
+                        postedDate: item.posted_date,
+                        location: item.location,
+                        sellerName: item.seller_name
+                    }));
+                    this.notifyObservers();
+                }
+            } catch (parseError) {
+                console.error('Invalid JSON response:', text);
             }
         } catch (error) {
             console.error('Error fetching saved items:', error);
