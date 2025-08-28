@@ -94,14 +94,22 @@ export async function removeFromCart(productId) {
             })
         });
 
-        const data = await response.json();
+        const text = await response.text();
         
-        if (data.success) {
-            await cartState.refreshCount();
-            showToast(TOAST_MESSAGES.REMOVED_FROM_LIST(data.product_name));
-            return true;
-        } else {
-            showToast(data.message);
+        try {
+            const data = JSON.parse(text);
+            if (data.success) {
+                await cartState.refreshCount();
+                await cartState.refreshItems();
+                showToast(TOAST_MESSAGES.REMOVED_FROM_LIST(data.product_name));
+                return true;
+            } else {
+                showToast(data.message);
+                return false;
+            }
+        } catch (parseError) {
+            console.error('Invalid JSON response:', text);
+            showToast('Server returned invalid response');
             return false;
         }
     } catch (error) {
@@ -110,15 +118,6 @@ export async function removeFromCart(productId) {
         return false;
     }
 }
-
-export async function updateDeliveryOption(productId, optionId) {
-    // ...existing implementation...
-}
-
-export async function updateQuantity(productId, quantity) {
-    // ...existing implementation...
-}
-
 export async function clearCart() {
     try {
         const response = await fetch('/nsikacart/api/products/saved-list/clear-cart.php', {
@@ -127,19 +126,28 @@ export async function clearCart() {
                 'Content-Type': 'application/json'
             }
         });
+
+        const text = await response.text();
         
-        const data = await response.json();
-        if (data.success) {
-            await cartState.refreshItems();
-            await cartState.refreshCount();
-            showToast('Cart cleared successfully');
-            return true;
+        try {
+            const data = JSON.parse(text);
+            if (data.success) {
+                await cartState.refreshCount();
+                await cartState.refreshItems();
+                showToast('All items removed from saved list');
+                return true;
+            } else {
+                showToast(data.message);
+                return false;
+            }
+        } catch (parseError) {
+            console.error('Invalid JSON response:', text);
+            showToast('Server returned invalid response');
+            return false;
         }
-        showToast(data.message || 'Failed to clear cart');
-        return false;
     } catch (error) {
         console.error('Error clearing cart:', error);
-        showToast('Failed to clear cart');
+        showToast('Failed to clear saved list');
         return false;
     }
 }

@@ -3,6 +3,82 @@ import { formatCurrency } from '../utilities/calculate_cash.js';
 import dayjs from '../../package/esm/index.js';
 import { renderPaymentSummary } from './paymentsummary.js';
 
+// Add modal handling functions
+function showModal(productId, productName) {
+    const modal = document.getElementById('delete-modal');
+    const closeBtn = document.getElementById('modal-close-btn');
+    const confirmBtn = document.getElementById('modal-confirm-btn');
+    const cancelBtn = document.getElementById('modal-cancel-btn');
+    const modalMessage = document.getElementById('modal-message');
+
+    // Update modal message with product name
+    modalMessage.textContent = `Are you sure you want to remove "${productName}" from your saved list?`;
+
+    // Show modal
+    modal.style.display = 'block';
+
+    // Handle close button
+    closeBtn.onclick = () => modal.style.display = 'none';
+
+    // Handle cancel button
+    cancelBtn.onclick = () => modal.style.display = 'none';
+
+    // Handle confirm button
+    confirmBtn.onclick = async () => {
+        modal.style.display = 'none';
+        if (await removeFromCart(productId)) {
+            await cart.state.refreshItems();
+            renderOrderSummary();
+            renderPaymentSummary();
+        }
+    };
+
+    // Close modal when clicking outside
+    window.onclick = (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    };
+}
+
+function showClearCartModal() {
+    const modal = document.getElementById('delete-modal');
+    const closeBtn = document.getElementById('modal-close-btn');
+    const confirmBtn = document.getElementById('modal-confirm-btn');
+    const cancelBtn = document.getElementById('modal-cancel-btn');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
+
+    // Update modal content for clear cart
+    modalTitle.textContent = 'Clear Saved List?';
+    modalMessage.textContent = 'Are you sure you want to remove all items from your saved list?';
+
+    // Show modal
+    modal.style.display = 'block';
+
+    // Handle close button
+    closeBtn.onclick = () => modal.style.display = 'none';
+
+    // Handle cancel button
+    cancelBtn.onclick = () => modal.style.display = 'none';
+
+    // Handle confirm button
+    confirmBtn.onclick = async () => {
+        modal.style.display = 'none';
+        if (await clearCart()) {
+            renderOrderSummary();
+            renderPaymentSummary();
+        }
+    };
+
+    // Close modal when clicking outside
+    window.onclick = (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    };
+}
+
 export function renderOrderSummary() {
     let cartSummaryHTML = '';
     const items = cart.getItems();
@@ -72,27 +148,19 @@ export function renderOrderSummary() {
         element.innerHTML = cartSummaryHTML;
         toggleDeleteButton();
         
-        // Add event listeners for delete buttons
+        // Update delete button event listeners to show modal
         document.querySelectorAll('.js-delete-link').forEach(button => {
-            button.addEventListener('click', async (event) => {
-                const productId = event.currentTarget.dataset.productId;
-                if (await removeFromCart(productId)) {
-                    await cart.state.refreshItems();
-                    renderOrderSummary();
-                    renderPaymentSummary();
-                }
+            button.addEventListener('click', () => {
+                const productId = button.dataset.productId;
+                const productName = items.find(item => item.productId === productId)?.name || 'this item';
+                showModal(productId, productName);
             });
         });
 
-        // Add event listener for clear cart button
+        // Update clear cart button to show modal
         const clearCartBtn = document.getElementById('clear-cart-btn');
         if (clearCartBtn) {
-            clearCartBtn.addEventListener('click', async () => {
-                if (await clearCart()) {
-                    renderOrderSummary();
-                    renderPaymentSummary();
-                }
-            });
+            clearCartBtn.addEventListener('click', showClearCartModal);
         }
     }
 }

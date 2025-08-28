@@ -1,9 +1,17 @@
 <?php
 ob_start();
-session_start();
 
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/../../../logs/debug.log');
+
+session_start();
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../middleware/auth_required.php';
+
+// Clear any previous output
+ob_clean();
 
 header('Content-Type: application/json');
 
@@ -12,20 +20,29 @@ try {
         throw new Exception('User not authenticated');
     }
 
+    // Delete all saved items for this user
     $stmt = $pdo->prepare("DELETE FROM saved_items WHERE user_id = ?");
     $result = $stmt->execute([$current_user_id]);
 
     if ($result) {
         echo json_encode([
             'success' => true,
-            'message' => 'Cart cleared successfully'
+            'message' => 'All items removed from saved list'
         ]);
     } else {
-        throw new Exception('Failed to clear cart');
+        throw new Exception('Failed to clear saved list');
     }
 
-} catch (Exception $e) {
+} catch (PDOException $e) {
+    error_log("[" . date('Y-m-d H:i:s') . "] Database error: " . $e->getMessage());
     http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Database error occurred'
+    ]);
+} catch (Exception $e) {
+    error_log("[" . date('Y-m-d H:i:s') . "] Error: " . $e->getMessage());
+    http_response_code(400);
     echo json_encode([
         'success' => false,
         'message' => $e->getMessage()
