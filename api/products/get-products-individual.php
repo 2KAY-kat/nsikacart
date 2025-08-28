@@ -21,13 +21,13 @@ try {
     $search = trim($_GET['search'] ?? '');
     
     // Build WHERE clause for search
-    $whereClause = "WHERE user_id = ?";
-    $params = [$user_id];
+    $whereClause = "WHERE user_id = :user_id";
+    $params = [':user_id' => $user_id];
     
     if (!empty($search)) {
-        $whereClause .= " AND (name LIKE ? OR description LIKE ? OR category LIKE ? OR location LIKE ?)";
+        $whereClause .= " AND (name LIKE :search OR description LIKE :search OR category LIKE :search OR location LIKE :search)";
         $searchParam = "%{$search}%";
-        $params = array_merge($params, [$searchParam, $searchParam, $searchParam, $searchParam]);
+        $params[':search'] = $searchParam;
     }
     
     // Get total count with search
@@ -37,8 +37,22 @@ try {
     $totalPages = ceil($totalRecords / $limit);
     
     // Get paginated products with search
-    $stmt = $pdo->prepare("SELECT * FROM products {$whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?");
-    $stmt->execute(array_merge($params, [$limit, $offset]));
+    $stmt = $pdo->prepare("SELECT * FROM products {$whereClause} ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
+    
+    // First execute the search parameters if they exist
+    if (!empty($search)) {
+        $stmt->bindValue(':user_id', $user_id);
+        $stmt->bindValue(':search', "%{$search}%");
+    } else {
+        $stmt->bindValue(':user_id', $user_id);
+    }
+
+    // Then bind the pagination parameters
+    $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+    
+    // Execute the statement
+    $stmt->execute();
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     foreach ($products as &$product) {
