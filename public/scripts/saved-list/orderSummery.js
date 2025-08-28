@@ -110,7 +110,11 @@ export function renderOrderSummary() {
 
                     <div class="cart-item-details-grid">
                         <a href="details.html?id=${item.productId}">
-                            <img class="product-image" src="${item.image}">
+                            <img class="product-image" 
+                                 src="${item.image || '/nsikacart/public/assets/placeholder.png'}" 
+                                 alt="${item.name}"
+                                 onerror="this.src='/nsikacart/public/assets/placeholder.png'"
+                            >
                         </a>
 
                         <div class="cart-item-details">

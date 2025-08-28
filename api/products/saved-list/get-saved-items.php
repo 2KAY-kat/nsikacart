@@ -52,6 +52,19 @@ try {
         $stmt->execute([$current_user_id]);
         $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        // Process image paths
+        foreach ($items as &$item) {
+            if (!empty($item['image'])) {
+                // If image doesn't start with /, it's just a filename
+                if (strpos($item['image'], '/') !== 0) {
+                    $item['image'] = '/nsikacart/public/dashboard/uploads/' . $item['image'];
+                }
+            } else {
+                // Fallback to placeholder
+                $item['image'] = '/nsikacart/public/assets/placeholder.png';
+            }
+        }
+
         echo json_encode([
             'success' => true,
             'saved_items' => $items,

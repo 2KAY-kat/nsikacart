@@ -869,9 +869,19 @@ input {
 }
 
 .cart-item-details-grid {
-  display: grid;
-  grid-template-columns: 100px 1fr 1fr;
-  column-gap: 25px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: start;
+    margin-bottom: 15px;
+}
+
+.cart-item-details-grid .product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
 }
 
 @media (max-width: 1000px) {
