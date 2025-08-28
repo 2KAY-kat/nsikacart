@@ -27,24 +27,6 @@ try {
         throw new Exception('User not authenticated');
     }
 
-    // Check if the saved_items table exists
-    $tableCheck = $pdo->query("SHOW TABLES LIKE 'saved_items'");
-    if ($tableCheck->rowCount() === 0) {
-        // Create the table if it doesn't exist
-        $pdo->exec("CREATE TABLE IF NOT EXISTS saved_items (
-            id INT PRIMARY KEY AUTO_INCREMENT,
-            user_id INT NOT NULL,
-            product_id INT NOT NULL,
-            quantity INT DEFAULT 1,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-            FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-            UNIQUE KEY unique_user_product (user_id, product_id)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-        
-        error_log("[" . date('Y-m-d H:i:s') . "] Created saved_items table");
-    }
-
     // Get saved items with error logging
     try {
         // Modified query to get location from products table instead of users
