@@ -139,8 +139,11 @@ export function renderOrderSummary() {
                         </div>
                     </div>
                     <div class="saved-list-description">
-                        <h3 class="top"><i class="fa fa-user"></i> ${item.sellerName}</h3>
+                    <div class="restructure-details">
+                        <h3 class="top name""><i class="fa fa-user"></i> ${item.sellerName}</h3>
+                        <hr class="divider">
                         <p class="location">${item.location}</p>
+                    </div>
                     </div>
                 </div>
             `;
