@@ -163,26 +163,31 @@ function displayProductDetails(product) {
                 </button>
                 
                 <div class="account-info-name details-seller-name">
-                    <h3>Product Details <i class="fa fa-indent"></i></h3>
-                    <br>
-                    <h3><i class="fa fa-user"></i> Seller Information</h3>
-                    ${product.seller_name ? `<p><strong>Seller:</strong> ${product.seller_name}</p>` : ''}
-                    <p class="location">
-                        <i class="fa fa-map-marker-alt"></i> ${product.location || 'Location not specified'}
-                    </p>
-                    <p>
-                        <ul class="seller-socails">
-                            <li> 
-                                <i class="fab fa-whatsapp"></i> 
-                                ${product.seller_phone ? 
-                                    `<a href="https://wa.me/${whatsappPhone}?text=${whatsappMessage}" target="_blank" class="whatsapp-link">
-                                        Contact Seller: ${displayPhone}
-                                    </a>` : 
-                                    'Contact Seller: Phone not available'
-                                }
-                            </li>
-                        </ul>
-                    </p>
+                    <h3>Product Details</h3>
+                    <h3 class="seller-information">Seller Information</h3>
+
+                    <div class="restructure-details">
+                        <p class="name"><i class="fa fa-user"></i> ${product.seller_name ? `${product.seller_name}` : ''}</p>
+                        <hr class="divider">
+                        <p>
+                            <ul class="seller-socails">
+                                <li> 
+                                    <i class="fab fa-whatsapp"></i> 
+                                    ${product.seller_phone ? 
+                                        `<a href="https://wa.me/${whatsappPhone}?text=${whatsappMessage}" target="_blank" class="whatsapp-link">
+                                            ${displayPhone}
+                                        </a>` : 
+                                        'Phone not available'
+                                    }
+                                </li>
+                            </ul>
+                        </p>
+                        <hr class="divider">
+                        <h3 class="location">
+                            <i class="fa fa-map-marker-alt"></i> ${product.location || 'Location not specified'}
+                        </h3>
+                    </div>
+
                     <div class="product-description">
                         <h4>Description:</h4>
                         <p>${product.description || 'No description available for this product.'}</p>
@@ -302,20 +307,3 @@ function createToastElement() {
     document.body.appendChild(toast);
     return toast;
 }
-
-// Dashboard redirect functionality
-document.addEventListener('DOMContentLoaded', () => {
-    updateCartQuantity();
-    
-    // Dashboard link handler
-    document.querySelectorAll('.js-dashboard-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            // Add loading state or redirect logic here
-            window.location.href = '/nsikacart/public/dashboard/index.html';
-        });
-    });
-});
-
-
-

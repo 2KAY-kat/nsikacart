@@ -124,6 +124,50 @@ p.location {
     color: #fff;
 }
 
+.restructure-details {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;      
+    gap: 14px;                
+    font-size: 14px;
+    flex-wrap: wrap;          
+}
+
+.restructure-details p,
+.restructure-details h3 {
+    margin: 0;
+    padding: 0;
+}
+
+.restructure-details .seller-socails {
+    margin: 0;
+}
+
+.restructure-details .location {
+    margin-left: 0;
+}
+
+.seller-information {
+    color: #002a46;
+}
+
+.name {
+    color: #002a46;
+    text-transform: capitalize;
+    font-weight: 600;
+}
+
+hr.divider {
+    border: none;
+    height: 4px;
+    width: 4px;
+    border-radius: 50%;
+    background: #002a46;
+    display: inline-block;
+    margin: 0 8px;
+    vertical-align: middle;
+}
+
 .seller-socails {
     display: flex;
     gap: 20px;
