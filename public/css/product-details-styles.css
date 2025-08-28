@@ -107,6 +107,8 @@ p.location {
     color: var(--border-color);
     font-weight: 500;
     margin-left: 10px;
+    text-transform: capitalize;
+
 }
 
 .btn {
