@@ -1594,26 +1594,33 @@ p.saved-list-descriptionP {
 .modal {
   position: fixed;
   z-index: 1000;
-  left: 0; 
+  left: 0;
   top: 0;
-  width: 100vw; 
-  height: 100vh;
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
+  width: 100%;
+  height: 100%;
   background: rgba(0,0,0,0.4);
-  -webkit-backdrop-filter: blur(4px); 
-  backdrop-filter: blur(4px); 
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  display: none; /* Changed from flex to maintain current show/hide functionality */
+}
+
+/* Show modal with flex when visible */
+.modal[style*="display: block"] {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-content {
+  /* Remove any margin/position properties that might interfere with centering */
+  margin: 0;
+  position: relative;
   background: var(--random-color);
   border-radius: 8px;
   padding: 2rem 2rem 1.5rem 2rem;
   box-shadow: 0 2px 16px rgba(0,0,0,0.2);
   min-width: 320px;
   max-width: 90vw;
-  position: relative;
   text-align: center;
 }
 
