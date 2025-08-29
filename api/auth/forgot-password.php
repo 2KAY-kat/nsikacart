@@ -15,7 +15,6 @@ require_once '../../helpers/PHPMailer-master/src/SMTP.php';
 
 // classes that define phpmailer and whtawver it does under the hood 
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 // as usual start the session and set headers

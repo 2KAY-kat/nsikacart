@@ -19,7 +19,6 @@ require_once '../../helpers/PHPMailer-master/src/SMTP.php';
 
 // stage PHPMailer variables and then the headers
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 header('Content-Type: application/json; charset=utf-8');
