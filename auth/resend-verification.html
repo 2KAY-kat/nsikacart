@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../public/assets/favicon.png" type="image/x-icon">
+    <title>Nsikacart | Resend Verification</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="./css/auth-styles.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-box">
+            <div class="checkout-header-middle-section">
+                <img class="dambwe-logo" src="../public/assets/favicon.png">
+            </div>
+            <h2>Resend Verification Email</h2>
+            <p class="subtitle">Enter your email address to receive a new verification link</p>
+            
+            <form id="resend-verification-form" class="login-form">
+                <div class="input-group">
+                    <i class="fa fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Email address" required>
+                </div>
+
+                <button type="submit" class="login-btn">Send Verification Link</button>
+                <div class="message" id="message"></div>
+            </form>
+
+            <p class="register-text">
+                Remember your password? <a href="./login.html">Login here</a>
+            </p>
+        </div>
+    </div>
+    
+    <script src="./js/auth.js"></script>
+    <script src="./js/resend-verification.js"></script>
+</body>
+</html>
