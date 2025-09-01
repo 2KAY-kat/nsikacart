@@ -1,0 +1,7 @@
+.options.legal {
+    font-size: 12px;
+}
+
+.options.legal a {
+    color: var(--accent-color);
+}

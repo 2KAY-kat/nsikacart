@@ -62,7 +62,7 @@ uploadContainer.forEach((container) => {
                 <label>Product Images</label>
                 <div class="image-upload-container">
                     <label class="image-upload-button" id="image_upload_button">
-                        <i class="upload-icon">📷</i>
+                        <div class="upload-icon">📷</div>
                         <span>Choose Images</span>
                         <input type="file" id="product_images" name="images[]" accept="image/*" style="display: none;" multiple>
                     </label>

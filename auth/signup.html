@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nsikacart | Signup</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style-legal.css">
     <link rel="shortcut icon" href="../public/assets/favicon.png" type="image/x-icon">
 
 </head>
@@ -14,7 +15,9 @@
     <div class="login-container">
         <div class="login-box">
             <div class="checkout-header-middle-section">
+              <a href="../public/index.html">
                 <img class="dambwe-logo" src="../public/assets/favicon.png">
+            </a>
             </div>
             <p class="subtitle">Please enter your details</p>
             <form id="signup-form" class="login-form">
@@ -48,12 +51,15 @@
                     <i class="fas fa-check password-match-icon"></i>
                     <i class="fas fa-times password-mismatch-icon "></i>
                 </div>
-
                 <div class="password-strength">
                     <div class="strength-meter"></div>
                     <p class="strength-text"></p>
                 </div>
-
+                <div class="options legal">
+                <label>
+                    <input type="checkbox" required> I agree with site's <a href="../docs/terms.md">terms & conditions</a> and <a href="../docs/privacy-policy">privacy policy</a>
+                </label>
+                </div>
                 <button type="submit" class="login-btn">Sign up</button>
                 <div class="message" id="message"></div>
                 <p class="register-text">
