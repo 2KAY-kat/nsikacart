@@ -10,6 +10,7 @@ productsStatus.unshift('All');
 */
 //import {loadUsers} from './dashboard-render';
 export const sections = {
+    // home dashboard section layout
     home: {
         header: 'Dashboard Home',
         content: `
@@ -17,6 +18,7 @@ export const sections = {
             <p>Select a section from the sidebar to get started.</p>
         `
     },
+    // products dashboard section layout
     products: {
         header: 'Products',
         content: `
@@ -28,7 +30,7 @@ export const sections = {
                         <i class="fa-solid fa-lock"></i>
                     </button>
                 </div>
-              
+            
             </div>
             <div class="products-area-wrapper tableView" id="dashboard-products-table"></div>
             <div class="pagination-container" id="products-pagination-container" style="display: none;">
@@ -54,6 +56,7 @@ export const sections = {
             </div>
         `
     },
+    // admin section user-management, analytics section, activity statics, system settings
     admin: {
         header: 'Welcome to Your Admin Panel, <span id="username"></span> ',
         content: `
@@ -101,7 +104,7 @@ export const sections = {
                                     <p>Total Products</p>
                                 </div>
                             </div>
-                           
+                        
                             <div class="stat-card">
                                 <div class="stat-icon">
                                     <i class="fa-solid fa-signal"></i>
@@ -112,7 +115,7 @@ export const sections = {
                                 </div>
                             </div>
 
-                             <div class="stat-card">
+                            <div class="stat-card">
                                 <div class="stat-icon">
                                     <i class="fa-solid fa-user-check"></i>
                                 </div>
