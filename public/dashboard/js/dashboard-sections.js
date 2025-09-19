@@ -10,6 +10,13 @@ productsStatus.unshift('All');
 */
 //import {loadUsers} from './dashboard-render';
 export const sections = {
+    home: {
+        header: 'Dashboard Home',
+        content: `
+            <h2>Welcome to your dashboard!</h2>
+            <p>Select a section from the sidebar to get started.</p>
+        `
+    },
     products: {
         header: 'Products',
         content: `
