@@ -204,7 +204,6 @@ export const sections = {
                                         <thead>
                                             <tr>
                                                 <th>Username</th>
-                                                <th>Email</th>
                                                 <th>Registered On</th>
                                                 <th>Role</th>
                                                 <th>Status</th>

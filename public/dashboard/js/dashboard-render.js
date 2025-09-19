@@ -650,9 +650,8 @@ export async function loadUsers(page = 1, pageSize = 5) {
                 }
                 const row = `
                     <tr>
-                        <td data-label="Username">${user.name || 'N/A'}</td>
-                        <td data-label="Email">${user.email || 'N/A'}</td>
-                         <td data-label="Created">${createdDate}</td>
+                        <td data-label="Username">${user.name || 'N/A'}</td>  
+                        <td data-label="Created">${createdDate}</td>
                         <td data-label="Role"><span class="role-badge role-${user.role}">${user.role || 'N/A'}</span></td>
                         <td data-label="Status"><span class="status-badge ${statusClass}">${user.status || 'N/A'}</span></td>
                         <td data-label="Actions" class="actions-cell">

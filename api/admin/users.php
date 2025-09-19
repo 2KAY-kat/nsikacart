@@ -57,7 +57,7 @@ try {
     $totalPages = ceil($totalRecords / $limit);
 
     // Build query for actual data with pagination
-    $query = "SELECT id, name, email, role, status, created_at FROM users WHERE 1=1";
+    $query = "SELECT id, name, /*email,*/role, status, created_at FROM users WHERE 1=1";
     $params = [];
 
     if ($role) {
@@ -70,7 +70,7 @@ try {
     }
 
     // Add ORDER BY and LIMIT/OFFSET directly to the query
-    $query .= " ORDER BY created_at DESC LIMIT " . intval($limit) . " OFFSET " . intval($offset);
+    $query .= " ORDER BY name DESC LIMIT " . intval($limit) . " OFFSET " . intval($offset);
 
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);
