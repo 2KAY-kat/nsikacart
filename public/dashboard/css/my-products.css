@@ -173,6 +173,15 @@ body {
     color: var(--sidebar-main-color);
 }
 
+/* mockup button layout alignment */
+.admin-content h3 {
+    margin-left: 20px;
+}
+
+.admin-content > button.app-content-headerButton:first-child {
+    margin-left: 25px;
+}
+
 .app-icon svg {
     width: 24px;
     height: 24px;

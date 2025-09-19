@@ -785,7 +785,7 @@ function setupPaginationEvents() {
             loadUsers(1, newPageSize); 
         });
     }
-}
+} setupPaginationEvents()
 
 async function loadStatistics() {
     try {
@@ -951,7 +951,7 @@ window.performDeleteUser = async function(userId) {
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     if (!toast) {
-     console.log(message);
+        console.log(message);
         return;
     }
     

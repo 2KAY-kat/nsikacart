@@ -83,7 +83,7 @@ export const sections = {
                 <div class="admin-content">
                     <div class="admin-subsection" id="admin-statistics" style="display: block;">
                         <h3>System Statistics</h3>
-                        <button class="app-content-headerButton"><a href="/nsikacart/logs/logs">View Statistics</a></button>
+                        <button class="app-content-headerButton"><a href="/nsikacart/logs/activity.log">View Statistics</a></button>
                         <button class="app-content-headerButton"><a href="">Download Data</a></button>
                         <div class="stats-grid">
                             <div class="stat-card">
