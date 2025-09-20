@@ -701,7 +701,7 @@ a {
     text-decoration: none;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1024px) {
     .sidebar {
         position: fixed;
         top: 0;
@@ -839,7 +839,7 @@ a {
 
 
 /* Responsive: dropup becomes dropdown on small screens */
-@media (max-width: 600px) {
+@media (max-width: 1024px) {
     .account-info .dropup-menu {
         bottom: auto;
         top: 55px;
