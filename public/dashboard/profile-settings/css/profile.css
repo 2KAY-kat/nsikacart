@@ -52,8 +52,8 @@ body {
     background-color: var(--main-color);
 }
 
-.logout-btn {
-    background-color: var(--error-color);
+.header button.logout-btn {
+    background: var(--error-color);
     color: #fff;
     border: none;
     padding: 16px;
@@ -61,8 +61,8 @@ body {
     cursor: pointer;
 }
 
-.logout-btn:hover {
-    background-color: var(--error-color);
+.header button.logout-btn:hover {
+    background-color: var(--price-color);
 }
 
 .tabs {
@@ -84,8 +84,8 @@ body {
 }
 
 .tab-btn.active {
-    color: #2980b9;
-    border-color: #2980b9;
+    color: var(--main-color);
+    border-color: var(--accent-color);
 }
 
 .tab-content .tab-pane {
@@ -119,12 +119,12 @@ input[type="file"] {
 }
 
 input:focus {
-    border-color: #2980b9;
+    border-color: var(--main-color);
     outline: none;
 }
 
 .save-btn {
-    background: #2980b9;
+    background: var(--main-color);
     color: #fff;
     border: none;
     padding: 12px;
@@ -135,7 +135,7 @@ input:focus {
 }
 
 .save-btn:hover {
-    background: #1f6391;
+    background: var(--accent-color);
 }
 
 
@@ -154,7 +154,7 @@ input:focus {
 .address-box button {
     background: none;
     border: none;
-    color: #2980b9;
+    color: var(--main-color);
     cursor: pointer;
     font-size: 14px;
 }
