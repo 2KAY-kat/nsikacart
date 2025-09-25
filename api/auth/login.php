@@ -82,10 +82,10 @@ try {
     /* since the first input besides the password is either email or username ... we check if the inputs is either of those by by checking it against the their other details.
     */
     if (filter_var($login_input, FILTER_VALIDATE_EMAIL)) {
-        $query = "SELECT id, name, email, password, role, email_verified FROM users WHERE email = ?";
+        $query = "SELECT id, name, email, password, role, status, email_verified FROM users WHERE email = ?";
         $params = [$login_input];
     } else {
-        $query = "SELECT id, name, email, password, role, email_verified FROM users WHERE name = ?";
+        $query = "SELECT id, name, email, password, role, status, email_verified FROM users WHERE name = ?";
         $params = [$login_input];
     }
     
@@ -108,6 +108,15 @@ try {
             "success" => false,
             "message" => "Please verify your email address before logging in. Check your inbox for the verification link.",
             "email_not_verified" => true
+        ]);
+        exit;
+    }
+
+    // check if the user is suspemded or not 
+    if ($user['status'] === 'suspended') {
+        echo json_encode([
+            "success" => false,
+            "message" => "Your acount is currently suspended. Please contact the adminstrator"
         ]);
         exit;
     }

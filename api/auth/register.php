@@ -23,7 +23,7 @@ header("Cache-Control: no-cache, must-revalidate");
 try {
     // as ussual only process POST requests
     if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-       http_response_code(405);
+    http_response_code(405);
         echo json_encode([
             "success" => false,
             "message" => "Method not allowed"
