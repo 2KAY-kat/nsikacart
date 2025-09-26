@@ -24,11 +24,14 @@ header.forEach((header) => {
         </div>
     </a>
     <div class="nav-login-cart">
-        <div class="searchIn fa-solid fa-search"> </div>
+        <div class="search-wrapper" title="Search products">
+            <i class="search-icon fa-solid fa-search" aria-hidden="true"></i>
+            <input type="search" class="search-input" placeholder="Search products..." aria-label="Search products" />
+        </div>
         <a href="${header.link}"><i class="fa fa-bag-shopping"></i></a>
         <div class="nav-cart-count cart-quantity js-cart-quantity">0</div>
         <a href="/nsikacart/public/dashboard/index.html" class="js-dashboard-link">
-           <div class="fa-solid fa-gauge"> </div>
+            <div class="fa-solid fa-gauge"> </div>
         </a>
     </div>`;
 })
@@ -122,6 +125,7 @@ function renderProductsByCategory(categoryName) {
                 <div class="product-card">
                     <img class="product-image" src="${product.image}" alt="">
                     <h3 class="product-name">${product.name}</h3>
+                    <!--- <p>${product.category}</p> ---->
                     <p class="product-price">MK${formatCurrency(product.dollar)}</p>
                     <div class="view-details">
                         <button class="btn1 add-to-cart js-add-to-cart"
@@ -225,6 +229,7 @@ document.querySelectorAll('.js-add-to-cart')
         });
     });
 
+    // the back to top button logic 
 const backToTop = document.getElementById('back-to-top');
 
 window.addEventListener('scroll', () => {
@@ -251,9 +256,118 @@ backToTop.addEventListener('click', (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
-   
 
 backToTop.addEventListener('click', (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// emd of back to top
+
+// search logic and rendering and querying hundles
+function renderProductCards(filteredProducts) {
+    let productsHTML = '';
+
+    if (!filteredProducts || filteredProducts.length === 0) {
+        productsHTML = `
+            <div class="no-products-message">
+                <div class="no-products-svg">
+                    <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                        <circle cx="60" cy="60" r="56" stroke="#007bff" stroke-width="8" fill="#333"/>
+                        <ellipse cx="60" cy="85" rx="28" ry="10" fill="#0056b3" opacity="0.5"/>
+                        <path d="M40 60 Q60 80 80 60" stroke="#007bff" stroke-width="4" fill="none" />
+                        <circle cx="50" cy="55" r="4" fill="#007bff"/>
+                        <circle cx="70" cy="55" r="4" fill="#007bff"/>
+                        <path d="M55 75 Q60 78 65 75" stroke="#333" stroke-width="2" fill="#007bff"/>
+                    </svg>
+                </div>
+                <div class="no-products-text">
+                    <h3>No products found</h3>
+                    <p>Sorry, there are no products matching your search.</p>
+                </div>
+            </div>
+        `;
+    } else {
+        filteredProducts.forEach((product) => {
+            productsHTML += `
+                <div class="product-card">
+                    <img class="product-image" src="${product.image}" alt="">
+                    <h3 class="product-name">${product.name}</h3>
+                    <p class="product-price">MK${formatCurrency(product.dollar)}</p>
+                    <div class="view-details">
+                        <button class="btn1 add-to-cart js-add-to-cart"
+                            data-product-id="${product.id}"><i
+                            class="fa fa-bag-shopping"></i></button>
+                        <button class="btn2"><a href="details.html?id=${product.id}">Details</a></button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    document.querySelector('.js-products-grid').innerHTML = productsHTML;
+
+    // making sure the searched results does the ussual functionality=ies like add-to-cart...
+    document.querySelectorAll('.js-add-to-cart').forEach((button) => {
+        button.addEventListener('click', async () => {
+            button.classList.add('animate__animated', 'animate__pulse');
+            const productId = button.dataset.productId;
+            await addToCart(productId);
+            setTimeout(() => {
+                button.classList.remove('animate__animated', 'animate__pulse');
+            }, 1000);
+        });
+    });
+}
+
+// the results query stuff
+function renderSearchResults(query) {
+    const queryText = (query || '').trim().toLowerCase();
+    if (!queryText) {
+        // display the active category if not all
+        if (window.restoreCategorySelection) {
+            window.restoreCategorySelection();
+        } else {
+            renderProductsByCategory('All');
+        }
+        return;
+    }
+
+    // filltering the seaech results by text searched tied to category and description of the product 
+    const results = products.filter(p => {
+        return (p.name && p.name.toLowerCase().includes(queryText)) ||
+            (p.description && p.description.toLowerCase().includes(queryText)) || (p.category && p.category.toLowerCase().includes(queryText));
+    });
+
+    renderProductCards(results);
+}
+
+// hooking up input event. listeners after DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) {
+        let debounceTimer = null;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            const queryText = e.target.value;
+            debounceTimer = setTimeout(() => {
+                renderSearchResults(queryText);
+            }, 250);
+        });
+
+        // focus when hovered and keeps it active ... i dont know some people might want the search bar there for a while ... might comment out later
+        const wrapper = document.querySelector('.search-wrapper');
+        if (wrapper) {
+            wrapper.addEventListener('mouseenter', () => searchInput.focus());
+        }
+
+        // the icon clicks focus the input so mobile users can open the field by clicking the icon
+        const icon = document.querySelector('.search-icon');
+        if (icon) {
+            icon.addEventListener('click', (e) => {
+                e.preventDefault();
+                searchInput.focus();
+            });
+        }
+    }
 });
