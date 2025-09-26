@@ -603,7 +603,7 @@ export async function loadUsers(page = 1, pageSize = 5) {
         if (data.data && data.data.length > 0) {
             data.data.forEach(user => {
                 const statusClass = user.status === 'active' ? 'status-active' : 'status-inactive';
-                const actionText = user.status === 'active' ? 'Suspend' : 'Activate';
+                const actionText = user.status === 'active' ? '<i class="fa fa-user-slash"></i>' : 'Activate';
                 const actionClass = user.status === 'active' ? 'btn-warning' : 'btn-success';
                 
                 // Check current user permissions
@@ -628,7 +628,7 @@ export async function loadUsers(page = 1, pageSize = 5) {
                 
                 // Only admins can delete users (except themselves)
                 if (isCurrentUserAdmin && !isCurrentUser) {
-                    deleteButton = `<button onclick="deleteUser(${user.id}, '${user.name}')" class="action-btn btn-danger">Delete</button>`;
+                    deleteButton = `<button onclick="deleteUser(${user.id}, '${user.name}')" class="action-btn btn-danger"><i class="fa fa-trash-can"></i></button>`;
                 }
                 
                 // Show different messages for current user's own row

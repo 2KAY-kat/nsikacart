@@ -1,7 +1,7 @@
 import { cart, removeFromCart, clearCart, toggleDeleteButton } from '../cart.js';
 import { formatCurrency } from '../utilities/calculate_cash.js';
-import dayjs from '../../package/esm/index.js';
 import { renderPaymentSummary } from './paymentsummary.js';
+import dayjs from 'https://cdn.jsdelivr.net/npm/dayjs@1.11.18/+esm';
 
 // Add modal handling functions
 function showModal(productId, productName) {
