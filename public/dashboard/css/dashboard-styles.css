@@ -1003,7 +1003,7 @@ a {
     padding-right: 20px;
 }
 
-/* Analytics header should stay sticky at top */
+/* Analytics header should stay sticky at top ... but we dont need this shit anymore
 .analytics-header {
     display: flex;
     justify-content: space-between;
@@ -1015,7 +1015,8 @@ a {
     z-index: 10;
     padding: 10px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
+} */
+
 
 /* Ensure analytics content flows properly */
 .analytics-overview {

@@ -18,7 +18,10 @@ try {
     if ($current_user_role !== 'admin' && $current_user_role !== 'monitor') {
         ob_clean();
         http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'Access denied']);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Access denied'
+        ]);
         exit;
     }
 

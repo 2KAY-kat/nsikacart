@@ -129,8 +129,12 @@ export const sections = {
                     
                     <div class="admin-subsection" id="admin-activity-analytics" style="display: none;">
                         <div class="analytics-container">
+
+                        <h3>Site Activity Analytics</h3>
+
+                            <!-- this is fucking up the whole ui
                             <div class="analytics-header">
-                                <h3>Site Activity Analytics</h3>
+                                
                                 <div class="analytics-controls">
                                     <select id="analytics-period" class="form-control">
                                         <option value="7">Last 7 days</option>
@@ -142,6 +146,7 @@ export const sections = {
                                     </button>
                                 </div>
                             </div>
+                            -->
                             
                             <div class="analytics-content">
                                 <div class="analytics-overview">

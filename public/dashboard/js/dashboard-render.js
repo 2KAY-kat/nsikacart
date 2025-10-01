@@ -222,8 +222,8 @@ async function loadActivityAnalytics() {
         createTopEndpointsTable(data.endpoints);
         createRecentActivitiesTable(data.recent_activities);
         
-        // Setup refresh handler
-        setupAnalyticsControls();
+        // // Setup refresh handler 
+        // setupAnalyticsControls();
         
     } catch (error) {
         console.error('Error loading analytics:', error);
@@ -542,18 +542,18 @@ function createRecentActivitiesTable(activities) {
     container.innerHTML = table;
 }
 
-function setupAnalyticsControls() {
-    const periodSelect = document.getElementById('analytics-period');
-    const refreshBtn = document.getElementById('refresh-analytics');
+// function setupAnalyticsControls() { this function is in no use ists container was messing up the ui presantation so it dies here kaye
+//     const periodSelect = document.getElementById('analytics-period');
+//     // const refreshBtn = document.getElementById('refresh-analytics');
     
-    if (periodSelect) {
-        periodSelect.addEventListener('change', loadActivityAnalytics);
-    }
+//     if (periodSelect) {
+//         periodSelect.addEventListener('change', loadActivityAnalytics);
+//     }
     
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', loadActivityAnalytics);
-    }
-}
+//     // if (refreshBtn) { the refre
+//     //     refreshBtn.addEventListener('click', loadActivityAnalytics);
+//     // }
+// }
 
 // Global pagination state
 let currentPage = 1;
