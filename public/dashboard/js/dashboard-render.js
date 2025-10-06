@@ -181,7 +181,7 @@ async function loadActivityAnalytics() {
         await loadChartJS();
         
         const period = document.getElementById('analytics-period')?.value || 30;
-        const response = await fetch(`./api/analytics/activity-stats.php?days=${period}`);
+        const response = await fetch(`../../api/analytics/activity-stats.php?days=${period}`);
         
         // Check if response is ok
         if (!response.ok) {
@@ -570,7 +570,7 @@ export async function loadUsers(page = 1, pageSize = 5) {
     }
     
     try {
-        const response = await fetch(`./api/admin/users.php?page=${page}&limit=${pageSize}`);
+        const response = await fetch(`../../api/admin/users.php?page=${page}&limit=${pageSize}`);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -789,7 +789,7 @@ function setupPaginationEvents() {
 
 async function loadStatistics() {
     try {
-        const response = await fetch('./api/admin/get-statistics.php');
+        const response = await fetch('../../api/admin/get-statistics.php');
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -856,7 +856,7 @@ window.changeUserRole = async function() {
     }
     
     try {
-        const response = await fetch('./api/admin/change-user-role.php', {
+        const response = await fetch('../../api/admin/change-user-role.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -886,7 +886,7 @@ window.changeUserRole = async function() {
 // Update the user action functions
 window.toggleUserStatus = async function(userId, currentStatus) {
     try {
-        const response = await fetch('./api/admin/toggle-user-status.php', {
+        const response = await fetch('../../api/admin/toggle-user-status.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -926,7 +926,7 @@ window.deleteUser = function(userId, username) {
 
 window.performDeleteUser = async function(userId) {
     try {
-        const response = await fetch('./api/admin/delete-user.php', {
+        const response = await fetch('../../api/admin/delete-user.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

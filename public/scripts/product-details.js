@@ -39,7 +39,7 @@ const productId = urlParams.get('id');
 // Fetch and display product details
 async function fetchAndDisplayProduct(productId) {
     try {
-        const response = await fetch('./api/products/get-public-products.php');
+        const response = await fetch('../api/products/get-public-products.php');
         const data = await response.json();
 
         if (data.success) {

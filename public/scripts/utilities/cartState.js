@@ -18,7 +18,7 @@ class CartState {
 
     async refreshItems() {
         try {
-            const response = await fetch('../../api/products/saved-list/get-saved-items.php');
+            const response = await fetch('/../../../api/products/saved-list/get-saved-items.php');
             const text = await response.text();
             
             try {
@@ -47,7 +47,7 @@ class CartState {
 
     async refreshCount() {
         try {
-            const response = await fetch('../../api/products/saved-list/get-saved-count.php');
+            const response = await fetch('/../../../api/products/saved-list/get-saved-count.php');
             const text = await response.text();
             
             try {
