@@ -128,3 +128,11 @@ secrets/
 
 # temp ignore
 test.db.php
+
+
+
+
+password VSSsxWwulospGmcMpAZxvbAfzKDoyLpJ
+username root
+connection url mysql://root:VSSsxWwulospGmcMpAZxvbAfzKDoyLpJ@centerbeam.proxy.rlwy.net:24134/railway
+raw command mysql -h centerbeam.proxy.rlwy.net -u root -p VSSsxWwulospGmcMpAZxvbAfzKDoyLpJ --port 24134 --protocol=TCP railway

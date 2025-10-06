@@ -16,7 +16,7 @@ COPY auth/ /var/www/html/auth/
 
 # Copy backend and config (not public)
 COPY api/ /var/www/api/
-COPY config/ /var/www/logs/
+COPY logs/ /var/www/logs/
 COPY helpers/ /var/www/helpers/
 
 # Expose Railway port
