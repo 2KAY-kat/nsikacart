@@ -40,7 +40,7 @@ export async function renderProductsTable(page = 1, pageSize = 5, searchTerm = '
 
     try {
         // Add search parameter to the request
-        let apiUrl = `/nsikacart/api/products/get-products-individual.php?page=${page}&limit=${pageSize}`;
+        let apiUrl = `./api/products/get-products-individual.php?page=${page}&limit=${pageSize}`;
         if (searchTerm) {
             apiUrl += `&search=${encodeURIComponent(searchTerm)}`;
         }
@@ -304,7 +304,7 @@ async function deleteProduct(productId) {
             return;
         }
 
-        const response = await fetch('/nsikacart/api/products/delete.php', {
+        const response = await fetch('./api/products/delete.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

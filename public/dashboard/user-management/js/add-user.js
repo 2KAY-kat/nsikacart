@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = Object.fromEntries(new FormData(form).entries());
 
     try {
-      const res = await fetch('/nsikacart/api/admin/add-users.php', {
+      const res = await fetch('./api/admin/add-users.php', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(data)
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast(json.message, json.success ? 'success' : 'error');
       if (json.success) form.reset();
 setTimeout(() => {
-                window.location.href = '/nsikacart/public/dashboard/index.html';
+                window.location.href = '/public/dashboard/index.html';
             }, 2000);
     } catch (err) {
       console.error(err);

@@ -12,7 +12,7 @@ function showToast(message, type = "success") {
 
 logoutBtn.addEventListener("click", async () => {
     try {
-        const response = await fetch("/nsikacart/api/auth/logout.php", {
+        const response = await fetch("./api/auth/logout.php", {
             method: "POST"
         });
         const result = await response.json();
@@ -20,7 +20,7 @@ logoutBtn.addEventListener("click", async () => {
         if (result.success) {
             showToast(result.message, "success");
             setTimeout(() => {
-                window.location.href = "/nsikacart/auth/login.html";
+                window.location.href = "./auth/login.html";
             }, 1200);
         } else {
             showToast(result.message || "Logout failed", "error");

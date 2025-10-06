@@ -46,7 +46,7 @@ function handleSignup(e) {
     submitButton.disabled = true;
     submitButton.textContent = 'Creating Account...';
 
-    fetch('/nsikacart/api/auth/register.php', {
+    fetch('./api/auth/register.php', {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

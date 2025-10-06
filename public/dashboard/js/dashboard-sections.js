@@ -83,7 +83,7 @@ export const sections = {
                 <div class="admin-content">
                     <div class="admin-subsection" id="admin-statistics" style="display: block;">
                         <h3>System Statistics</h3>
-                        <button class="app-content-headerButton"><a href="/nsikacart/logs/activity.log">View Statistics</a></button>
+                        <button class="app-content-headerButton"><a href="./logs/activity.log">View Statistics</a></button>
                         <button class="app-content-headerButton"><a href="">Download Data</a></button>
                         <div class="stats-grid">
                             <div class="stat-card">
@@ -209,7 +209,7 @@ export const sections = {
                     
                     <div class="admin-subsection" id="admin-users" style="display: none;">
                         <h3></h3>
-                        <button class="app-content-headerButton"><a href="/nsikacart/public/dashboard/user-management/add-user.html"><i class="fa-solid fa-user-plus"></i> Add User</a></button>
+                        <button class="app-content-headerButton"><a href="/public/dashboard/user-management/add-user.html"><i class="fa-solid fa-user-plus"></i> Add User</a></button>
                         <button class="app-content-headerButton"><a href="">View User Activity</a></button>
                         <div class="users-management">
                             <div class="users-table-container">

@@ -18,7 +18,7 @@ class CartState {
 
     async refreshItems() {
         try {
-            const response = await fetch('/nsikacart/api/products/saved-list/get-saved-items.php');
+            const response = await fetch('../../api/products/saved-list/get-saved-items.php');
             const text = await response.text();
             
             try {
@@ -30,7 +30,7 @@ class CartState {
                         name: item.name,
                         dollar: parseFloat(item.dollar),
                         description: item.description,
-                        image: item.image || '`/nsikacart/public/assets/placeholder.png`',
+                        image: item.image || '`/public/assets/placeholder.png`',
                         postedDate: item.posted_date,
                         location: item.location,
                         sellerName: item.seller_name
@@ -47,7 +47,7 @@ class CartState {
 
     async refreshCount() {
         try {
-            const response = await fetch('/nsikacart/api/products/saved-list/get-saved-count.php');
+            const response = await fetch('../../api/products/saved-list/get-saved-count.php');
             const text = await response.text();
             
             try {

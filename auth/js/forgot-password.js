@@ -68,7 +68,7 @@ function handleResetPassword(e) {
     submitButton.disabled = true;
     submitButton.textContent = 'Sending reset email...';
 
-    fetch('/nsikacart/api/auth/forgot-password.php', {
+    fetch('./api/auth/forgot-password.php', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -108,7 +108,7 @@ function handleResetPassword(e) {
             
             // Redirect after success
             setTimeout(() => {
-                window.location.href = "/nsikacart/auth/login.html";
+                window.location.href = "./auth/login.html";
             }, 2000);
         } else {
             if (typeof window.showToast === 'function') {

@@ -80,7 +80,7 @@ function handleLogin(e) {
         return false;
     }
 
-    fetch('/nsikacart/api/auth/login.php', {
+    fetch('./api/auth/login.php', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -125,7 +125,7 @@ function handleLogin(e) {
             
             // Redirect after a short delay
             setTimeout(() => {
-                window.location.href = "/nsikacart/public/dashboard/index.html";
+                window.location.href = "/public/dashboard/index.html";
             }, 1500);
         } else {
             // Show error toast

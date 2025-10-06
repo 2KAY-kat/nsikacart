@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function verifyEmail(token) {
     try {
-        const response = await fetch('/nsikacart/api/auth/verify-email.php', {
+        const response = await fetch('./api/auth/verify-email.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

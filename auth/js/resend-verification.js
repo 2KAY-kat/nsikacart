@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.disabled = true;
             submitButton.textContent = 'Sending...';
 
-            const response = await fetch('/nsikacart/api/auth/resend-verification.php', {
+            const response = await fetch('./api/auth/resend-verification.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

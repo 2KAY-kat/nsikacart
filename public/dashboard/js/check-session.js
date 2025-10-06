@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 window.addEventListener('DOMContentLoaded', async () => {
     try {
-        const response = await fetch('/nsikacart/api/auth/check-session.php');
+        const response = await fetch('./api/auth/check-session.php');
         const result = await response.json();
 
         if (result.success && result.user && result.user.name) {
@@ -15,10 +15,10 @@ window.addEventListener('DOMContentLoaded', async () => {
             // store user role for dashboard.js
             window.currentUserRole = result.user.role;
         } else {
-            window.location.href = '/nsikacart/auth/login.html';
+            window.location.href = './auth/login.html';
         }
     } catch (err) {
-        window.location.href = '/nsikacart/auth/login.html';
+        window.location.href = './auth/login.html';
     }
 });
 

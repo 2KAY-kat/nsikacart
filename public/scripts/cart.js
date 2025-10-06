@@ -54,7 +54,7 @@ cart.subscribe(updateCartIcon);
 
 export async function addToCart(productId) {
     try {
-        const response = await fetch('/nsikacart/api/products/saved-list/add-to-saved.php', {
+        const response = await fetch('./api/products/saved-list/add-to-saved.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -84,7 +84,7 @@ export async function addToCart(productId) {
 
 export async function removeFromCart(productId) {
     try {
-        const response = await fetch('/nsikacart/api/products/saved-list/remove-saved-item.php', {
+        const response = await fetch('./api/products/saved-list/remove-saved-item.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -120,7 +120,7 @@ export async function removeFromCart(productId) {
 }
 export async function clearCart() {
     try {
-        const response = await fetch('/nsikacart/api/products/saved-list/clear-cart.php', {
+        const response = await fetch('./api/products/saved-list/clear-cart.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

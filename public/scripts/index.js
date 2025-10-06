@@ -30,7 +30,7 @@ header.forEach((header) => {
         </div>
         <a href="${header.link}"><i class="fa fa-bag-shopping"></i></a>
         <div class="nav-cart-count cart-quantity js-cart-quantity">0</div>
-        <a href="/nsikacart/public/dashboard/index.html" class="js-dashboard-link">
+        <a href="./dashboard/index.html" class="js-dashboard-link">
             <div class="fa-solid fa-gauge"> </div>
         </a>
     </div>`;
@@ -61,7 +61,7 @@ let products = [];
 
 async function fetchPublicProducts() {
     try {
-        const response = await fetch('/nsikacart/api/products/get-public-products.php');
+        const response = await fetch('../api/products/get-public-products.php');
         const data = await response.json();
 
         if (data.success) {

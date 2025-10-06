@@ -9,7 +9,7 @@ async function validateSession() {
     if (!user || !user.id) {
         console.log('No user in sessionStorage, checking server...');
         try {
-            const response = await fetch('/nsikacart/api/auth/check-session.php');
+            const response = await fetch('./api/auth/check-session.php');
             console.log('Server response status:', response.status);
             
             const data = await response.json();
@@ -21,12 +21,12 @@ async function validateSession() {
                 return true;
             } else {
                 console.log('No valid session found on server');
-                window.location.href = '/nsikacart/auth/login.html';
+                window.location.href = './auth/login.html';
                 return false;
             }
         } catch (error) {
             console.error('Session validation error:', error);
-            window.location.href = '/nsikacart/auth/login.html';
+            window.location.href = './auth/login.html';
             return false;
         }
     }

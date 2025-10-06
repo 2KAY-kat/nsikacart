@@ -39,7 +39,7 @@ const productId = urlParams.get('id');
 // Fetch and display product details
 async function fetchAndDisplayProduct(productId) {
     try {
-        const response = await fetch('/nsikacart/api/products/get-public-products.php');
+        const response = await fetch('./api/products/get-public-products.php');
         const data = await response.json();
 
         if (data.success) {
@@ -52,7 +52,7 @@ async function fetchAndDisplayProduct(productId) {
                 description: product.description,
                 location: product.location,
                 images: product.images || [],
-                image: product.main_image || (product.images && product.images[0]) || '/nsikacart/public/assets/placeholder.png',
+                image: product.main_image || (product.images && product.images[0]) || './public/assets/placeholder.png',
                 seller_phone: product.seller_phone,
                 seller_name: product.seller_name
             }));
