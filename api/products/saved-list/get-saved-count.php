@@ -1,22 +1,28 @@
 <?php
+// Start output buffering
 ob_start();
 
-// Disable error display
+// Enable error logging but disable display
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/../../../logs/debug.log');
 
 session_start();
-require_once __DIR__ . '../../config/db.php';
-require_once __DIR__ . '../../middleware/auth_required.php';
+require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../middleware/auth_required.php';
 
 // Clear any previous output
 ob_clean();
-
 header('Content-Type: application/json');
 
 try {
+    // First check if database connection exists
+    if (!isset($pdo)) {
+        throw new Exception('Database connection not established');
+    }
+
+    // Check if user is authenticated
     if (!isset($current_user_id)) {
         throw new Exception('User not authenticated');
     }

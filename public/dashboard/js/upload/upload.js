@@ -100,7 +100,7 @@ if (isEditMode && editProductId) {
 
 async function loadProductForEdit(productId) {
     try {
-        const response = await fetch(`./api/products/get-product.php?id=${productId}`);
+        const response = await fetch(`../../api/products/get-product.php?id=${productId}`);
         const data = await response.json();
         
         if (!data.success) {
@@ -291,13 +291,13 @@ function showToast(message, type = 'success') {
 async function uploadProduct(formData) {
     const user = JSON.parse(sessionStorage.getItem('user'));
     if (!user || !user.id) {
-        window.location.href = './auth/login.html';
+        window.location.href = '../../auth/login.html';
         return;
     }
 
     try {
         // Use different endpoint for edit vs create
-        const endpoint = isEditMode ? './api/products/update.php' : './api/products/upload.php';
+        const endpoint = isEditMode ? '../../api/products/update.php' : '../../api/products/upload.php';
         
         const response = await fetch(endpoint, {
             method: 'POST',
@@ -307,7 +307,7 @@ async function uploadProduct(formData) {
 
         if (response.status === 401) {
             sessionStorage.removeItem('user');
-            window.location.href = './auth/login.html';
+            window.location.href = '../../auth/login.html';
             return;
         }
 
@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const user = sessionStorage.getItem('user');
     console.log('Session storage user on load:', user ? JSON.parse(user) : null);
     
-    fetch('./api/auth/session-debugg.php')
+    fetch('../../api/auth/session-debug.php')
         .then(res => res.json())
         .then(data => {
             console.log('PHP session debug data:', data);
