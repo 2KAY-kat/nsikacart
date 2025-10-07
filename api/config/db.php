@@ -6,7 +6,7 @@ loadEnv(__DIR__ . '/../../.env');
 
 try {
     $host = env('DB_HOST');
-    $port = env('DB_PORT', 3306);
+    $port = env('DB_PORT', 3306);  
     $db   = env('DB_NAME');
     $user = env('DB_USER');
     $pass = env('DB_PASS');
