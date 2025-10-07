@@ -34,7 +34,7 @@ try {
         throw new Exception('Invalid content type. Must be multipart/form-data');
     }
 
-    $upload_dir = __DIR__ . '/../../public/dashboard/uploads/';
+    $upload_dir = __DIR__ . '../../public/dashboard/uploads/';
 
     // ensure uploads directory exists and is writable
     if (!file_exists($upload_dir)) {

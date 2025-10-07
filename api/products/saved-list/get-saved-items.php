@@ -57,11 +57,11 @@ try {
             if (!empty($item['image'])) {
                 // If image doesn't start with /, it's just a filename
                 if (strpos($item['image'], '/') !== 0) {
-                    $item['image'] = '/nsikacart/public/dashboard/uploads/' . $item['image'];
+                    $item['image'] = '../public/dashboard/uploads/' . $item['image'];
                 }
             } else {
                 // Fallback to placeholder
-                $item['image'] = '/nsikacart/public/assets/placeholder.png';
+                $item['image'] = '../public/assets/placeholder.png';
             }
         }
 

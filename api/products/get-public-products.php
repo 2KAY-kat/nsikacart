@@ -31,7 +31,7 @@ try { // joining the users table and the products table lets as refernce the sel
         // Convert image filenames to web URLs
         if (!empty($product['images'])) {
             $product['images'] = array_map(function($imageName) {
-                return '/nsikacart/public/dashboard/uploads/' . $imageName;
+                return '../public/dashboard/uploads/' . $imageName;
             }, $product['images']);
         }
         
@@ -39,14 +39,14 @@ try { // joining the users table and the products table lets as refernce the sel
         if (!empty($product['main_image'])) {
             // If main_image doesn't start with /, it's just a filename
             if (strpos($product['main_image'], '/') !== 0) {
-                $product['main_image'] = '/nsikacart/public/dashboard/uploads/' . $product['main_image'];
+                $product['main_image'] = '../public/dashboard/uploads/' . $product['main_image'];
             }
         } else if (!empty($product['images'])) {
             // Use first image as main_image if main_image is empty
             $product['main_image'] = $product['images'][0];
         } else {
             // Fallback to placeholder
-            $product['main_image'] = '/nsikacart/public/assets/placeholder.png';
+            $product['main_image'] = '../public/assets/placeholder.png';
         }
         
         // Convert price to float
