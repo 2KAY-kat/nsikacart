@@ -7,17 +7,17 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql
 # Enable mod_rewrite for clean URLs
 RUN a2enmod rewrite
 
-# Set working directory
+# Set working directory to the public folder
 WORKDIR /var/www/html
 
 # Copy frontend files
 COPY public/ /var/www/html/
 COPY auth/ /var/www/html/auth/
 
-# Copy backend and config (not public)
+# Copy backend and helpers (API stays outside public)
 COPY api/ /var/www/api/
-COPY logs/ /var/www/logs/
 COPY helpers/ /var/www/helpers/
+COPY logs/ /var/www/logs/
 
 # Expose Railway port
 EXPOSE 8080
@@ -28,6 +28,11 @@ RUN sed -i 's/80/8080/' /etc/apache2/ports.conf /etc/apache2/sites-available/000
 # Allow .htaccess override for public folder
 RUN echo '<Directory "/var/www/html">\nAllowOverride All\n</Directory>' > /etc/apache2/conf-available/override.conf \
     && a2enconf override
+
+# Set up Apache alias for API folder
+RUN echo 'Alias /api /var/www/api\n<Directory "/var/www/api">\n    AllowOverride None\n    Require all granted\n</Directory>' \
+    > /etc/apache2/conf-available/api.conf \
+    && a2enconf api
 
 # Start Apache
 CMD ["apache2-foreground"]
