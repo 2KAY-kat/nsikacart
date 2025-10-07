@@ -34,7 +34,11 @@ try {
         throw new Exception('Invalid content type. Must be multipart/form-data');
     }
 
-    $upload_dir = __DIR__ . '../../public/dashboard/uploads/';
+    // Correct upload directory (use explicit path segments)
+    $upload_dir = __DIR__ . '/../../public/dashboard/uploads/';
+
+    // Web-accessible base path for returned URLs (assumes public/ is docroot)
+    $upload_web_base = '/dashboard/uploads/';
 
     // ensure uploads directory exists and is writable
     if (!file_exists($upload_dir)) {
@@ -106,24 +110,24 @@ try {
     $main_image_name = uniqid() . '_' . basename($main_image['name']);
     $main_image_path = $upload_dir . $main_image_name;
 
-    // validate image type
+    // validate image type (keep allowed list)
     $allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!in_array($main_image['type'], $allowed_types)) {
         throw new Exception("Invalid file type. Only JPG, PNG,  WEBP and GIF allowed");
     }
 
     if (!move_uploaded_file($main_image['tmp_name'], $main_image_path)) {
-        throw new Exception("Failed to upload main image");
+        throw new Exception("Failed to move main image to uploads directory");
     }
 
     // process additional images
     $other_images = [];
     if (isset($_FILES['images'])) {
         foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
-            if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
+            if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK && is_uploaded_file($tmp_name)) {
                 $image_name = uniqid() . '_' . basename($_FILES['images']['name'][$key]);
                 $image_path = $upload_dir . $image_name;
-                
+
                 if (move_uploaded_file($tmp_name, $image_path)) {
                     $other_images[] = $image_name;
                 }
@@ -142,7 +146,7 @@ try {
         throw new Exception("Invalid status value");
     }
 
-    // prepare image data for database
+    // prepare image data for database (store filenames; front end will build full urls)
     $images_json = json_encode(array_merge([$main_image_name], $other_images));
 
     // insert into database with proper type casting
@@ -170,38 +174,30 @@ try {
         $user_id
     ])) {
         $product_id = $pdo->lastInsertId();
-        
-        // writes into the log file for the uplaod sucess helpful to track error on uplaods and some common traits of users upload activity
+
+        // Use POST values (not undefined $name, $category etc.)
         ActivityLogger::logDatabaseActivity('INSERT', 'products', $product_id, [
-            'name' => $name,
-            'category' => $category,
-            'price' => $price,
-            'location' => $location
+            'name' => $_POST['name'] ?? '',
+            'category' => $_POST['category'] ?? '',
+            'price' => $_POST['price'] ?? '',
+            'location' => $_POST['location'] ?? ''
         ]);
-        
-        ActivityLogger::logAudit('PRODUCT_CREATED', "Product '$name' created successfully", 'INFO');
-        
-        // add debug logging
+
+        ActivityLogger::logAudit('PRODUCT_CREATED', "Product '{$_POST['name']}' created successfully", 'INFO');
+
         logDebug([
             'session' => $_SESSION,
             'user_id' => $user_id ?? 'not set',
             'post_data' => $_POST
         ]);
 
-        // file upload handling
-        foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
-            $target_file = $upload_dir . uniqid() . '_' . basename($_FILES['images']['name'][$key]);
-            
-            if (move_uploaded_file($tmp_name, $target_file)) {
-                // Log file upload
-                ActivityLogger::logFileActivity('upload', $target_file, $_FILES['images']['size'][$key]);
-            }
-        }
-        
         echo json_encode([
             'success' => true,
             'message' => 'Product uploaded successfully',
-            'product_id' => $product_id
+            'product_id' => $product_id,
+            // optional: return web URLs so frontend can immediately show uploaded images
+            'main_image_url' => $upload_web_base . $main_image_name,
+            'images' => array_map(fn($n) => $upload_web_base . $n, array_merge([$main_image_name], $other_images))
         ]);
     }
 } catch (Exception $e) {
