@@ -71,7 +71,7 @@ export async function renderProductsTable(page = 1, pageSize = 5, searchTerm = '
             const imgSrc = `uploads/${product.main_image}`;
             return `
                 <div class="products-row">
-                    <a class="product-cell image" href="../../public/details.html?id=${product.id}">
+                    <a class="product-cell image" href="../../details.html?id=${product.id}">
                         <img src="${imgSrc}" alt="product">
                         <span>${product.name}</span>
                     </a>

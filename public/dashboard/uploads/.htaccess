@@ -1,0 +1,16 @@
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
+
+Options -Indexes
+Options +FollowSymLinks
+
+<IfModule mod_mime.c>
+    AddType image/jpeg .jpg .jpeg
+    AddType image/png .png
+    AddType image/gif .gif
+</IfModule>
+
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>

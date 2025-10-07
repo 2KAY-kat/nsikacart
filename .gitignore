@@ -21,9 +21,6 @@ config/production.php
 /api/auth/test*.php
 
 # User uploads and data
-/public/dashboard/uploads/
-/uploads/
-/user-uploads/
 
 # Vendor directories
 /public/package/

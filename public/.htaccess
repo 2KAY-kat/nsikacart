@@ -2,14 +2,14 @@
     RewriteEngine On
     RewriteBase /
 
-    # Allow API requests to bypass SPA routing
+    # Exclude API
     RewriteRule ^api/ - [L]
 
-    # Allow direct access to static files
+    # Static files
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
-    # Route all other requests to index.html (SPA)
+    # SPA routing
     RewriteRule ^ index.html [L]
 </IfModule>
