@@ -106,7 +106,6 @@ README-local.md
 *-old.*
 
 # Helper files that contain sensitive examples
-/helpers/PHPMailer-master/
 
 # Email configuration backups
 email-config.backup
