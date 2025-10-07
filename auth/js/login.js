@@ -125,7 +125,7 @@ function handleLogin(e) {
             
             // Redirect after a short delay
             setTimeout(() => {
-                window.location.href = "../public/dashboard/index.html";
+                window.location.href = "../public/dashboard/";
             }, 1500);
         } else {
             // Show error toast

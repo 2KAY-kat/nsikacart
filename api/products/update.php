@@ -24,7 +24,7 @@ try {
         throw new Exception('Product not found or access denied');
     }
     
-    $upload_dir = __DIR__ . '../../public/dashboard/uploads/';
+    $upload_dir = __DIR__ . 'uploads/';
     
     // Prepare update fields
     $update_fields = [];

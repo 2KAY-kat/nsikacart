@@ -424,19 +424,6 @@ async function handleFormSubmit(event) {
 
 document.getElementById('product-form').addEventListener('submit', handleFormSubmit);
 
-// Debug logging (existing code)
-document.addEventListener('DOMContentLoaded', () => {
-    const user = sessionStorage.getItem('user');
-    console.log('Session storage user on load:', user ? JSON.parse(user) : null);
-    
-    fetch('../../api/auth/session-debug.php')
-        .then(res => res.json())
-        .then(data => {
-            console.log('PHP session debug data:', data);
-        })
-        .catch(err => console.error('Error fetching session debug:', err));
-});
-
 document.addEventListener('DOMContentLoaded', () => {
     // Load product data if in edit mode
     if (isEditMode && editProductId) {
