@@ -1,18 +1,21 @@
 <?php
 require_once __DIR__ . '/../../helpers/env.php';
 
-// Load environment variables
+// Load local .env if exists
 loadEnv(__DIR__ . '/../../.env');
 
 try {
-    $dsn = "mysql:host=" . env('DB_HOST') . ";port=" . env('DB_PORT') . ";dbname=" . env('DB_NAME');
-    $username = env('DB_USER');
-    $password = env('DB_PASS');
+    $host = env('DB_HOST', 'localhost');
+    $port = env('DB_PORT', 3306);
+    $db   = env('DB_NAME', 'nsikacart');
+    $user = env('DB_USER', 'root');
+    $pass = env('DB_PASS', '');
 
-    $pdo = new PDO($dsn, $username, $password, [
+    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
+
+    $pdo = new PDO($dsn, $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
     ]);
 } catch (PDOException $e) {
     error_log("Database connection failed: " . $e->getMessage());
