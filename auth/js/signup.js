@@ -46,7 +46,7 @@ function handleSignup(e) {
     submitButton.disabled = true;
     submitButton.textContent = 'Creating Account...';
 
-    fetch('./api/auth/register.php', {
+    fetch('../api/auth/register.php', {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -71,7 +71,7 @@ function handleSignup(e) {
             // Show verification notice with 15-minute warning
             setTimeout(() => {
                 alert('Registration successful! Please check your email and click the verification link within 15 minutes before logging in.');
-                window.location.href = "./login.html";
+                window.location.href = "login.html";
             }, 2000);
         } else {
             if (typeof window.showToast === 'function') {

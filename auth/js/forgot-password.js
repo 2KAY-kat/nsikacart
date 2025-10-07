@@ -68,7 +68,7 @@ function handleResetPassword(e) {
     submitButton.disabled = true;
     submitButton.textContent = 'Sending reset email...';
 
-    fetch('./api/auth/forgot-password.php', {
+    fetch('../api/auth/forgot-password.php', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -108,7 +108,7 @@ function handleResetPassword(e) {
             
             // Redirect after success
             setTimeout(() => {
-                window.location.href = "./auth/login.html";
+                window.location.href = "login.html";
             }, 2000);
         } else {
             if (typeof window.showToast === 'function') {

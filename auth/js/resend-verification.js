@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.disabled = true;
             submitButton.textContent = 'Sending...';
 
-            const response = await fetch('./api/auth/resend-verification.php', {
+            const response = await fetch('../api/auth/resend-verification.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Redirect to login page after 3 seconds
                 setTimeout(() => {
-                    window.location.href = './login.html';
+                    window.location.href = 'login.html';
                 }, 3000);
             } else {
                 showToast(data.message || 'Failed to send verification email', 'error');

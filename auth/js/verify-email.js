@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function verifyEmail(token) {
     try {
-        const response = await fetch('./api/auth/verify-email.php', {
+        const response = await fetch('../api/auth/verify-email.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ function showVerificationResult(success, message) {
                 <i class="fas fa-check-circle" style="font-size: 48px; color: #28a745; margin-bottom: 15px;"></i>
                 <h3 style="color: #28a745; margin-bottom: 15px;">Email Verified!</h3>
                 <p class="subtitle">${message}</p>
-                <a href="./login.html" class="login-btn" style="display: inline-block; margin-top: 20px; text-decoration: none;">
+                <a href="login.html" class="login-btn" style="display: inline-block; margin-top: 20px; text-decoration: none;">
                     Continue to Login
                 </a>
             </div>
@@ -55,10 +55,10 @@ function showVerificationResult(success, message) {
                 <h3 style="color: #dc3545; margin-bottom: 15px;">Verification Failed</h3>
                 <p class="subtitle">${message}</p>
                 <div style="margin-top: 20px;">
-                    <a href="./resend-verification.html" class="login-btn" style="display: inline-block; margin: 5px; text-decoration: none;">
+                    <a href="resend-verification.html" class="login-btn" style="display: inline-block; margin: 5px; text-decoration: none;">
                         Resend Verification
                     </a>
-                    <a href="./signup.html" class="login-btn" style="display: inline-block; margin: 5px; text-decoration: none; background-color: #6c757d;">
+                    <a href="signup.html" class="login-btn" style="display: inline-block; margin: 5px; text-decoration: none; background-color: #6c757d;">
                         Register Again
                     </a>
                 </div>

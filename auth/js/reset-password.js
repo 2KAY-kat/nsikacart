@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window.showToast('Invalid reset link', 'error');
         }
         setTimeout(() => {
-            window.location.href = './auth/forgot-password.html';
+            window.location.href = 'forgot-password.html';
         }, 2000);
         return;
     }
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (token.length < 64) { // tokens are 64 chars (32 bytes hex encoded)
         window.showToast('Invalid reset token format', 'error');
         setTimeout(() => {
-            window.location.href = './auth/forgot-password.html';
+            window.location.href = 'forgot-password.html';
         }, 2000);
         return;
     }
@@ -72,7 +72,7 @@ function handlePasswordReset(e, token) {
     submitButton.disabled = true;
     submitButton.textContent = 'Resetting Password...';
     
-    fetch('./api/auth/reset-password.php', {
+    fetch('../api/auth/reset-password.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ function handlePasswordReset(e, token) {
                 window.showToast(result.message, 'success');
             }
             setTimeout(() => {
-                window.location.href = './auth/login.html';
+                window.location.href = 'login.html';
             }, 2000);
         } else {
             if (typeof window.showToast === 'function') {
