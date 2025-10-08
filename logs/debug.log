@@ -8101,3 +8101,168 @@ Stack trace:
 [08-Oct-2025 06:14:19 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
 [08-Oct-2025 06:14:19 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
 [08-Oct-2025 06:14:19 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:31:40 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:31:40 UTC] PHP Stack trace:
+[08-Oct-2025 10:31:40 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:31:40 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:31:40 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:31:46 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:31:46 UTC] PHP Stack trace:
+[08-Oct-2025 10:31:46 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:31:46 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:31:46 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:31:46 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:31:46 UTC] PHP Stack trace:
+[08-Oct-2025 10:31:46 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:31:46 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:31:46 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:32:27 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:32:27 UTC] PHP Stack trace:
+[08-Oct-2025 10:32:27 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:32:27 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:32:27 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:32:28 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:32:28 UTC] PHP Stack trace:
+[08-Oct-2025 10:32:28 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:32:28 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:32:28 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:32:55 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:32:55 UTC] PHP Stack trace:
+[08-Oct-2025 10:32:55 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:32:55 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:32:55 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:33:24 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:33:24 UTC] PHP Stack trace:
+[08-Oct-2025 10:33:24 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:33:24 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:33:24 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:33:24 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:33:24 UTC] PHP Stack trace:
+[08-Oct-2025 10:33:24 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:33:24 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:33:24 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:33:25 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:33:25 UTC] PHP Stack trace:
+[08-Oct-2025 10:33:25 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:33:25 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:33:25 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:33:59 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:33:59 UTC] PHP Stack trace:
+[08-Oct-2025 10:33:59 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:33:59 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:33:59 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:33:59 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:33:59 UTC] PHP Stack trace:
+[08-Oct-2025 10:33:59 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:33:59 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:33:59 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:33:59 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:33:59 UTC] PHP Stack trace:
+[08-Oct-2025 10:33:59 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:33:59 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:33:59 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:33:59 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:33:59 UTC] PHP Stack trace:
+[08-Oct-2025 10:33:59 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:33:59 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:33:59 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:35:23 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:35:23 UTC] PHP Stack trace:
+[08-Oct-2025 10:35:23 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:35:23 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:35:23 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:35:23 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:35:23 UTC] PHP Stack trace:
+[08-Oct-2025 10:35:23 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:35:23 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:35:23 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:38:49 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:38:49 UTC] PHP Stack trace:
+[08-Oct-2025 10:38:49 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:38:49 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:38:49 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:38:49 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:38:49 UTC] PHP Stack trace:
+[08-Oct-2025 10:38:49 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:38:49 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:38:49 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:38:49 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:38:49 UTC] PHP Stack trace:
+[08-Oct-2025 10:38:49 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:38:49 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:38:49 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:38:49 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:38:49 UTC] PHP Stack trace:
+[08-Oct-2025 10:38:49 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:38:49 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:38:49 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:38:54 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:38:54 UTC] PHP Stack trace:
+[08-Oct-2025 10:38:54 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:38:54 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:38:54 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:38:54 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:38:54 UTC] PHP Stack trace:
+[08-Oct-2025 10:38:54 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:38:54 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:38:54 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:38:54 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:38:54 UTC] PHP Stack trace:
+[08-Oct-2025 10:38:54 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:38:54 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:38:54 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:38:54 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:38:54 UTC] PHP Stack trace:
+[08-Oct-2025 10:38:54 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:38:54 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:38:54 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:43:27 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:43:27 UTC] PHP Stack trace:
+[08-Oct-2025 10:43:27 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:43:27 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:43:27 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:43:28 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:43:28 UTC] PHP Stack trace:
+[08-Oct-2025 10:43:28 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:43:28 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:43:28 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:43:28 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:43:28 UTC] PHP Stack trace:
+[08-Oct-2025 10:43:28 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:43:28 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:43:28 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:43:28 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:43:28 UTC] PHP Stack trace:
+[08-Oct-2025 10:43:28 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:43:28 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:43:28 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:49:29 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:49:29 UTC] PHP Stack trace:
+[08-Oct-2025 10:49:29 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:49:29 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:49:29 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:49:29 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:49:29 UTC] PHP Stack trace:
+[08-Oct-2025 10:49:29 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:49:29 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:49:29 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:49:29 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:49:29 UTC] PHP Stack trace:
+[08-Oct-2025 10:49:29 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:49:29 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:49:29 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:49:29 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:49:29 UTC] PHP Stack trace:
+[08-Oct-2025 10:49:29 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:49:29 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:49:29 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:50:38 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:50:38 UTC] PHP Stack trace:
+[08-Oct-2025 10:50:38 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:0
+[08-Oct-2025 10:50:38 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-items.php:13
+[08-Oct-2025 10:50:41 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
+[08-Oct-2025 10:50:41 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php on line 11) in C:\wamp64\www\nsikacart\api\middleware\auth_required.php on line 2
+[08-Oct-2025 10:50:41 UTC] PHP Stack trace:
+[08-Oct-2025 10:50:41 UTC] PHP   1. {main}() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:0
+[08-Oct-2025 10:50:41 UTC] PHP   2. require_once() C:\wamp64\www\nsikacart\api\products\saved-list\get-saved-count.php:13
+[08-Oct-2025 10:50:41 UTC] PHP   3. session_start() C:\wamp64\www\nsikacart\api\middleware\auth_required.php:2
