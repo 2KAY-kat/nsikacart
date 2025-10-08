@@ -30,7 +30,7 @@ class CartState {
                         name: item.name,
                         dollar: parseFloat(item.dollar),
                         description: item.description,
-                        image: item.image || '`/public/assets/placeholder.png`',
+                        image: item.image, // || '`/public/assets/placeholder.png`',
                         postedDate: item.posted_date,
                         location: item.location,
                         sellerName: item.seller_name

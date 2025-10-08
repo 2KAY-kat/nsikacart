@@ -57,7 +57,7 @@ try {
             if (!empty($item['image'])) {
                 // If image doesn't start with /, it's just a filename
                 if (strpos($item['image'], '/') !== 0) {
-                    $item['image'] = '../public/dashboard/uploads/' . $item['image'];
+                    $item['image'] = '/dashboard/uploads/' . $item['image'];
                 }
             } else {
                 // Fallback to placeholder
