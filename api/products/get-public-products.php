@@ -16,7 +16,7 @@ try {
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Web base path for images (assumes public/ is webroot)
-    $upload_web_base = '/dashboard/uploads/';
+    $upload_web_base = './dashboard/uploads/';
 
     foreach ($products as &$product) {
         $product['images'] = json_decode($product['images'], true) ?: [];
@@ -39,7 +39,10 @@ try {
         } else if (!empty($product['images'])) {
             $product['main_image'] = $product['images'][0];
         } else {
-            $product['main_image'] = '/public/assets/placeholder.png';
+            json_encode([
+            "success" => false,
+            "message" => "no image"
+           ]);
         }
 
         $product['price'] = floatval($product['price']);
