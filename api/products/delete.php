@@ -147,7 +147,7 @@ try {
         }
 
         // Delete associated image files (after successful DB deletion)
-        $upload_dir = dirname(__DIR__, 2) . '../../public/dashboard/uploads/';
+        $upload_dir = __DIR__ . '/../../public/dashboard/uploads/';
 
         // Ensure upload directory exists and is accessible
         if (!is_dir($upload_dir)) {

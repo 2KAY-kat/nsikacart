@@ -38,7 +38,7 @@ try {
     $upload_dir = __DIR__ . '/../../public/dashboard/uploads/';
 
     // Web-accessible base path for returned URLs (assumes public/ is docroot)
-    $upload_web_base = '/dashboard/uploads/';
+    // $upload_web_base = '/dashboard/uploads/';
 
     // ensure uploads directory exists and is writable
     if (!file_exists($upload_dir)) {
@@ -47,7 +47,10 @@ try {
 
     if (!is_writable($upload_dir)) {
         logError("Upload directory is not writable: " . $upload_dir);
-        throw new Exception("Server configuration error");
+        echo json_encode([
+            'success' => false,
+            'message' => 'Server configuration error, there was an error on our end'
+        ]);
     }
 
     // check if the user is authenticated

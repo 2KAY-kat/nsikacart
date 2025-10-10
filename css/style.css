@@ -1204,8 +1204,9 @@ body.details-page {
 }
 
 body.login-page {
-  margin: 0;
-  padding: 0;
+  margin: 20px 0;
+  padding: 40px 0;
+  background-color: var(--random-color);
 }
 
 .product-details {

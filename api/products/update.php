@@ -24,7 +24,7 @@ try {
         throw new Exception('Product not found or access denied');
     }
     
-    $upload_dir = __DIR__ . 'uploads/';
+    $upload_dir = __DIR__ . '/../../public/dashboard/uploads/';
     
     // Prepare update fields
     $update_fields = [];
@@ -172,15 +172,17 @@ try {
     $stmt = $pdo->prepare($sql);
     $result = $stmt->execute($update_values);
     
-    if (!$result) {
-        throw new Exception('Failed to update product');
-    }
-    
-    echo json_encode([
+    if ($result) {
+        echo json_encode([
         'success' => true,
         'message' => 'Product updated successfully'
     ]);
-    
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to update product'
+        ]);
+    }    
 } catch (Exception $e) {
     http_response_code(400);
     echo json_encode([

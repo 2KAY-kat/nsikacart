@@ -133,9 +133,15 @@ i.toggle-password {
     background: var(--main-color);
 }
 
+.google-login {
+    background-color: var(--success-color);
+    color: var(--main-description-color);
+}
+
 .register-text {
     text-align: center;
     color: var(--input-register-color);
+    margin-bottom: 15px;
 }
 
 .register-text a,

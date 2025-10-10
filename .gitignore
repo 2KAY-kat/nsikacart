@@ -67,10 +67,10 @@ backup/
 /api/*/debug*.php
 
 # Logs
-activitylocal.log
-auditlocal.log
-debuglocal.log
-upload_errorslocal.log
+/logs/activity.log
+/logs/audit.log
+/logs/debug.log
+/logs/upload_errors.log
 
 error.log
 access.log
