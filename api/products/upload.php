@@ -5,6 +5,7 @@ ini_set('display_errors', 0);
 require_once '../config/db.php';
 require_once '../middleware/auth_required.php';
 require_once '../middleware/activity_logger.php';
+require_once __DIR__ . '/../../helpers/cloudinary.php';
 
 header('Content-Type: application/json');
 
@@ -22,7 +23,7 @@ function logDebug($data) {
 }
 
 try {
-    // starts writting into the activity log file for the current uplading activity
+    // starts writting into the activity log file for the current uploading activity
     ActivityLogger::logActivity('product_upload_start', [
         'product_name' => $name ?? 'unknown',
         'category' => $category ?? 'unknown',
@@ -32,25 +33,6 @@ try {
     // check if request is multipart/form-data
     if (!isset($_SERVER['CONTENT_TYPE']) || strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') === false) {
         throw new Exception('Invalid content type. Must be multipart/form-data');
-    }
-
-    // Correct upload directory (use explicit path segments)
-    $upload_dir = __DIR__ . '/../../public/dashboard/uploads/';
-
-    // Web-accessible base path for returned URLs (assumes public/ is docroot)
-    // $upload_web_base = '/dashboard/uploads/';
-
-    // ensure uploads directory exists and is writable
-    if (!file_exists($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
-    }
-
-    if (!is_writable($upload_dir)) {
-        logError("Upload directory is not writable: " . $upload_dir);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Server configuration error, there was an error on our end'
-        ]);
     }
 
     // check if the user is authenticated
@@ -63,7 +45,6 @@ try {
         exit;
     }
 
-    // get user_id from session
     $user_id = $_SESSION['user']['id'];
 
     // validate required fields
@@ -108,37 +89,43 @@ try {
         throw new Exception($error_message);
     }
 
+    // Cloudinary instance
+    $cloudinary = getCloudinaryInstance();
+
     // process main image
     $main_image = $_FILES['main_image'];
-    $main_image_name = uniqid() . '_' . basename($main_image['name']);
-    $main_image_path = $upload_dir . $main_image_name;
-
-    // validate image type (keep allowed list)
     $allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!in_array($main_image['type'], $allowed_types)) {
-        throw new Exception("Invalid file type. Only JPG, PNG,  WEBP and GIF allowed");
+        throw new Exception("Invalid file type. Only JPG, PNG, WEBP and GIF allowed");
     }
 
-    if (!move_uploaded_file($main_image['tmp_name'], $main_image_path)) {
-        throw new Exception("Failed to move main image to uploads directory");
-    }
+    // upload main image to Cloudinary
+    $main_upload = $cloudinary->uploadApi()->upload($main_image['tmp_name'], [
+        'folder' => 'nsikacart_products',
+        'use_filename' => true,
+        'unique_filename' => true
+    ]);
+    $main_image_url = $main_upload['secure_url']; // store this in DB instead of local path
 
     // process additional images
-    $other_images = [];
+    $other_images_urls = [];
     if (isset($_FILES['images'])) {
         foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
             if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK && is_uploaded_file($tmp_name)) {
-                $image_name = uniqid() . '_' . basename($_FILES['images']['name'][$key]);
-                $image_path = $upload_dir . $image_name;
-
-                if (move_uploaded_file($tmp_name, $image_path)) {
-                    $other_images[] = $image_name;
+                if (!in_array($_FILES['images']['type'][$key], $allowed_types)) {
+                    continue; // skip invalid type
                 }
+                $upload = $cloudinary->uploadApi()->upload($tmp_name, [
+                    'folder' => 'nsikacart_products',
+                    'use_filename' => true,
+                    'unique_filename' => true
+                ]);
+                $other_images_urls[] = $upload['secure_url'];
             }
         }
     }
 
-    // validate price format though we have a function in js that does that i think... its been a while since i worked on it ... last year
+    // validate price format
     if (!is_numeric($_POST['price']) || $_POST['price'] <= 0) {
         throw new Exception("Price must be a positive number");
     }
@@ -149,10 +136,10 @@ try {
         throw new Exception("Invalid status value");
     }
 
-    // prepare image data for database (store filenames; front end will build full urls)
-    $images_json = json_encode(array_merge([$main_image_name], $other_images));
+    // prepare image data for database (store Cloudinary URLs)
+    $images_json = json_encode(array_merge([$main_image_url], $other_images_urls));
 
-    // insert into database with proper type casting
+    // insert into database
     $stmt = $pdo->prepare("
         INSERT INTO products (
             name, description, price, category, 
@@ -172,13 +159,12 @@ try {
         trim($_POST['category']),
         trim($_POST['location']),
         $_POST['status'],
-        $main_image_name,
+        $main_image_url,
         $images_json,
         $user_id
     ])) {
         $product_id = $pdo->lastInsertId();
 
-        // Use POST values (not undefined $name, $category etc.)
         ActivityLogger::logDatabaseActivity('INSERT', 'products', $product_id, [
             'name' => $_POST['name'] ?? '',
             'category' => $_POST['category'] ?? '',
@@ -198,16 +184,14 @@ try {
             'success' => true,
             'message' => 'Product uploaded successfully',
             'product_id' => $product_id,
-            // optional: return web URLs so frontend can immediately show uploaded images
-            'main_image_url' => $upload_web_base . $main_image_name,
-            'images' => array_map(fn($n) => $upload_web_base . $n, array_merge([$main_image_name], $other_images))
+            'main_image_url' => $main_image_url,
+            'images' => array_merge([$main_image_url], $other_images_urls)
         ]);
     }
 } catch (Exception $e) {
-    // Log upload failure
     ActivityLogger::logAudit('PRODUCT_UPLOAD_FAILED', $e->getMessage(), 'ERROR');
     logError($e->getMessage());
-    
+
     echo json_encode([
         'success' => false,
         'message' => 'Upload failed: ' . $e->getMessage()

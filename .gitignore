@@ -24,7 +24,7 @@ config/production.php
 
 # Vendor directories
 /public/package/
-/vendor/
+# /vendor/
 /node_modules/
 
 # FontAwesome 

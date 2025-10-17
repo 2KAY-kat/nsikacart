@@ -134,7 +134,7 @@ function populateForm(product) {
         imageGrid.innerHTML = '';
         
         product.images.forEach((imageName, index) => {
-            const imageContainer = createImagePreview(`uploads/${imageName}`, imageName, true, index);
+            const imageContainer = createImagePreview(imageName.startsWith('http') ? imageName : `uploads/${imageName}`, imageName, true, index);
             imageGrid.appendChild(imageContainer);
         });
         
@@ -296,7 +296,6 @@ async function uploadProduct(formData) {
     }
 
     try {
-        // Use different endpoint for edit vs create
         const endpoint = isEditMode ? '../../api/products/update.php' : '../../api/products/upload.php';
         
         const response = await fetch(endpoint, {
@@ -354,13 +353,11 @@ function validateForm() {
 async function handleFormSubmit(event) {
     event.preventDefault();
     
-    // Custom validation
     if (!validateForm()) {
         showToast('Please fill in all required fields and add at least one image', 'error');
         return;
     }
     
-    // Validate session before proceeding
     const isValid = await validateSession();
     if (!isValid) {
         return;
@@ -376,10 +373,10 @@ async function handleFormSubmit(event) {
     try {
         const formData = new FormData(event.target);
         
-        // Remove the default file input data
+        // Remove default file input data
         formData.delete('images[]');
         
-        // Add selected images to form data
+        // Add selected images
         selectedImages.forEach((file, index) => {
             if (index === 0) {
                 formData.append('main_image', file);
@@ -387,7 +384,7 @@ async function handleFormSubmit(event) {
             formData.append('images[]', file);
         });
         
-        // In edit mode, handle existing images
+        // Edit mode: handle deleted images
         if (isEditMode) {
             const imagesToDelete = [];
             const imageGrid = document.getElementById('image_grid');
@@ -425,11 +422,8 @@ async function handleFormSubmit(event) {
 document.getElementById('product-form').addEventListener('submit', handleFormSubmit);
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Load product data if in edit mode
     if (isEditMode && editProductId) {
         loadProductForEdit(editProductId);
     }
-    
-    // Initialize upload button state
     updateUploadButton();
 });

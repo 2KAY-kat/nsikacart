@@ -1,0 +1,19 @@
+<?php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Cloudinary\Cloudinary;
+
+function getCloudinaryInstance() {
+    return new Cloudinary([
+        'cloud' => [
+            'cloud_name' => getenv('CLOUDINARY_CLOUD_NAME'),
+            'api_key' => getenv('CLOUDINARY_API_KEY'),
+            'api_secrete' => getenv('CLOUDINARY_API_SECRET'),
+        ],
+        'url' => [
+            'secure' => true
+        ]
+    ]);
+}
+
