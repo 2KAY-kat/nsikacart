@@ -89,38 +89,46 @@ try {
         throw new Exception($error_message);
     }
 
-    // Cloudinary instance
-    $cloudinary = getCloudinaryInstance();
-
     // process main image
     $main_image = $_FILES['main_image'];
     $allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!in_array($main_image['type'], $allowed_types)) {
-        throw new Exception("Invalid file type. Only JPG, PNG, WEBP and GIF allowed");
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Main image must be a valid image (jpg, png, webp, gif).']);
+        exit;
     }
 
     // upload main image to Cloudinary
-    $main_upload = $cloudinary->uploadApi()->upload($main_image['tmp_name'], [
-        'folder' => 'nsikacart_products',
-        'use_filename' => true,
-        'unique_filename' => true
-    ]);
-    $main_image_url = $main_upload['secure_url']; // store this in DB instead of local path
+    try {
+        $folder = getenv('CLOUDINARY_UPLOAD_FOLDER') ?: 'nsikacart_products';
+        $main_upload = cloudinary_upload($main_image['tmp_name'], ['folder' => $folder]);
+        $main_image_url = $main_upload['secure_url'] ?? $main_upload['url'] ?? null;
+        $main_public_id = $main_upload['public_id'] ?? null;
+        if (!$main_image_url) throw new Exception('No secure_url returned from Cloudinary for main image.');
+    } catch (Exception $e) {
+        cloudinary_log('Main image upload failed: ' . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Failed to upload main image.']);
+        exit;
+    }
 
-    // process additional images
+    // process additional images (optional)
     $other_images_urls = [];
+    $other_public_ids = [];
     if (isset($_FILES['images'])) {
-        foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
-            if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK && is_uploaded_file($tmp_name)) {
-                if (!in_array($_FILES['images']['type'][$key], $allowed_types)) {
-                    continue; // skip invalid type
+        $files = restructure_files_array($_FILES['images']);
+        foreach ($files as $f) {
+            if ($f['error'] !== UPLOAD_ERR_OK) continue;
+            if (!in_array($f['type'], $allowed_types)) continue;
+            try {
+                $other_upload = cloudinary_upload($f['tmp_name'], ['folder' => $folder]);
+                if (!empty($other_upload['secure_url'])) {
+                    $other_images_urls[] = $other_upload['secure_url'];
+                    $other_public_ids[] = $other_upload['public_id'] ?? null;
                 }
-                $upload = $cloudinary->uploadApi()->upload($tmp_name, [
-                    'folder' => 'nsikacart_products',
-                    'use_filename' => true,
-                    'unique_filename' => true
-                ]);
-                $other_images_urls[] = $upload['secure_url'];
+            } catch (Exception $e) {
+                cloudinary_log('Other image upload failed: ' . $e->getMessage());
+                // continue uploading remaining images; don't fail entire request for one image
             }
         }
     }
@@ -196,4 +204,17 @@ try {
         'success' => false,
         'message' => 'Upload failed: ' . $e->getMessage()
     ]);
+}
+
+// helper used above - convert $_FILES multi to easier array
+function restructure_files_array(array $file_post) {
+    $files = [];
+    $file_count = count($file_post['name']);
+    $file_keys = array_keys($file_post);
+    for ($i = 0; $i < $file_count; $i++) {
+        foreach ($file_keys as $key) {
+            $files[$i][$key] = $file_post[$key][$i];
+        }
+    }
+    return $files;
 }

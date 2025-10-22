@@ -72,104 +72,84 @@ try {
     // Handle image deletions first
     $existing_images = json_decode($existing_product['images'], true) ?: [];
     $current_main_image = $existing_product['main_image'];
-    
-    if (isset($_POST['delete_images'])) {
-        $images_to_delete = json_decode($_POST['delete_images'], true);
-        if (is_array($images_to_delete)) {
-            foreach ($images_to_delete as $image_to_delete) {
-                // Optionally delete from local filesystem
-                $image_path = $upload_dir . basename($image_to_delete);
-                if (file_exists($image_path)) {
-                    unlink($image_path);
-                }
+    $existing_public_ids = json_decode($existing_product['images_public_ids'] ?? '[]', true) ?: [];
 
-                // Delete from Cloudinary
+    // handle image deletions (if client sends delete_images as array of public_ids)
+    $deleted_public_ids = $_POST['delete_images'] ? json_decode($_POST['delete_images'], true) : [];
+    $folder = getenv('CLOUDINARY_UPLOAD_FOLDER') ?: 'nsikacart_products';
+    if (!empty($deleted_public_ids)) {
+        foreach ($deleted_public_ids as $pubId) {
+            try {
                 $cloudinary = getCloudinaryInstance();
-                $public_id = pathinfo($image_to_delete, PATHINFO_FILENAME);
-                try {
-                    $cloudinary->uploadApi()->destroy(getenv('CLOUDINARY_UPLOAD_FOLDER') . '/' . $public_id);
-                } catch (Exception $e) {
-                    // ignore if not exists
-                }
-
-                // Remove from existing images array
-                $existing_images = array_filter($existing_images, function($img) use ($image_to_delete) {
-                    return $img !== $image_to_delete;
-                });
-
-                // Check if main image was deleted
-                if ($current_main_image === $image_to_delete) {
-                    $current_main_image = null;
-                }
-            }
-            $has_changes = true;
-        }
-    }
-
-    // Handle new image uploads
-    $new_images = [];
-    $new_main_image = $current_main_image;
-
-    if (isset($_FILES['images']) && is_array($_FILES['images']['tmp_name'])) {
-        $cloudinary = getCloudinaryInstance(); // create instance
-        foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
-            if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
-                $allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-                if (!in_array($_FILES['images']['type'][$key], $allowed_types)) {
-                    throw new Exception("Invalid file type. Only JPG, PNG, WEBP and GIF allowed");
-                }
-
-                $image_name = uniqid() . '_' . basename($_FILES['images']['name'][$key]);
-
-                // Upload to Cloudinary
-                $upload_result = $cloudinary->uploadApi()->upload($tmp_name, [
-                    'folder' => getenv('CLOUDINARY_UPLOAD_FOLDER'),
-                    'public_id' => pathinfo($image_name, PATHINFO_FILENAME),
-                    'overwrite' => true,
-                    'resource_type' => 'image'
-                ]);
-                $new_images[] = $upload_result['secure_url'];
-
-                // Optionally, save locally too
-                // move_uploaded_file($tmp_name, $upload_dir . $image_name);
-
-                if (!$new_main_image && count($new_images) === 1) {
-                    $new_main_image = $upload_result['secure_url'];
-                }
-
-                $has_changes = true;
+                $cloudinary->uploadApi()->destroy($pubId, ['resource_type' => 'image']);
+            } catch (Exception $e) {
+                cloudinary_log('Failed to delete image ' . $pubId . ': ' . $e->getMessage());
+                // do not abort; log and continue
             }
         }
-    }
-
-    // Combine existing and new images
-    $all_images = array_merge($existing_images, $new_images);
-
-    // Limit to 10 images total
-    if (count($all_images) > 10) {
-        $all_images = array_slice($all_images, 0, 10);
-    }
-
-    // Update main image if it was deleted and we have images
-    if (!$new_main_image && !empty($all_images)) {
-        $new_main_image = $all_images[0];
+        // remove deleted entries from $existing_images and $existing_public_ids
+        foreach ($deleted_public_ids as $pubId) {
+            $idx = array_search($pubId, $existing_public_ids);
+            if ($idx !== false) {
+                unset($existing_public_ids[$idx]);
+                unset($existing_images[$idx]);
+            }
+        }
+        // reindex arrays
+        $existing_images = array_values($existing_images);
+        $existing_public_ids = array_values($existing_public_ids);
         $has_changes = true;
     }
 
-    // Update database with new image data
-    if ($has_changes && (!empty($all_images) || !empty($new_main_image))) {
-        if ($new_main_image !== $existing_product['main_image']) {
-            $update_fields[] = "main_image = ?";
-            $update_values[] = $new_main_image;
-        }
-        if (json_encode($all_images) !== $existing_product['images']) {
-            $update_fields[] = "images = ?";
-            $update_values[] = json_encode($all_images);
+    // handle new uploads in $_FILES['images'] (multi) and optional new main image
+    $new_public_ids = [];
+    $new_images = [];
+    if (isset($_FILES['images'])) {
+        $files = restructure_files_array($_FILES['images']);
+        foreach ($files as $f) {
+            if ($f['error'] !== UPLOAD_ERR_OK) continue;
+            try {
+                $uploadResp = cloudinary_upload($f['tmp_name'], ['folder' => $folder]);
+                if (!empty($uploadResp['secure_url'])) {
+                    $new_images[] = $uploadResp['secure_url'];
+                    $new_public_ids[] = $uploadResp['public_id'] ?? null;
+                }
+            } catch (Exception $e) {
+                cloudinary_log('Update: failed to upload extra image: ' . $e->getMessage());
+            }
         }
     }
 
+    // handle new main image (if provided)
+    if (isset($_FILES['main_image']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
+        try {
+            $main_resp = cloudinary_upload($_FILES['main_image']['tmp_name'], ['folder' => $folder]);
+            if (!empty($main_resp['secure_url'])) {
+                $new_main_image = $main_resp['secure_url'];
+                $new_main_public_id = $main_resp['public_id'] ?? null;
+                // optionally delete old main image public_id if you have it
+                if (!empty($existing_product['main_image_public_id'])) {
+                    try {
+                        $cloudinary = getCloudinaryInstance();
+                        $cloudinary->uploadApi()->destroy($existing_product['main_image_public_id'], ['resource_type' => 'image']);
+                    } catch (Exception $e) {
+                        cloudinary_log('Failed to delete old main image: ' . $e->getMessage());
+                    }
+                }
+                $has_changes = true;
+            }
+        } catch (Exception $e) {
+            cloudinary_log('Main image update failed: ' . $e->getMessage());
+            // respond with error or continue depending on desired behavior
+        }
+    }
+
+    // merge existing + new images/public_ids and update DB inside transaction
+    $final_images = array_values(array_merge($existing_images, $new_images));
+    $final_public_ids = array_values(array_merge($existing_public_ids, $new_public_ids));
+
     // Only proceed if there are fields to update
-    if (empty($update_fields)) {
+    if (empty($update_fields) && empty($final_images) && empty($final_public_ids)) {
         echo json_encode([
             'success' => true,
             'message' => 'No changes detected'
