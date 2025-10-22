@@ -1,13 +1,36 @@
 <?php
 session_start();
+
+// send JSON header early
+header('Content-Type: application/json; charset=utf-8');
+
+// error handling: do not leak HTML to client, log instead
 error_reporting(E_ALL);
-ini_set('display_errors', 1); 
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/../../logs/php_errors.log');
+
+set_exception_handler(function($e){
+    error_log("Uncaught exception: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Server error: '.$e->getMessage()]);
+    exit;
+});
+
+register_shutdown_function(function() {
+    $err = error_get_last();
+    if ($err && in_array($err['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        error_log("Shutdown fatal error: " . print_r($err, true));
+        http_response_code(500);
+        // do not include internal details in production
+        echo json_encode(['success' => false, 'message' => 'Fatal server error']);
+    }
+});
+
 require_once '../config/db.php';
 require_once '../middleware/auth_required.php';
 require_once '../middleware/activity_logger.php';
 require_once __DIR__ . '/../../helpers/cloudinary.php';
-
-header('Content-Type: application/json');
 
 // increase upload limits if needed
 ini_set('upload_max_filesize', '10M');

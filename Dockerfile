@@ -34,6 +34,9 @@ COPY api/ /var/www/api/
 COPY helpers/ /var/www/helpers/
 COPY logs/ /var/www/logs/
 
+# ensure composer/vendor are available inside image
+COPY vendor/ /var/www/vendor/
+
 # ============================
 # Fix logs folder permissions
 # ============================
