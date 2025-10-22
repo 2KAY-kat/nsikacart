@@ -7,84 +7,55 @@ use Cloudinary\Api\Exception\ApiError;
 function cloudinary_log($msg) {
     $logDir = __DIR__ . '/../logs';
     if (!is_dir($logDir)) mkdir($logDir, 0775, true);
-    error_log(date('Y-m-d H:i:s') . " - " . $msg . PHP_EOL, 3, $logDir . '/cloudinary_errors.log');
+    error_log(date('Y-m-d H:i:s') . " - " . $msg . PHP_EOL, 3, $logDir . '/cloudinary.log');
 }
 
 function getCloudinaryInstance(): Cloudinary {
-    $cloud = getenv('CLOUDINARY_CLOUD_NAME') ?: null;
-    $key = getenv('CLOUDINARY_API_KEY') ?: null;
-    $secret = getenv('CLOUDINARY_API_SECRET') ?: null;
+    $cloud = getenv('CLOUDINARY_CLOUD_NAME');
+    $key = getenv('CLOUDINARY_API_KEY');
+    $secret = getenv('CLOUDINARY_API_SECRET');
 
     if (!$cloud || !$key || !$secret) {
-        cloudinary_log('Missing Cloudinary credentials (CLOUDINARY_CLOUD_NAME|API_KEY|API_SECRET).');
-        throw new Exception('Cloudinary credentials not configured.');
+        throw new Exception('Missing Cloudinary credentials.');
     }
 
     return new Cloudinary([
         'cloud' => [
             'cloud_name' => $cloud,
             'api_key' => $key,
-            'api_secret' => $secret
+            'api_secret' => $secret,
         ],
-        'url' => ['secure' => true]
+        'url' => ['secure' => true],
     ]);
 }
 
 function cloudinary_upload(string $source, array $options = []) {
     try {
         $cloudinary = getCloudinaryInstance();
-        $defaultOptions = [
+        $opts = array_merge([
             'use_filename' => true,
             'unique_filename' => true,
             'resource_type' => 'image'
-        ];
-        $opts = array_merge($defaultOptions, $options);
-        $resp = $cloudinary->uploadApi()->upload($source, $opts);
-        return $resp;
-    } catch (ApiError $ae) {
-        cloudinary_log('Cloudinary API error: ' . $ae->getMessage());
-        throw $ae;
+        ], $options);
+        return $cloudinary->uploadApi()->upload($source, $opts);
     } catch (Exception $e) {
-        cloudinary_log('Cloudinary upload error: ' . $e->getMessage());
+        cloudinary_log("Upload failed: " . $e->getMessage());
         throw $e;
     }
 }
 
-/**
- * Extract Cloudinary public_id from a given Cloudinary URL
- */
-function cloudinary_extract_public_id(string $url): ?string {
-    try {
-        if (empty($url)) return null;
-        $parsed = parse_url($url, PHP_URL_PATH);
-        if (!$parsed) return null;
-
-        $parts = explode('/', trim($parsed, '/'));
-        $file = end($parts);
-        $folderParts = array_slice($parts, array_search('upload', $parts) + 1, -1);
-        $folderPath = implode('/', $folderParts);
-        $public_id = pathinfo($file, PATHINFO_FILENAME);
-
-        return $folderPath ? "$folderPath/$public_id" : $public_id;
-    } catch (Exception $e) {
-        cloudinary_log("Extract public_id error: " . $e->getMessage());
-        return null;
-    }
-}
-
-/**
- * Delete an image from Cloudinary by public_id
- */
 function cloudinary_delete(string $public_id) {
+    if (empty($public_id)) return ['result' => 'skipped (empty id)'];
     try {
         $cloudinary = getCloudinaryInstance();
-        $result = $cloudinary->uploadApi()->destroy($public_id);
-        return $result;
-    } catch (ApiError $ae) {
-        cloudinary_log("Delete API error: " . $ae->getMessage());
-        throw $ae;
+        $res = $cloudinary->uploadApi()->destroy($public_id);
+        cloudinary_log("Deleted $public_id => " . json_encode($res));
+        return $res;
+    } catch (ApiError $e) {
+        cloudinary_log("Delete API error for $public_id: " . $e->getMessage());
+        return ['result' => 'error', 'message' => $e->getMessage()];
     } catch (Exception $e) {
-        cloudinary_log("Delete error: " . $e->getMessage());
-        throw $e;
+        cloudinary_log("Delete error for $public_id: " . $e->getMessage());
+        return ['result' => 'error', 'message' => $e->getMessage()];
     }
 }

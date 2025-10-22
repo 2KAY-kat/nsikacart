@@ -1,128 +1,83 @@
 <?php
 session_start();
-
-error_reporting(0);
-ini_set('display_errors', 0);
-
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') exit(0);
+require_once '../config/db.php';
+require_once __DIR__ . '/../../helpers/cloudinary.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
-    exit;
-}
-
-function outputJson($data) {
+function respond($data, $status = 200) {
+    http_response_code($status);
     echo json_encode($data);
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    respond(['success' => false, 'message' => 'Invalid method'], 405);
+}
+
+if (empty($_SESSION['user']['id'])) {
+    respond(['success' => false, 'message' => 'Not authenticated'], 401);
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+if (!isset($input['product_id'])) {
+    respond(['success' => false, 'message' => 'Missing product_id'], 400);
+}
+
+$product_id = (int)$input['product_id'];
+$user_id = (int)$_SESSION['user']['id'];
+
+// Get product info
+$stmt = $pdo->prepare("SELECT id, main_image_public_id, images_public_ids, user_id FROM products WHERE id = ? AND user_id = ?");
+$stmt->execute([$product_id, $user_id]);
+$product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$product) {
+    respond(['success' => false, 'message' => 'Product not found or permission denied'], 404);
+}
+
 try {
-    if (!isset($_SESSION['user']['id']) || empty($_SESSION['user']['id'])) {
-        http_response_code(401);
-        outputJson([
-            'success' => false,
-            'message' => 'Authentication required. Please log in first.',
-            'redirect' => '../../auth/login.html'
-        ]);
-    }
-
-    if (!file_exists('../config/db.php')) {
-        outputJson(['success' => false, 'message' => 'Database configuration not found']);
-    }
-
-    require_once '../config/db.php';
-    require_once __DIR__ . '/../../helpers/cloudinary.php';
-
-    if (!isset($pdo) || !($pdo instanceof PDO)) {
-        outputJson(['success' => false, 'message' => 'Database connection failed']);
-    }
-
-    $input_raw = file_get_contents('php://input');
-    if (empty($input_raw)) outputJson(['success' => false, 'message' => 'No input data received']);
-
-    $input = json_decode($input_raw, true);
-    if (json_last_error() !== JSON_ERROR_NONE)
-        outputJson(['success' => false, 'message' => 'Invalid JSON: ' . json_last_error_msg()]);
-
-    if (empty($input['product_id'])) outputJson(['success' => false, 'message' => 'Product ID required']);
-
-    $product_id = (int)$input['product_id'];
-    $user_id = (int)$_SESSION['user']['id'];
-
-    // Check product ownership
-    $stmt = $pdo->prepare("SELECT id, main_image, images, user_id FROM products WHERE id = ? AND user_id = ?");
-    $stmt->execute([$product_id, $user_id]);
-    $product = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$product) {
-        outputJson(['success' => false, 'message' => 'Product not found or not owned by you']);
-    }
-
-    // Begin transaction
     $pdo->beginTransaction();
 
-    // Delete from database
-    $delete_stmt = $pdo->prepare("DELETE FROM products WHERE id = ? AND user_id = ?");
-    $delete_stmt->execute([$product_id, $user_id]);
+    // Delete product record
+    $delStmt = $pdo->prepare("DELETE FROM products WHERE id = ? AND user_id = ?");
+    $delStmt->execute([$product_id, $user_id]);
 
-    if ($delete_stmt->rowCount() === 0) {
-        throw new Exception('Failed to delete product record.');
+    if ($delStmt->rowCount() === 0) {
+        throw new Exception('Failed to delete product');
     }
 
-    // Delete from Cloudinary
-    $cloud_deleted = [];
+    $cloudinary_results = [];
 
-    try {
-        // Delete main image (if available)
-        if (!empty($product['main_image'])) {
-            $mainImagePublicId = cloudinary_extract_public_id($product['main_image']);
-            if ($mainImagePublicId) {
-                $result = cloudinary_delete($mainImagePublicId);
-                $cloud_deleted[] = ['main_image' => $result];
-            }
-        }
+    // Delete main image from Cloudinary
+    if (!empty($product['main_image_public_id'])) {
+        $cloudinary_results[] = [
+            'main_image' => cloudinary_delete($product['main_image_public_id'])
+        ];
+    }
 
-        // Delete multiple images (if available)
-        if (!empty($product['images'])) {
-            $images = json_decode($product['images'], true);
-            if (is_array($images)) {
-                foreach ($images as $imgUrl) {
-                    $pid = cloudinary_extract_public_id($imgUrl);
-                    if ($pid) {
-                        $result = cloudinary_delete($pid);
-                        $cloud_deleted[] = ['extra_image' => $result];
-                    }
+    // Delete other images (if any)
+    if (!empty($product['images_public_ids'])) {
+        $extra_ids = json_decode($product['images_public_ids'], true);
+        if (is_array($extra_ids)) {
+            foreach ($extra_ids as $pid) {
+                if (!empty($pid)) {
+                    $cloudinary_results[] = [
+                        'extra_image' => cloudinary_delete($pid)
+                    ];
                 }
             }
         }
-
-    } catch (Exception $e) {
-        cloudinary_log("Failed deleting Cloudinary assets: " . $e->getMessage());
     }
 
     $pdo->commit();
-
-    outputJson([
+    respond([
         'success' => true,
         'message' => 'Product deleted successfully',
-        'cloudinary_deleted' => $cloud_deleted
+        'cloudinary_deleted' => $cloudinary_results
     ]);
-
 } catch (Exception $e) {
-    if ($pdo->inTransaction()) $pdo->rollBack();
-    error_log("Delete error: " . $e->getMessage());
-    outputJson(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
-} catch (Error $e) {
-    if ($pdo->inTransaction()) $pdo->rollBack();
-    error_log("Fatal error: " . $e->getMessage());
-    outputJson(['success' => false, 'message' => 'Server error: ' . $e->getMessage()]);
+    $pdo->rollBack();
+    cloudinary_log("Delete failed: " . $e->getMessage());
+    respond(['success' => false, 'message' => 'Deletion failed: ' . $e->getMessage()]);
 }
-
-outputJson(['success' => false, 'message' => 'Unknown error occurred']);
