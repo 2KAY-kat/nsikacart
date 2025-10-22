@@ -20,26 +20,16 @@ function getCloudinaryInstance(): Cloudinary {
         throw new Exception('Cloudinary credentials not configured.');
     }
 
-    try {
-        return new Cloudinary([
-            'cloud' => [
-                'cloud_name' => $cloud,
-                'api_key'    => $key,
-                'api_secret' => $secret,
-            ],
-            'url' => ['secure' => true]
-        ]);
-    } catch (Exception $e) {
-        cloudinary_log('Cloudinary init error: ' . $e->getMessage());
-        throw $e;
-    }
+    return new Cloudinary([
+        'cloud' => [
+            'cloud_name' => $cloud,
+            'api_key' => $key,
+            'api_secret' => $secret
+        ],
+        'url' => ['secure' => true]
+    ]);
 }
 
-/**
- * Upload a file to Cloudinary.
- * $source can be a path to tmp file or a data-url/remote url supported by Cloudinary.
- * Returns upload response array on success.
- */
 function cloudinary_upload(string $source, array $options = []) {
     try {
         $cloudinary = getCloudinaryInstance();
@@ -56,6 +46,45 @@ function cloudinary_upload(string $source, array $options = []) {
         throw $ae;
     } catch (Exception $e) {
         cloudinary_log('Cloudinary upload error: ' . $e->getMessage());
+        throw $e;
+    }
+}
+
+/**
+ * Extract Cloudinary public_id from a given Cloudinary URL
+ */
+function cloudinary_extract_public_id(string $url): ?string {
+    try {
+        if (empty($url)) return null;
+        $parsed = parse_url($url, PHP_URL_PATH);
+        if (!$parsed) return null;
+
+        $parts = explode('/', trim($parsed, '/'));
+        $file = end($parts);
+        $folderParts = array_slice($parts, array_search('upload', $parts) + 1, -1);
+        $folderPath = implode('/', $folderParts);
+        $public_id = pathinfo($file, PATHINFO_FILENAME);
+
+        return $folderPath ? "$folderPath/$public_id" : $public_id;
+    } catch (Exception $e) {
+        cloudinary_log("Extract public_id error: " . $e->getMessage());
+        return null;
+    }
+}
+
+/**
+ * Delete an image from Cloudinary by public_id
+ */
+function cloudinary_delete(string $public_id) {
+    try {
+        $cloudinary = getCloudinaryInstance();
+        $result = $cloudinary->uploadApi()->destroy($public_id);
+        return $result;
+    } catch (ApiError $ae) {
+        cloudinary_log("Delete API error: " . $ae->getMessage());
+        throw $ae;
+    } catch (Exception $e) {
+        cloudinary_log("Delete error: " . $e->getMessage());
         throw $e;
     }
 }
