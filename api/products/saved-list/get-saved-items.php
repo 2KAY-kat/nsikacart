@@ -61,7 +61,7 @@ try {
                 }
             } else {
                 // message placeholder
-                json_encode([
+                echo json_encode([
                     "success" => false,
                     "message" => "no image"
                 ]);

@@ -80,6 +80,7 @@ backup/
 /temp/
 *.tmp
 *.cache
+get-all-products.php
 
 # OS generated files
 Thumbs.db

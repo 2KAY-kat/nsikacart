@@ -68,7 +68,10 @@ export async function renderProductsTable(page = 1, pageSize = 5, searchTerm = '
         }
 
         const productsHTML = products.map(product => {
-            const imgSrc = `uploads/${product.main_image}`;
+            let imgSrc = product.main_image;
+            if (imgSrc && !imgSrc.startsWith('http')) {
+                imgSrc = `../../uploads/${imgSrc}`;
+            }
             return `
                 <div class="products-row">
                     <a class="product-cell image" href="../../details.html?id=${product.id}">
