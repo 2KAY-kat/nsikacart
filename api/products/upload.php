@@ -241,3 +241,23 @@ function restructure_files_array(array $file_post) {
     }
     return $files;
 }
+
+
+// CREATE TABLE products (
+//     id INT AUTO_INCREMENT  PRIMARY KEY,
+//     name VARCHAR(255) NOT NULL,
+//     price DECIMAL(10,2) NOT NULL,
+//     description TEXT NOT NULL,
+
+//     status ENUM('active', 'disabled') DEFAULT 'active',
+//     main_image VARCHAR(255) NOT NULL,
+//     images TEXT,
+
+//     category VARCHAR(100) NOT NULL,
+//     location VARCHAR(255) NOT NULL,
+
+//     user_id INT NOT NULL,
+//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+//     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+// );
