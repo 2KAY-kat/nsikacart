@@ -174,14 +174,17 @@ try {
     $stmt = $pdo->prepare("
         INSERT INTO products (
             name, description, price, category, 
-            location, status, main_image, 
-            images, user_id
+            location, status, main_image, main_image_public_id,
+            images, images_public_ids, user_id
         ) VALUES (
             ?, ?, ?, ?, 
-            ?, ?, ?, 
-            ?, ?
+            ?, ?, ?, ?,
+            ?, ?, ?
         )
     ");
+
+    // Prepare the public_ids JSON
+    $other_public_ids_json = json_encode($other_public_ids);
 
     if ($stmt->execute([
         trim($_POST['name']),
@@ -191,7 +194,9 @@ try {
         trim($_POST['location']),
         $_POST['status'],
         $main_image_url,
+        $main_public_id,
         $images_json,
+        $other_public_ids_json,
         $user_id
     ])) {
         $product_id = $pdo->lastInsertId();
@@ -258,6 +263,13 @@ function restructure_files_array(array $file_post) {
 
 //     user_id INT NOT NULL,
 //     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
+//     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
 //     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 // );
+
+
+// -- Verify your products table has these columns
+// ALTER TABLE products
+// ADD COLUMN main_image_public_id VARCHAR(255) NULL AFTER main_image,
+// ADD COLUMN images_public_ids TEXT NULL AFTER images,
+// ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;

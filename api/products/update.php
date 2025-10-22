@@ -44,9 +44,25 @@ function restructure_files_array(array $file_post) {
     return $files;
 }
 
+function logDebug($message, $data = null) {
+    $logDir = __DIR__ . '/../../logs';
+    if (!is_dir($logDir)) mkdir($logDir, 0775, true);
+    
+    $log = date('Y-m-d H:i:s') . " | " . $message;
+    if ($data) $log .= " | " . print_r($data, true);
+    error_log($log . "\n", 3, $logDir . '/debug.log');
+}
+
 try {
+    logDebug("Update request started", [
+        'POST' => $_POST,
+        'FILES' => $_FILES,
+        'SESSION' => $_SESSION
+    ]);
+
     // Basic auth/session check (auth_required.php should set $current_user_id or use session)
     if (!isset($_SESSION['user']['id'])) {
+        logDebug("Auth failed - no session user");
         http_response_code(401);
         echo json_encode(['success' => false, 'message' => 'Not authenticated']);
         exit;
@@ -188,7 +204,7 @@ try {
         throw new Exception('Invalid price');
     }
 
-    // Update DB - adapt columns to your schema
+    // Update DB query - modified to match your schema
     $updateStmt = $pdo->prepare("
         UPDATE products SET
             name = :name,
@@ -200,8 +216,7 @@ try {
             main_image = :main_image,
             main_image_public_id = :main_image_public_id,
             images = :images,
-            images_public_ids = :images_public_ids,
-            updated_at = NOW()
+            images_public_ids = :images_public_ids
         WHERE id = :id AND user_id = :user_id
     ");
 
@@ -239,10 +254,23 @@ try {
     if ($pdo && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    ActivityLogger::logAudit('PRODUCT_UPDATE_FAILED', $e->getMessage(), 'ERROR');
-    cloudinary_log('Update error: ' . $e->getMessage());
+
+    $error_details = [
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString()
+    ];
+    
+    logDebug("Update failed with exception", $error_details);
+    ActivityLogger::logAudit('PRODUCT_UPDATE_FAILED', json_encode($error_details), 'ERROR');
+    
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Update failed', 'error' => $e->getMessage()]);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Update failed: ' . $e->getMessage(),
+        'debug' => $error_details
+    ]);
     exit;
 }
 ?>
