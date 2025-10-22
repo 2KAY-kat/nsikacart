@@ -64,9 +64,15 @@ RUN echo 'Alias /api /var/www/api\n<Directory "/var/www/api">\n    AllowOverride
     > /etc/apache2/conf-available/api.conf \
     && a2enconf api
 
-# PHP Upload Settings
-RUN echo "upload_max_filesize = 10M" > /usr/local/etc/php/conf.d/uploads.ini
-RUN echo "post_max_size = 10M" >> /usr/local/etc/php/conf.d/uploads.ini
+# PHP Upload Settings and production error settings
+RUN echo "upload_max_filesize = 50M" > /usr/local/etc/php/conf.d/uploads.ini \
+ && echo "post_max_size = 50M" >> /usr/local/etc/php/conf.d/uploads.ini \
+ && echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/uploads.ini \
+ && echo "max_execution_time = 240" >> /usr/local/etc/php/conf.d/uploads.ini \
+ && echo "display_errors = Off" > /usr/local/etc/php/conf.d/prod.ini \
+ && echo "display_startup_errors = Off" >> /usr/local/etc/php/conf.d/prod.ini \
+ && echo "log_errors = On" >> /usr/local/etc/php/conf.d/prod.ini \
+ && echo "error_log = /var/www/logs/php_errors.log" >> /usr/local/etc/php/conf.d/prod.ini
 
 # Start Apache
 CMD ["apache2-foreground"]

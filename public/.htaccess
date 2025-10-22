@@ -1,6 +1,21 @@
+# Increase PHP upload limits and match Apache body limit
+php_value upload_max_filesize 50M
+php_value post_max_size 50M
+php_value memory_limit 256M
+php_value max_execution_time 240
+
+# Disable error output to clients, enable logging
+php_flag display_errors Off
+php_flag display_startup_errors Off
+php_flag log_errors On
+php_value error_log /var/www/logs/php_errors.log
+
+# Limit Apache request body to match PHP post_max_size (50MB)
+LimitRequestBody 52428800
+
+# Enable rewrites for SPA / pretty routes
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
 
     # Exclude API
     RewriteRule ^api/ - [L]
@@ -11,5 +26,5 @@
     RewriteRule ^ - [L]
 
     # SPA routing
-    RewriteRule ^ index.html [L]
+    RewriteRule ^ index.html [L,QSA]
 </IfModule>

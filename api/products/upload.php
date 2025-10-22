@@ -1,28 +1,43 @@
 <?php
-session_start();
+// Harden runtime before any output
+@ini_set('display_errors', '0');
+@ini_set('display_startup_errors', '0');
+@ini_set('log_errors', '1');
+@ini_set('error_log', __DIR__ . '/../../logs/php_errors.log');
+// runtime limits (match public/.htaccess)
+@ini_set('upload_max_filesize', '50M');
+@ini_set('post_max_size', '50M');
+@ini_set('memory_limit', '256M');
+@ini_set('max_execution_time', '240');
 
-// send JSON header early
+// Always respond JSON
 header('Content-Type: application/json; charset=utf-8');
 
-// error handling: do not leak HTML to client, log instead
-error_reporting(E_ALL);
-ini_set('display_errors', 0);
-ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/../../logs/php_errors.log');
+// Early payload-size guard (avoid PHP emitting warnings/HTML)
+$maxBytes = 50 * 1024 * 1024; // 50MB
+if (!empty($_SERVER['CONTENT_LENGTH']) && (int)$_SERVER['CONTENT_LENGTH'] > $maxBytes) {
+    http_response_code(413);
+    echo json_encode(['success' => false, 'message' => 'Payload too large. Max 50MB.']);
+    exit;
+}
 
+// Start session after headers are set
+session_start();
+
+// Ensure uncaught exceptions and fatals return JSON
 set_exception_handler(function($e){
-    error_log("Uncaught exception: " . $e->getMessage());
+    error_log("Uncaught exception in upload.php: " . $e->getMessage() . "\n" . $e->getTraceAsString());
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Server error: '.$e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'Server error']);
     exit;
 });
 
 register_shutdown_function(function() {
     $err = error_get_last();
     if ($err && in_array($err['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
-        error_log("Shutdown fatal error: " . print_r($err, true));
+        error_log("Shutdown fatal error in upload.php: " . print_r($err, true));
+        if (!headers_sent()) header('Content-Type: application/json; charset=utf-8');
         http_response_code(500);
-        // do not include internal details in production
         echo json_encode(['success' => false, 'message' => 'Fatal server error']);
     }
 });
