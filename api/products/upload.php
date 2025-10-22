@@ -247,29 +247,20 @@ function restructure_files_array(array $file_post) {
     return $files;
 }
 
-
 // CREATE TABLE products (
-//     id INT AUTO_INCREMENT  PRIMARY KEY,
+//     id INT AUTO_INCREMENT PRIMARY KEY,
 //     name VARCHAR(255) NOT NULL,
 //     price DECIMAL(10,2) NOT NULL,
 //     description TEXT NOT NULL,
-
 //     status ENUM('active', 'disabled') DEFAULT 'active',
 //     main_image VARCHAR(255) NOT NULL,
+//     main_image_public_id VARCHAR(255) NULL,
 //     images TEXT,
-
+//     images_public_ids TEXT NULL,
 //     category VARCHAR(100) NOT NULL,
 //     location VARCHAR(255) NOT NULL,
-
 //     user_id INT NOT NULL,
 //     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
+//     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 //     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 // );
-
-
-// -- Verify your products table has these columns
-// ALTER TABLE products
-// ADD COLUMN main_image_public_id VARCHAR(255) NULL AFTER main_image,
-// ADD COLUMN images_public_ids TEXT NULL AFTER images,
-// ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
