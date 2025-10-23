@@ -577,7 +577,6 @@ export async function loadUsers(page = 1, pageSize = 5) {
         }
         
         const data = await response.json();
-        // console.log('Users loaded successfully:', data);
         
         if (usersTable) {
             usersTable.style.display = 'none';
@@ -586,7 +585,7 @@ export async function loadUsers(page = 1, pageSize = 5) {
         if (!data.success) {
             console.error('API Error:', data.message);
             if (tableBody) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="error-message">Error: ${data.message}</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="6" class="error-message">Error: ${data.message}</td></tr>`;
             }
             return;
         }
@@ -606,6 +605,12 @@ export async function loadUsers(page = 1, pageSize = 5) {
                 const actionText = user.status === 'active' ? '<i class="fa fa-user-slash"></i>' : 'Activate';
                 const actionClass = user.status === 'active' ? 'btn-warning' : 'btn-success';
                 
+                // NEW: Email verification badge
+                const isEmailVerified = user.email_verified === 1 || user.email_verified === true;
+                const verificationBadge = isEmailVerified 
+                    ? '<span class="verification-badge verified"><i class="fa fa-check-circle"></i> Verified</span>'
+                    : '<span class="verification-badge unverified"><i class="fa fa-exclamation-circle"></i> Unverified</span>';
+                
                 // Check current user permissions
                 const currentUser = getCurrentUser();
                 const isCurrentUserAdmin = currentUser?.role === 'admin';
@@ -615,6 +620,7 @@ export async function loadUsers(page = 1, pageSize = 5) {
                 let roleToggleButton = '';
                 let deleteButton = '';
                 let statusButton = '';
+                let verifyButton = ''; // NEW: Manual verification button
                 
                 // Only admins can change roles and only for other users
                 if (isCurrentUserAdmin && !isCurrentUser) {
@@ -624,6 +630,13 @@ export async function loadUsers(page = 1, pageSize = 5) {
                 // Both admins and monitors can suspend/activate users (except themselves)
                 if ((isCurrentUserAdmin || isCurrentUserMonitor) && !isCurrentUser) {
                     statusButton = `<button onclick="toggleUserStatus(${user.id}, '${user.status}')" class="action-btn ${actionClass}">${actionText}</button>`;
+                }
+                
+                // NEW: Both admins and monitors can verify unverified users
+                if ((isCurrentUserAdmin || isCurrentUserMonitor) && !isEmailVerified && !isCurrentUser) {
+                    verifyButton = `<button onclick="verifyUser(${user.id}, '${user.name}')" class="action-btn btn-verify" title="Manually verify this user's email">
+                        <i class="fa fa-check-circle"></i> Verify Email
+                    </button>`;
                 }
                 
                 // Only admins can delete users (except themselves)
@@ -648,13 +661,18 @@ export async function loadUsers(page = 1, pageSize = 5) {
                         minute: '2-digit'
                     });
                 }
+                
                 const row = `
                     <tr>
-                        <td data-label="Username">${user.name || 'N/A'}</td>  
+                        <td data-label="Username">
+                            ${user.name || 'N/A'}
+                            <br>${verificationBadge}
+                        </td>  
                         <td data-label="Created">${createdDate}</td>
                         <td data-label="Role"><span class="role-badge role-${user.role}">${user.role || 'N/A'}</span></td>
                         <td data-label="Status"><span class="status-badge ${statusClass}">${user.status || 'N/A'}</span></td>
                         <td data-label="Actions" class="actions-cell">
+                            ${verifyButton}
                             ${roleToggleButton}
                             ${statusButton}
                             ${deleteButton}
@@ -669,7 +687,7 @@ export async function loadUsers(page = 1, pageSize = 5) {
                 paginationContainer.style.display = 'flex';
             }
         } else {
-            tableBody.innerHTML = '<tr><td colspan="5" class="no-data">No users found</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="6" class="no-data">No users found</td></tr>';
             if (paginationContainer) {
                 paginationContainer.style.display = 'none';
             }
@@ -681,13 +699,301 @@ export async function loadUsers(page = 1, pageSize = 5) {
             usersTable.style.display = 'none';
         }
         if (tableBody) {
-            tableBody.innerHTML = `<tr><td colspan="5" class="error-message">Error loading users: ${error.message}</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="6" class="error-message">Error loading users: ${error.message}</td></tr>`;
         }
         if (paginationContainer) {
             paginationContainer.style.display = 'none';
         }
     }
 }
+
+/**
+ * Load unverified users count and display badge
+ */
+async function loadUnverifiedCount() {
+    try {
+        // Fetch only unverified users count
+        const response = await fetch('../../api/admin/users.php?email_verified=false&limit=1');
+        const data = await response.json();
+        
+        if (data.success && data.pagination) {
+            const count = data.pagination.total_records;
+            const badge = document.getElementById('unverified-count-badge');
+            const countSpan = document.getElementById('unverified-count');
+            
+            if (count > 0) {
+                countSpan.textContent = count;
+                badge.style.display = 'inline-flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    } catch (error) {
+        console.error('Error loading unverified count:', error);
+    }
+}
+
+/**
+ * Setup verification filter event listener
+ */
+function setupVerificationFilter() {
+    const filterSelect = document.getElementById('verification-filter-select');
+    
+    if (filterSelect) {
+        filterSelect.addEventListener('change', function() {
+            const filterValue = this.value;
+            
+            // Build the API URL with filter
+            let apiUrl = '../../api/admin/users.php?page=1&limit=' + currentPageSize;
+            
+            if (filterValue === 'verified') {
+                apiUrl += '&email_verified=true';
+            } else if (filterValue === 'unverified') {
+                apiUrl += '&email_verified=false';
+            }
+            // 'all' doesn't need additional parameters
+            
+            // Reload users with filter
+            loadUsersWithFilter(filterValue);
+        });
+    }
+}
+
+/**
+ * Load users with verification filter applied
+ */
+async function loadUsersWithFilter(filterValue) {
+    const tableBody = document.querySelector('#userTable tbody');
+    const usersTable = document.querySelector('#users-table');
+    const paginationContainer = document.getElementById('pagination-container');
+    
+    if (usersTable) {
+        usersTable.textContent = 'Loading users...';
+    }
+    
+    try {
+        // Build API URL with filter
+        let apiUrl = `../../api/admin/users.php?page=1&limit=${currentPageSize}`;
+        
+        if (filterValue === 'verified') {
+            apiUrl += '&email_verified=true';
+        } else if (filterValue === 'unverified') {
+            apiUrl += '&email_verified=false';
+        }
+        
+        const response = await fetch(apiUrl);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (usersTable) {
+            usersTable.style.display = 'none';
+        }
+        
+        if (!data.success) {
+            console.error('API Error:', data.message);
+            if (tableBody) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="error-message">Error: ${data.message}</td></tr>`;
+            }
+            return;
+        }
+        
+        if (!tableBody) return;
+        
+        // Update pagination state
+        currentPage = data.pagination.current_page;
+        currentPageSize = data.pagination.limit;
+        totalPages = data.pagination.total_pages;
+        
+        tableBody.innerHTML = ''; 
+        
+        if (data.data && data.data.length > 0) {
+            data.data.forEach(user => {
+                const statusClass = user.status === 'active' ? 'status-active' : 'status-inactive';
+                const actionText = user.status === 'active' ? '<i class="fa fa-user-slash"></i>' : 'Activate';
+                const actionClass = user.status === 'active' ? 'btn-warning' : 'btn-success';
+                
+                // Email verification badge
+                const isEmailVerified = user.email_verified === 1 || user.email_verified === true;
+                const verificationBadge = isEmailVerified 
+                    ? '<span class="verification-badge verified"><i class="fa fa-check-circle"></i> Verified</span>'
+                    : '<span class="verification-badge unverified"><i class="fa fa-exclamation-circle"></i> Unverified</span>';
+                
+                // Check current user permissions
+                const currentUser = getCurrentUser();
+                const isCurrentUserAdmin = currentUser?.role === 'admin';
+                const isCurrentUserMonitor = currentUser?.role === 'monitor';
+                const isCurrentUser = user.id == currentUser?.id;
+
+                let roleToggleButton = '';
+                let deleteButton = '';
+                let statusButton = '';
+                let verifyButton = '';
+                
+                // Only admins can change roles and only for other users
+                if (isCurrentUserAdmin && !isCurrentUser) {
+                    roleToggleButton = `<button onclick="showRoleModal(${user.id}, '${user.role}', '${user.name}')" class="action-btn btn-info">Promote</button>`;
+                }
+                
+                // Both admins and monitors can suspend/activate users (except themselves)
+                if ((isCurrentUserAdmin || isCurrentUserMonitor) && !isCurrentUser) {
+                    statusButton = `<button onclick="toggleUserStatus(${user.id}, '${user.status}')" class="action-btn ${actionClass}">${actionText}</button>`;
+                }
+                
+                // Both admins and monitors can verify unverified users
+                if ((isCurrentUserAdmin || isCurrentUserMonitor) && !isEmailVerified && !isCurrentUser) {
+                    verifyButton = `<button onclick="verifyUser(${user.id}, '${user.name}')" class="action-btn btn-verify" title="Manually verify this user's email">
+                        <i class="fa fa-check-circle"></i> Verify Email
+                    </button>`;
+                }
+                
+                // Only admins can delete users (except themselves)
+                if (isCurrentUserAdmin && !isCurrentUser) {
+                    deleteButton = `<button onclick="deleteUser(${user.id}, '${user.name}')" class="action-btn btn-danger"><i class="fa fa-trash-can"></i></button>`;
+                }
+                
+                // Show different messages for current user's own row
+                if (isCurrentUser) {
+                    statusButton = '<span class="current-user-label">Current</span>';
+                }
+                
+                // Format the created date
+                let createdDate = 'N/A';
+                if (user.created_at) {
+                    const dateObj = new Date(user.created_at);
+                    createdDate = dateObj.toLocaleDateString(undefined, {
+                        year: '2-digit',
+                        month: 'short',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                }
+                
+                const row = `
+                    <tr>
+                        <td data-label="Username">
+                            ${user.name || 'N/A'}
+                            <br>${verificationBadge}
+                        </td>  
+                        <td data-label="Created">${createdDate}</td>
+                        <td data-label="Role"><span class="role-badge role-${user.role}">${user.role || 'N/A'}</span></td>
+                        <td data-label="Status"><span class="status-badge ${statusClass}">${user.status || 'N/A'}</span></td>
+                        <td data-label="Actions" class="actions-cell">
+                            ${verifyButton}
+                            ${roleToggleButton}
+                            ${statusButton}
+                            ${deleteButton}
+                        </td>
+                    </tr>`;
+                tableBody.innerHTML += row;
+            });
+            
+            // Show pagination
+            updatePagination(data.pagination);
+            if (paginationContainer) {
+                paginationContainer.style.display = 'flex';
+            }
+        } else {
+            let emptyMessage = 'No users found';
+            if (filterValue === 'unverified') {
+                emptyMessage = '🎉 All users are verified!';
+            } else if (filterValue === 'verified') {
+                emptyMessage = 'No verified users found';
+            }
+            tableBody.innerHTML = `<tr><td colspan="6" class="no-data">${emptyMessage}</td></tr>`;
+            if (paginationContainer) {
+                paginationContainer.style.display = 'none';
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        if (usersTable) {
+            usersTable.style.display = 'none';
+        }
+        if (tableBody) {
+            tableBody.innerHTML = `<tr><td colspan="6" class="error-message">Error loading users: ${error.message}</td></tr>`;
+        }
+        if (paginationContainer) {
+            paginationContainer.style.display = 'none';
+        }
+    }
+}
+
+// Update the setupAdminNavigation function to initialize filter when users section is shown
+function setupAdminNavigationEnhanced(activeSubsection = 'statistics') {
+    const adminNavBtns = document.querySelectorAll('.admin-nav-btn');
+    const adminSubsections = document.querySelectorAll('.admin-subsection');
+    
+    adminNavBtns.forEach(btn => btn.classList.remove('active'));
+    adminSubsections.forEach(section => section.style.display = 'none');
+    
+    const activeSection = document.getElementById(`admin-${activeSubsection}`);
+    if (activeSection) {
+        activeSection.style.display = 'block';
+        
+        const activeBtn = document.querySelector(`[data-admin-section="${activeSubsection}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+    }
+    
+    adminNavBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetSection = btn.getAttribute('data-admin-section');
+            if (targetSection) {
+                localStorage.setItem('dashboard-admin-subsection', targetSection);
+                
+                adminNavBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                adminSubsections.forEach(section => section.style.display = 'none');
+                const targetEl = document.getElementById(`admin-${targetSection}`);
+                if (targetEl) {
+                    targetEl.style.display = 'block';
+                    
+                    if (targetSection === 'statistics') {
+                        loadStatistics();
+                    } else if (targetSection === 'activity-analytics') {
+                        loadActivityAnalytics();
+                    } else if (targetSection === 'users') {
+                        // Load users and setup filter
+                        loadUsers();
+                        // Setup verification filter after short delay
+                        setTimeout(() => {
+                            setupVerificationFilter();
+                            loadUnverifiedCount();
+                        }, 100);
+                    }
+                }
+            }
+        });
+    });
+    
+    // Load initial data and setup filter if users section is active
+    if (activeSubsection === 'users') {
+        setTimeout(() => {
+            loadUsers();
+            setupVerificationFilter();
+            loadUnverifiedCount();
+        }, 100);
+    } else if (activeSubsection === 'statistics') {
+        setTimeout(() => {
+            loadStatistics();
+        }, 100);
+    } else if (activeSubsection === 'activity-analytics') {
+        setTimeout(() => {
+            loadActivityAnalytics();
+        }, 100);
+    }
+}
+
+// Export the new functions
+export { loadUnverifiedCount, setupVerificationFilter, loadUsersWithFilter };
 
 function updatePagination(pagination) {
     const infoText = document.getElementById('pagination-info-text');
@@ -962,3 +1268,33 @@ function showToast(message, type = 'success') {
         toast.className = 'toast';
     }, 3000);
 }
+
+// manual verification of users by an admin or monitor
+window.verifyUser = async function(userId, username) {
+    if (!confirm(`Are you sure you want to manually verify the email for user "${username}"?`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('../../api/admin/manual-verify-user.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_id: userId })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast(result.message, 'success');
+            // Refresh the users table to show updated verification status
+            loadUsers(currentPage, currentPageSize);
+        } else {
+            showToast(result.message || 'Failed to verify user', 'error');
+        }
+    } catch (error) {
+        console.error('Error verifying user:', error);
+        showToast('An error occurred while verifying the user', 'error');
+    }
+};

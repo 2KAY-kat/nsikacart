@@ -208,51 +208,68 @@ export const sections = {
                     </div>
                     
                     <div class="admin-subsection" id="admin-users" style="display: none;">
-                        <h3></h3>
-                        <button class="app-content-headerButton"><a href="user-management/add-user.html"><i class="fa-solid fa-user-plus"></i> Add User</a></button>
-                        <button class="app-content-headerButton"><a href="">View User Activity</a></button>
-                        <div class="users-management">
-                            <div class="users-table-container">
-                                <div id="users-table" class="loading-message">Loading users...</div>
-                                <div class="table-wrapper">
-                                    <table id="userTable" class="admin-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Username</th>
-                                                <th>Registered On</th>
-                                                <th>Role</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="pagination-container" id="pagination-container" style="display: none;">
-                                    <div class="pagination-info">
-                                        <span id="pagination-info-text">Showing 0-0 of 0 users</span>
-                                    </div>
-                                    <div class="pagination-controls">
-                                        <div class="page-size-selector">
-                                            <label for="page-size">Show:</label>
-                                            <select id="page-size">
-                                                <option value="5" selected>5</option>
-                                                <option value="6">6</option>
-                                                <option value="10">10</option>
-                                                <option value="20">20</option>
-                                                <option value="50">50</option>
-                                            </select>
-                                            <span>users per page</span>
-                                        </div>
-                                        <div class="pagination-buttons" id="pagination-buttons">
-                                            <!-- Pagination buttons will be generated here -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <h3></h3>
+    <button class="app-content-headerButton"><a href="user-management/add-user.html"><i class="fa-solid fa-user-plus"></i> Add User</a></button>
+    <button class="app-content-headerButton"><a href="">View User Activity</a></button>
+    
+    <!-- NEW: Verification Filter -->
+    <div class="verification-filter">
+        <label for="verification-filter-select">
+            <i class="fa fa-filter"></i> Filter by Verification:
+        </label>
+        <select id="verification-filter-select" class="form-control">
+            <option value="all">All Users</option>
+            <option value="verified">Verified Only</option>
+            <option value="unverified">Unverified Only</option>
+        </select>
+        <span id="unverified-count-badge" class="badge-count" style="display: none;">
+            <i class="fa fa-exclamation-circle"></i> <span id="unverified-count">0</span> pending verification
+        </span>
+    </div>
+    
+    <div class="users-management">
+        <div class="users-table-container">
+            <div id="users-table" class="loading-message">Loading users...</div>
+            <div class="table-wrapper">
+                <table id="userTable" class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Registered On</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-container" id="pagination-container" style="display: none;">
+                <div class="pagination-info">
+                    <span id="pagination-info-text">Showing 0-0 of 0 users</span>
+                </div>
+                <div class="pagination-controls">
+                    <div class="page-size-selector">
+                        <label for="page-size">Show:</label>
+                        <select id="page-size">
+                            <option value="5" selected>5</option>
+                            <option value="6">6</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span>users per page</span>
                     </div>
+                    <div class="pagination-buttons" id="pagination-buttons">
+                        <!-- Pagination buttons will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
                     
                     <div class="admin-subsection" id="admin-settings" style="display: none;">
                         <h3>System Settings</h3>

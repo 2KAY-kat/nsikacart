@@ -1549,3 +1549,152 @@ a {
     /* transform: rotate(180deg);*/
     text-transform: uppercase;
 }
+
+/*  verfify buttons */
+
+/* Verification Badge Styles */
+.verification-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.verification-badge.verified {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.verification-badge.verified i {
+    color: #28a745;
+}
+
+.verification-badge.unverified {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+.verification-badge.unverified i {
+    color: #ffc107;
+}
+
+/* Verify Button Style */
+.action-btn.btn-verify:hover {
+    background: linear-gradient(135deg, #218838 0%, #1ba87e 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.action-btn.btn-verify:active {
+    transform: translateY(0);
+}
+
+.action-btn.btn-verify i {
+    margin-right: 4px;
+}
+
+/* Update table header to accommodate verification status */
+#userTable thead th:first-child {
+    min-width: 150px;
+}
+
+/* Responsive verification badges */
+@media (max-width: 768px) {
+    .verification-badge {
+        display: block;
+        margin-top: 8px;
+        width: fit-content;
+    }
+    
+    .action-btn.btn-verify {
+        width: 100%;
+        margin-bottom: 4px;
+    }
+}
+
+/* Filter section for unverified users (optional enhancement) */
+.verification-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+.verification-filter label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.verification-filter select {
+    padding: 6px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+}
+
+/* Highlight unverified users row */
+tr:has(.verification-badge.unverified) {
+    background-color: #fffbf0;
+}
+
+tr:has(.verification-badge.unverified):hover {
+    background-color: #fff8e1;
+}btn-verify {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 2px;
+}
+
+
+
+.badge-count {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(255, 152, 0, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.verification-filter {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.verification-filter select {
+    transition: all 0.3s ease;
+}
+
+.verification-filter select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+    outline: none;
+}
+

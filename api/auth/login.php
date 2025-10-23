@@ -24,7 +24,7 @@ try {
     $raw_input = file_get_contents("php://input");
     
     // check if input is empty helps us prevet security edge cases and yes no data can be dangourous as bad data
-    if (empty(trim($raw_input))) { // ad ofcouser the trim to avoid unncessary and spaced out data
+    if (empty(trim($raw_input))) {
         http_response_code(400);
         echo json_encode([
             "success" => false,
@@ -67,7 +67,7 @@ try {
 
     $login_input = trim($data['email']);
     $password = trim($data['password']);
-    $remember = isset($data['remember']) && $data['remember'] ? true : false; // if the remember me check bos is ever ticked store it into the db
+    $remember = isset($data['remember']) && $data['remember'] ? true : false;
 
     // you jsut cant sent an empty password or field itno the processing engine
     if (empty($login_input) || empty($password)) {
@@ -79,8 +79,6 @@ try {
     }
 
     // check if input is an email or username
-    /* since the first input besides the password is either email or username ... we check if the inputs is either of those by by checking it against the their other details.
-    */
     if (filter_var($login_input, FILTER_VALIDATE_EMAIL)) {
         $query = "SELECT id, name, email, password, role, status, email_verified FROM users WHERE email = ?";
         $params = [$login_input];
@@ -89,7 +87,7 @@ try {
         $params = [$login_input];
     }
     
-    // actual prepared statement to avoid sql injections and yeah to be safe so afar...
+    // actual prepared statement to avoid sql injections
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);
     $user = $stmt->fetch();
@@ -102,12 +100,13 @@ try {
         exit;
     }
 
-    // check if email is verified/ this helps us to identify if the currently logging in user is actaually verified and if not and email is sent actual genius...
+    // UPDATED: Check if email is verified - now with more helpful message
     if (!$user['email_verified']) {
         echo json_encode([
             "success" => false,
-            "message" => "Please verify your email address before logging in. Check your inbox for the verification link.",
-            "email_not_verified" => true
+            "message" => "Your email address has not been verified yet. Please wait for an administrator to verify your account, or contact support if you've been waiting for an extended period.",
+            "email_not_verified" => true,
+            "pending_verification" => true // NEW: Flag to show it's pending admin action
         ]);
         exit;
     }

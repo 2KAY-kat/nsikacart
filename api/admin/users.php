@@ -36,6 +36,8 @@ try {
     // Optional filters
     $role = $_GET['role'] ?? null;
     $status = $_GET['status'] ?? null;
+    // NEW: Add email verification filter
+    $emailVerified = $_GET['email_verified'] ?? null;
 
     // Build base query for counting total records
     $countQuery = "SELECT COUNT(*) as total FROM users WHERE 1=1";
@@ -49,6 +51,11 @@ try {
         $countQuery .= " AND status = ?";
         $countParams[] = $status;
     }
+    // NEW: Filter by email verification status
+    if ($emailVerified !== null) {
+        $countQuery .= " AND email_verified = ?";
+        $countParams[] = $emailVerified === 'true' ? 1 : 0;
+    }
 
     // Get total count
     $countStmt = $pdo->prepare($countQuery);
@@ -57,7 +64,8 @@ try {
     $totalPages = ceil($totalRecords / $limit);
 
     // Build query for actual data with pagination
-    $query = "SELECT id, name, /*email,*/role, status, created_at FROM users WHERE 1=1";
+    // UPDATED: Include email_verified and verified_at columns
+    $query = "SELECT id, name, /*email,*/ role, status, email_verified, verified_at, created_at FROM users WHERE 1=1";
     $params = [];
 
     if ($role) {
@@ -67,6 +75,11 @@ try {
     if ($status) {
         $query .= " AND status = ?";
         $params[] = $status;
+    }
+    // NEW: Filter by email verification status
+    if ($emailVerified !== null) {
+        $query .= " AND email_verified = ?";
+        $params[] = $emailVerified === 'true' ? 1 : 0;
     }
 
     // Add ORDER BY and LIMIT/OFFSET directly to the query
