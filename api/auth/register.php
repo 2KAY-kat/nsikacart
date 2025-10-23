@@ -107,10 +107,10 @@ try {
 
     // NEW: Send notification email to admin about new registration (since Resend is sandboxed)
     $baseUrl = env('APP_URL', 'http://localhost/nsikacart');
-    $dashboardLink = rtrim($baseUrl, '/') . "/public/dashboard/index.html#admin/users";
+    $dashboardLink = rtrim($baseUrl, '/') . "/dashboard/index.html#admin";
     
     // Get admin email from env or use your verified Resend email
-    $adminEmail = env('ADMIN_EMAIL', 'onboarding@resend.dev'); // Replace with your email
+    $adminEmail = env('ADMIN_EMAIL', 'dambwedesigns@gmail.com'); 
 
     // Prepare admin notification email
     $subject = 'New User Registration - ' . env('APP_NAME', 'Nsikacart');
@@ -183,7 +183,7 @@ try {
     // Send notification via Resend API to admin
     $emailPayload = [
         "from" => "Nsikacart <onboarding@resend.dev>",
-        "to" => [$adminEmail], // Admin email
+        "to" => [$adminEmail],
         "subject" => $subject,
         "html" => $htmlBody,
         "text" => $textBody
