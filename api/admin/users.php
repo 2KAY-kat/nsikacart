@@ -65,7 +65,7 @@ try {
 
     // Build query for actual data with pagination
     // UPDATED: Include email_verified and verified_at columns
-    $query = "SELECT id, name, /*email,*/ role, status, email_verified, verified_at, created_at FROM users WHERE 1=1";
+    $query = "SELECT id, name, /*email,*/ role, status, email_verified, admin_verified_at, created_at FROM users WHERE 1=1";
     $params = [];
 
     if ($role) {
