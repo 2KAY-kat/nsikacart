@@ -99,8 +99,8 @@ try {
         SET email_verified = TRUE, 
             verification_token = NULL, 
             verification_expires_at = NULL,
-            verified_by = ?,
-            verified_at = NOW()
+            admin_verified_by = ?,
+            admin_verified_at = NOW()
         WHERE id = ?
     ");
     
