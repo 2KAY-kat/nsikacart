@@ -1648,7 +1648,7 @@ tr:has(.verification-badge.unverified) {
 }
 
 tr:has(.verification-badge.unverified):hover {
-    background-color: #fff8e1;
+    background-color: var(--sidebar-hover-link);
 }
 .btn-verify {
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
