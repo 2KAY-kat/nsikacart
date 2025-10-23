@@ -212,21 +212,6 @@ export const sections = {
     <button class="app-content-headerButton"><a href="user-management/add-user.html"><i class="fa-solid fa-user-plus"></i> Add User</a></button>
     <button class="app-content-headerButton"><a href="">View User Activity</a></button>
     
-    <!-- NEW: Verification Filter -->
-    <div class="verification-filter">
-        <label for="verification-filter-select">
-            <i class="fa fa-filter"></i> Filter by Verification:
-        </label>
-        <select id="verification-filter-select" class="form-control">
-            <option value="all">All Users</option>
-            <option value="verified">Verified Only</option>
-            <option value="unverified">Unverified Only</option>
-        </select>
-        <span id="unverified-count-badge" class="badge-count" style="display: none;">
-            <i class="fa fa-exclamation-circle"></i> <span id="unverified-count">0</span> pending verification
-        </span>
-    </div>
-    
     <div class="users-management">
         <div class="users-table-container">
             <div id="users-table" class="loading-message">Loading users...</div>

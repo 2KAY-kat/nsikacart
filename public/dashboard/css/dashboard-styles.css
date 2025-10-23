@@ -1575,7 +1575,7 @@ a {
 }
 
 .verification-badge.unverified {
-    background-color: #fff3cd;
+    background-color: var(--app-content-secondary-color);
     color: #856404;
     border: 1px solid #ffeeba;
 }
@@ -1644,12 +1644,13 @@ a {
 
 /* Highlight unverified users row */
 tr:has(.verification-badge.unverified) {
-    background-color: #fffbf0;
+    background-color: var(--app-content-secondary-color);
 }
 
 tr:has(.verification-badge.unverified):hover {
     background-color: #fff8e1;
-}btn-verify {
+}
+.btn-verify {
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     color: white;
     border: none;
