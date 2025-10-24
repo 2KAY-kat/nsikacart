@@ -635,7 +635,8 @@ export async function loadUsers(page = 1, pageSize = 5) {
                 // NEW: Both admins and monitors can verify unverified users
                 if ((isCurrentUserAdmin || isCurrentUserMonitor) && !isEmailVerified && !isCurrentUser) {
                     verifyButton = `<button onclick="verifyUser(${user.id}, '${user.name}')" class="action-btn btn-verify" title="Manually verify this user's email">
-                        <i class="fa fa-check-circle"></i> Verify Email
+                        <i class="fa fa-check-circle"></i>
+                        <i class="fa-solid fa-envelope"></i>
                     </button>`;
                 }
                 
@@ -846,7 +847,8 @@ async function loadUsersWithFilter(filterValue) {
                 // Both admins and monitors can verify unverified users
                 if ((isCurrentUserAdmin || isCurrentUserMonitor) && !isEmailVerified && !isCurrentUser) {
                     verifyButton = `<button onclick="verifyUser(${user.id}, '${user.name}')" class="action-btn btn-verify" title="Manually verify this user's email">
-                        <i class="fa fa-check-circle"></i> Verify Email
+                        <i class="fa fa-check-circle"></i> 
+                        <i class="fa-solid fa-envelope"></i>
                     </button>`;
                 }
                 
