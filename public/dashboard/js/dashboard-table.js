@@ -184,7 +184,7 @@ function updateProductsPagination(pagination) {
         // Previous button
         const prevBtn = document.createElement('button');
         prevBtn.className = 'pagination-btn';
-        prevBtn.textContent = '‹ Previous';
+        prevBtn.textContent = '< Previous';
         prevBtn.disabled = !pagination.has_prev;
         prevBtn.onclick = () => pagination.has_prev && renderProductsTable(pagination.current_page - 1, pagination.limit, currentSearchTerm);
         buttonsContainer.appendChild(prevBtn);
@@ -228,7 +228,7 @@ function updateProductsPagination(pagination) {
         // Next button
         const nextBtn = document.createElement('button');
         nextBtn.className = 'pagination-btn';
-        nextBtn.textContent = 'Next ›';
+        nextBtn.textContent = 'Next >';
         nextBtn.disabled = !pagination.has_next;
         nextBtn.onclick = () => pagination.has_next && renderProductsTable(pagination.current_page + 1, pagination.limit, currentSearchTerm);
         buttonsContainer.appendChild(nextBtn);
